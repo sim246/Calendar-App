@@ -1,14 +1,51 @@
 package com.example.calendarapp.ui.screens
 
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 
-    
+
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun CreateEventMenu(){
-        Text(text = "test (if this works you have the CreateEvent menu shown yahee)")
+        /*
+        Required:
+        Title + Description
+        Location
+        Time
+        Day (auto-specified by adding from day view or user-specified)
+         ??? (probably nothing else)
+        */
+        EventInputField("Title")
+        EventInputField("Description")
+        EventInputField("Location")
+       Button(
+          content={Text(text = "Return to Menu")},
+          onClick={}
+       )
     }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun EventInputField(name:String)
+    {
+        var inputText by rememberSaveable {mutableStateOf("")}
+        TextField(
+            value = inputText,
+            onValueChange = { inputText = it },
+            label = { name }
+        )
+    }
+
+
+
     @Preview
     @Composable
     fun CreateEventMenuPreview(){
