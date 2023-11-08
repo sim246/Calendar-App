@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 fun DailyOverview() {
 
     var hour = 6;
-    var meridiem = "AM"
+    var meridiem = "am"
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -32,13 +32,17 @@ fun DailyOverview() {
         {
             Row(horizontalArrangement = Arrangement.Start)
             {
-                Text("$hour:00 $meridiem")
+                if (hour != 12) {
+                    Text("$hour:00 $meridiem", color = MaterialTheme.colorScheme.primary)
+                } else {
+                    Text("$hour:00", color = MaterialTheme.colorScheme.primary)
+                }
             }
             i++
             if (hour == 12)
             {
                 hour = 1
-                meridiem = "PM"
+                meridiem = "pm"
             } else
             {
                 hour++
