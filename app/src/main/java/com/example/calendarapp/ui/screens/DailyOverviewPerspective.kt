@@ -4,7 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,13 +28,7 @@ import com.example.calendarapp.R
 @Composable
 fun DailyOverview() {
 
-    var hour = 6;
-    Button(onClick = {}) {
-        Image(
-            painterResource(id = R.drawable.add_button),
-            contentDescription ="Cart button icon",
-            modifier = Modifier.size(20.dp))
-    }
+    var hour = 6
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -44,15 +37,42 @@ fun DailyOverview() {
             .verticalScroll(rememberScrollState())
     )
     {
-        var i = 0;
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+            Image(
+                painterResource(id = R.drawable.arrow_left),
+                contentDescription ="Cart button icon",
+                modifier = Modifier.size(40.dp)
+                    .clickable {  })
+            Image(
+                painterResource(id = R.drawable.arrow_right),
+                contentDescription ="Cart button icon",
+                modifier = Modifier.size(40.dp)
+                    .clickable {  })
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
+            Image(
+                painterResource(id = R.drawable.add_button),
+                contentDescription ="Cart button icon",
+                modifier = Modifier.size(30.dp)
+                .clickable {  })
+        }
+        var i = 0
+        var color = MaterialTheme.colorScheme.onPrimaryContainer
         while (i <= 18)
         {
+            if (i % 2 == 0) {
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                color = MaterialTheme.colorScheme.onBackground
+            }
             Row(horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .height(50.dp)
                     .border(BorderStroke(0.5.dp, Color.LightGray))
                     .fillMaxWidth()
+                    .background(color)
             )
             {
                 Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
