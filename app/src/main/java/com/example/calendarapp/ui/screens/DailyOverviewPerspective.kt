@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.calendarapp.R
 
 @Composable
-fun DailyOverview() {
+fun DailyOverview(day:String) {
 
     var hour = 6
     Column(
@@ -43,6 +43,7 @@ fun DailyOverview() {
                 contentDescription ="Cart button icon",
                 modifier = Modifier.size(40.dp)
                     .clickable {  })
+            Text(day)
             Image(
                 painterResource(id = R.drawable.arrow_right),
                 contentDescription ="Cart button icon",
@@ -54,23 +55,24 @@ fun DailyOverview() {
             Image(
                 painterResource(id = R.drawable.add_button),
                 contentDescription ="Cart button icon",
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(40.dp)
                 .clickable {  })
         }
+        Spacer(modifier = Modifier.height(5.dp))
         var i = 0
-        var color = MaterialTheme.colorScheme.onPrimaryContainer
+        var color: Color
         while (i <= 18)
         {
-            if (i % 2 == 0) {
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+            color = if (i % 2 == 0) {
+                MaterialTheme.colorScheme.outlineVariant
             } else {
-                color = MaterialTheme.colorScheme.onBackground
+                MaterialTheme.colorScheme.onPrimary
             }
             Row(horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .height(50.dp)
-                    .border(BorderStroke(0.5.dp, Color.LightGray))
+                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline))
                     .fillMaxWidth()
                     .background(color)
             )
