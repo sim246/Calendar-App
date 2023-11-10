@@ -1,9 +1,13 @@
 package com.example.calendarapp.ui.screens
 
+import android.app.TimePickerDialog
+import android.widget.TimePicker
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun CreateEventMenu(){
+
         /*
         Required:
         Title + Description
@@ -23,13 +28,26 @@ import androidx.compose.ui.tooling.preview.Preview
         Day (auto-specified by adding from day view or user-specified)
          ??? (probably nothing else)
         */
-        EventInputField("Title")
-        EventInputField("Description")
-        EventInputField("Location")
-       Button(
-          content={Text(text = "Return to Menu")},
-          onClick={}
-       )
+        Column(){
+            EventInputField("Title")
+            EventInputField("Description")
+            EventInputField("Location")
+            EventTimePicker()
+            Button(
+                content={Text(text = "Return to Menu")},
+                onClick={}
+            )
+
+        }
+
+
+
+
+    }
+
+    @Composable
+    fun EventTimePicker(){
+        Button(onClick={}, content={Text(text = "Time: ???? pm")},)
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
         TextField(
             value = inputText,
             onValueChange = { inputText = it },
-            label = { name }
+            label = { Text(name) }
         )
     }
 
