@@ -43,7 +43,7 @@ fun DailyOverview(day:String) {
                 contentDescription ="Cart button icon",
                 modifier = Modifier.size(40.dp)
                     .clickable {  })
-            Text(day)
+            Text(day, modifier = Modifier.size(40.dp))
             Image(
                 painterResource(id = R.drawable.arrow_right),
                 contentDescription ="Cart button icon",
