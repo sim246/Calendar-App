@@ -1,8 +1,10 @@
 package com.example.calendarapp
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.calendarapp.ui.resources.Event
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.theme.CalendarAppTheme
+import java.time.LocalDateTime
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +42,11 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     CalendarAppTheme {
-        DailyOverview("day", event = Event("event", 1, 9))
+        DailyOverview("year-month-day", event = Event("event",LocalDateTime.parse("2021-05-18T15:00:00"), LocalDateTime.parse("2021-05-18T16:00:00")))
     }
 }

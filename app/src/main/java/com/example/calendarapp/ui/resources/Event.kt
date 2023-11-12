@@ -1,7 +1,9 @@
 package com.example.calendarapp.ui.resources
 
+import java.time.LocalDateTime
+
 class Event(
     val eventName: String,
-    val startTime: Int,
-    val endTime: Int
+    val start: LocalDateTime,
+    val end: LocalDateTime
 )

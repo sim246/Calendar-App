@@ -1,19 +1,25 @@
 package com.example.calendarapp.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,10 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.calendarapp.R
 import com.example.calendarapp.ui.resources.Event
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DailyOverview(day:String,event: Event) {
     Column(
@@ -42,9 +52,30 @@ fun DailyOverview(day:String,event: Event) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+val EventTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EventDisplay(event: Event) {
+fun EventDisplay(event: Event?) {
+    if(event != null) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 2.dp, bottom = 2.dp)
+                .background(Color.Blue)
+                .padding(4.dp)
+                .RoundedCornerShape(4.dp)
+        ) {
+            Text(
+                text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(EventTimeFormatter)}",
+            )
 
+            Text(
+                text = event.eventName,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
 }
 
 @Composable
@@ -64,7 +95,7 @@ fun HourDisplay() {
             modifier = Modifier
                 .height(50.dp)
                 .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline))
-                .fillMaxWidth()
+                .width(50.dp)
                 .background(color)
         )
         {
@@ -88,7 +119,7 @@ fun TopHalf(day:String){
             modifier = Modifier
                 .size(40.dp)
                 .clickable { })
-        Text(day, modifier = Modifier.size(40.dp))
+        Text(day, modifier = Modifier.height(40.dp), fontSize = 20.sp)
         Image(
             painterResource(id = R.drawable.arrow_right),
             contentDescription ="Cart button icon",
