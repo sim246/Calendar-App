@@ -47,6 +47,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     CalendarAppTheme {
-        DailyOverview("year-month-day", event = Event("event",LocalDateTime.parse("2021-05-18T15:00:00"), LocalDateTime.parse("2021-05-18T16:00:00")))
     }
+    val events: List<Event> = listOf(
+        Event("event",LocalDateTime.parse("2021-05-18T15:15:00"), LocalDateTime.parse("2021-05-18T16:30:00")),
+        Event("event",LocalDateTime.parse("2021-05-18T08:15:00"), LocalDateTime.parse("2021-05-18T09:30:00"))
+    )
+        DailyOverview("year-month-day", events = events)
 }
