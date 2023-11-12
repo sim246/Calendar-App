@@ -24,11 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.calendarapp.R
+import com.example.calendarapp.ui.resources.Event
 
 @Composable
-fun DailyOverview(day:String) {
-
-    var hour = 6
+fun DailyOverview(day:String,event: Event) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -37,56 +36,74 @@ fun DailyOverview(day:String) {
             .verticalScroll(rememberScrollState())
     )
     {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
-            Image(
-                painterResource(id = R.drawable.arrow_left),
-                contentDescription ="Cart button icon",
-                modifier = Modifier.size(40.dp)
-                    .clickable {  })
-            Text(day, modifier = Modifier.size(40.dp))
-            Image(
-                painterResource(id = R.drawable.arrow_right),
-                contentDescription ="Cart button icon",
-                modifier = Modifier.size(40.dp)
-                    .clickable {  })
+        TopHalf(day)
+        HourDisplay()
+        EventDisplay(event)
+    }
+}
+
+@Composable
+fun EventDisplay(event: Event) {
+
+}
+
+@Composable
+fun HourDisplay() {
+    var i = 0
+    var hour = 6
+    var color: Color
+    while (i <= 18) {
+        color = if (i % 2 == 0) {
+            MaterialTheme.colorScheme.outlineVariant
+        } else {
+            MaterialTheme.colorScheme.onPrimary
         }
-        Spacer(modifier = Modifier.height(5.dp))
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
-            Image(
-                painterResource(id = R.drawable.add_button),
-                contentDescription ="Cart button icon",
-                modifier = Modifier.size(40.dp)
-                .clickable {  })
-        }
-        Spacer(modifier = Modifier.height(5.dp))
-        var i = 0
-        var color: Color
-        while (i <= 18)
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .height(50.dp)
+                .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline))
+                .fillMaxWidth()
+                .background(color)
+        )
         {
-            color = if (i % 2 == 0) {
-                MaterialTheme.colorScheme.outlineVariant
-            } else {
-                MaterialTheme.colorScheme.onPrimary
-            }
-            Row(horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .height(50.dp)
-                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline))
-                    .fillMaxWidth()
-                    .background(color)
-            )
-            {
-                Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
-            }
-            i++
-            if (hour == 12)
-            {
-                hour = 1
-            } else
-            {
-                hour++
-            }
+            Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
+        }
+        i++
+        if (hour == 12) {
+            hour = 1
+        } else {
+            hour++
         }
     }
+}
+
+@Composable
+fun TopHalf(day:String){
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+        Image(
+            painterResource(id = R.drawable.arrow_left),
+            contentDescription ="Cart button icon",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { })
+        Text(day, modifier = Modifier.size(40.dp))
+        Image(
+            painterResource(id = R.drawable.arrow_right),
+            contentDescription ="Cart button icon",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { })
+    }
+    Spacer(modifier = Modifier.height(5.dp))
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
+        Image(
+            painterResource(id = R.drawable.add_button),
+            contentDescription ="Cart button icon",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { })
+    }
+    Spacer(modifier = Modifier.height(5.dp))
 }
