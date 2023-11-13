@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -96,11 +97,31 @@ fun EventDisplay(event: Event) {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
+val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleDisplay(events: List<Event>){
     Column(modifier = Modifier.fillMaxSize()) {
         events.sortedBy(Event::start).forEach { event ->
-            EventDisplay(event)
+            Layout(
+                content = { EventDisplay(event) },
+                modifier = Modifier,
+            ) { measureables, constraints ->
+//                val height = event.start.format(Formatter).toInt() * 50
+                val height = 0
+                val placeables = measureables.map { measurable ->
+                    measurable.measure(constraints.copy(maxHeight = 50.dp.roundToPx()))
+                }
+                layout(constraints.maxWidth, height) {
+                    var y = event.start.format(Formatter).toInt() * 50
+//                    var y = event.end.format(Formatter).toInt() * 50
+//                    var y = 0
+                    placeables.forEach { placeable ->
+                        placeable.place(0, y)
+                        y += placeable.height
+                    }
+                }
+            }
         }
     }
 }
