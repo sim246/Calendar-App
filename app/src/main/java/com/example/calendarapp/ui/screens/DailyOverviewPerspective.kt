@@ -8,12 +8,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,9 +50,23 @@ fun DailyOverview(day:String,events: List<Event>?) {
     )
     {
         TopHalf(day)
-        HourDisplay()
-        if (!events.isNullOrEmpty()) {
-            ScheduleDisplay(events)
+        Row (Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(50.dp)
+            ) {
+                HourDisplay()
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .offset(x = 50.dp, y = 0.dp)
+            ) {
+                if (!events.isNullOrEmpty()) {
+                    ScheduleDisplay(events)
+                }
+            }
         }
     }
 }
@@ -61,7 +78,6 @@ val EventTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a"
 fun EventDisplay(event: Event) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(end = 2.dp, bottom = 2.dp)
                 .background(Color.Blue)
                 .padding(4.dp)
@@ -82,8 +98,10 @@ fun EventDisplay(event: Event) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleDisplay(events: List<Event>){
+    Column(modifier = Modifier.fillMaxSize()) {
         events.sortedBy(Event::start).forEach { event ->
             EventDisplay(event)
+        }
     }
 }
 
@@ -92,29 +110,31 @@ fun HourDisplay() {
     var i = 0
     var hour = 6
     var color: Color
-    while (i <= 18) {
-        color = if (i % 2 == 0) {
-            MaterialTheme.colorScheme.outlineVariant
-        } else {
-            MaterialTheme.colorScheme.onPrimary
-        }
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .height(50.dp)
-                .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline))
-                .width(50.dp)
-                .background(color)
-        )
-        {
-            Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
-        }
-        i++
-        if (hour == 12) {
-            hour = 1
-        } else {
-            hour++
+    Column(modifier = Modifier.fillMaxSize()) {
+        while (i <= 18) {
+            color = if (i % 2 == 0) {
+                MaterialTheme.colorScheme.outlineVariant
+            } else {
+                MaterialTheme.colorScheme.onPrimary
+            }
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .height(50.dp)
+                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline))
+                    .fillMaxWidth()
+                    .background(color)
+            )
+            {
+                Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
+            }
+            i++
+            if (hour == 12) {
+                hour = 1
+            } else {
+                hour++
+            }
         }
     }
 }
