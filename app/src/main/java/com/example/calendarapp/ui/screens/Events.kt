@@ -1,5 +1,7 @@
 package com.example.calendarapp.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,12 +15,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.calendarapp.Event
+import com.example.calendarapp.ui.resources.Event
+import java.time.LocalDateTime
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun CreateEventMenu(event: Event = Event("","","","","")){
+    fun CreateEventMenu(event: Event = Event("", LocalDateTime.parse("2021-05-18T15:15:00"),
+    LocalDateTime.parse("2021-05-18T15:16:00"),"","")){
 
         /*
         Required:
@@ -35,7 +40,8 @@ import com.example.calendarapp.Event
             var titleString = EventInputField("Title")
             var descriptionString = EventInputField("Description")
             var locationString = EventInputField("Location")
-            EventTimeDisplay()
+            var clientString = EventInputField("Client")
+            EventTimeDisplay(event)
             Button(
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
@@ -57,34 +63,6 @@ import com.example.calendarapp.Event
 
 
     }
-    /*
-    @Composable
-    fun EventView(event: Event){
-        val currentEvent by remember { mutableStateOf(event)}
-        val visible by remember { mutableStateOf(false) }
-
-        /*
-        Box() {
-            if(visible){
-                Composable1()
-            }else{
-                Composable2()
-            }
-        }
-        */
-
-
-        var isEditing = remember {mutableStateOf(false)}
-        if(!isEditing){
-            EventDisplay(currentEvent)
-        }
-        else
-        {
-            CreateEventMenu(currentEvent)
-        }
-
-
-    }*/
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -92,9 +70,9 @@ import com.example.calendarapp.Event
         Column(){
 
 
-            Text(text=event.title)
+            Text(text=event.eventName)
             Text(text="@ " + event.location)
-            Text(text=event.date + " - " + event.time)
+            Text(text=event.start.toString() + " to " + event.end.toString())
             Text(text=event.description)
             Button(
                 content={Text(text = "Edit Event")},
@@ -107,13 +85,14 @@ import com.example.calendarapp.Event
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     @ExperimentalMaterial3Api
-    fun EventTimeDisplay(){
+    fun EventTimeDisplay(event: Event){
         var showTimePicker by remember { mutableStateOf(false) }
-        val time by rememberSaveable { mutableStateOf("12:24")}
+        //val time = event.start.hour.toString() + ":"+ event.start.minute +":"+ event.start.second
 
-        Text("Time: $time")
+        //Text("Time: $time")
 
 
         if (showTimePicker) {
@@ -123,7 +102,8 @@ import com.example.calendarapp.Event
         }
         else
         {
-            Button(onClick={showTimePicker = true}, content={Text(text = "Set Time")})
+            Button(onClick={}, content={Text(text = "Set Start Time")})
+            Button(onClick={}, content={Text(text = "Set End Time")})
         }
 
 
@@ -145,18 +125,21 @@ import com.example.calendarapp.Event
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
     @Composable
     fun CreateEventMenuPreview(){
-        val ev = Event("title","desc","loc","time","date")
+        val ev = Event("title",LocalDateTime.parse("2021-05-18T15:15:00"),
+            LocalDateTime.parse("2021-05-18T15:16:00"),"desc","client","location")
         CreateEventMenu(ev)
     }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
     @Composable
     fun EventDisplayPreview(){
-        val ev = Event("title","desc","loc","time","date")
+    val ev = Event("title",LocalDateTime.parse("2021-05-18T15:15:00"),LocalDateTime.parse("2021-05-18T15:16:00"),"desc","client","location")
         EventDisplay(ev)
     }
 

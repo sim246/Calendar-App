@@ -13,11 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.calendarapp.ui.resources.Event
+import com.example.calendarapp.ui.screens.CreateEventMenu
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 import java.time.LocalDateTime
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -27,7 +29,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val vent = Event("Example event", LocalDateTime.parse("2021-05-18T15:15:00"), LocalDateTime.parse("2021-05-18T15:15:00"))
+                   CreateEventMenu(vent)
                 }
             }
         }
