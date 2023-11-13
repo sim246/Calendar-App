@@ -76,13 +76,13 @@ fun DailyOverview(day:String,events: List<Event>?) {
 val EventTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EventDisplay(event: Event) {
+fun EventDisplay(event: Event, height:Int) {
         Column(
             modifier = Modifier
-                .padding(end = 2.dp, bottom = 2.dp)
-                .background(Color.Blue)
+                .background(Color.Blue, shape = RoundedCornerShape(4.dp))
                 .padding(4.dp)
-                .clip(RoundedCornerShape(4.dp))
+                .height(height.dp)
+                .width(200.dp)
         ) {
             Text(
                 text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(EventTimeFormatter)}",
@@ -103,19 +103,15 @@ val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
 fun ScheduleDisplay(events: List<Event>){
     Column(modifier = Modifier.fillMaxSize()) {
         events.sortedBy(Event::start).forEach { event ->
+            val height = (event.end.format(Formatter).toInt() - event.start.format(Formatter).toInt()) * 50
             Layout(
-                content = { EventDisplay(event) },
-                modifier = Modifier,
+                content = { EventDisplay(event, height) }
             ) { measureables, constraints ->
-//                val height = event.start.format(Formatter).toInt() * 50
-                val height = 0
                 val placeables = measureables.map { measurable ->
-                    measurable.measure(constraints.copy(maxHeight = 50.dp.roundToPx()))
+                    measurable.measure(constraints.copy(maxHeight = (height).dp.roundToPx()))
                 }
                 layout(constraints.maxWidth, height) {
                     var y = event.start.format(Formatter).toInt() * 50
-//                    var y = event.end.format(Formatter).toInt() * 50
-//                    var y = 0
                     placeables.forEach { placeable ->
                         placeable.place(0, y)
                         y += placeable.height
