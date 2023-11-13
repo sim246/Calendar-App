@@ -15,9 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.calendarapp.Event
 
 
-    @OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun CreateEventMenu(){
 
@@ -35,7 +36,12 @@ import androidx.compose.ui.tooling.preview.Preview
             EventInputField("Location")
             EventTimeDisplay()
             Button(
-                content={Text(text = "Return to Menu")},
+                content={Text(text = "Save Event")},
+                //should save the event at the specified date and time onclick
+                onClick={}
+            )
+            Button(
+                content={Text(text = "Quit without saving")},
                 onClick={}
             )
 
@@ -44,6 +50,25 @@ import androidx.compose.ui.tooling.preview.Preview
 
 
 
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun EventDisplay(event: Event){
+        Column(){
+            Text(text=event.title)
+            Text(text="@ " + event.location)
+            Text(text=event.date + " - " + event.time)
+            Text(text=event.description)
+            Button(
+                content={Text(text = "Edit Event")},
+                onClick={}
+            )
+            Button(
+                content={Text(text = "Delete Event")},
+                onClick={}
+            )
+        }
     }
 
     @Composable
@@ -57,12 +82,12 @@ import androidx.compose.ui.tooling.preview.Preview
 
         if (showTimePicker) {
 
-            Button(onClick={showTimePicker = false}, content={Text(text = "Save")},)
+            Button(onClick={showTimePicker = false}, content={Text(text = "Save")})
 
         }
         else
         {
-            Button(onClick={showTimePicker = true}, content={Text(text = "Set Time")},)
+            Button(onClick={showTimePicker = true}, content={Text(text = "Set Time")})
         }
 
 
@@ -88,5 +113,13 @@ import androidx.compose.ui.tooling.preview.Preview
     @Composable
     fun CreateEventMenuPreview(){
         CreateEventMenu()
+    }
+
+
+    @Preview
+    @Composable
+    fun EventDisplayPreview(){
+        val ev = Event("title","desc","loc","time","date")
+        EventDisplay(ev)
     }
 
