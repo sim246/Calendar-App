@@ -20,7 +20,7 @@ import com.example.calendarapp.Event
 
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun CreateEventMenu(){
+    fun CreateEventMenu(event: Event = Event("","","","",""), isEditing: Boolean){
 
         /*
         Required:
@@ -42,12 +42,15 @@ import com.example.calendarapp.Event
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
                 onClick={
+                    //isEditing = false
                     //saves the event somehow with the specified params
                 }
             )
             Button(
                 content={Text(text = "Quit without saving")},
-                onClick={}
+                onClick={
+                    //isEditing = false
+                }
             )
 
         }
@@ -57,9 +60,22 @@ import com.example.calendarapp.Event
 
     }
 
+    @Composable
+    fun EventView(event: Event){
+        val currentEvent by remember { mutableStateOf(event)}
+        var isEditing by remember {mutableStateOf(false)}
+        if(!isEditing){
+            EventDisplay(currentEvent, isEditing)
+        }
+        else
+        {
+            CreateEventMenu(currentEvent, isEditing)
+        }
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun EventDisplay(event: Event){
+    fun EventDisplay(event: Event, isEditing:Boolean){
         Column(){
 
 
@@ -115,7 +131,7 @@ import com.example.calendarapp.Event
     }
 
 
-
+/*
     @Preview
     @Composable
     fun CreateEventMenuPreview(){
@@ -130,3 +146,11 @@ import com.example.calendarapp.Event
         EventDisplay(ev)
     }
 
+*/
+
+@Preview
+@Composable
+fun EventEditPreview(){
+    val ev = Event("title","desc","loc","time","date")
+    EventView(ev)
+}
