@@ -1,6 +1,7 @@
 package com.example.calendarapp.ui.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -28,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
@@ -76,13 +76,13 @@ fun DailyOverview(day:String,events: List<Event>?) {
 val EventTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EventDisplay(event: Event, height:Int) {
+fun EventDisplay(event: Event) {
         Column(
             modifier = Modifier
-                .background(Color.Blue, shape = RoundedCornerShape(4.dp))
+                .background(MaterialTheme.colorScheme.outlineVariant, shape = RoundedCornerShape(4.dp))
                 .padding(4.dp)
-                .height(height.dp)
-                .width(200.dp)
+                .fillMaxHeight()
+                .width(250.dp)
         ) {
             Text(
                 text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(EventTimeFormatter)}",
@@ -97,24 +97,29 @@ fun EventDisplay(event: Event, height:Int) {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
+val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
+@RequiresApi(Build.VERSION_CODES.O)
+val FormatterMinuts: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleDisplay(events: List<Event>){
     Column(modifier = Modifier.fillMaxSize()) {
         events.sortedBy(Event::start).forEach { event ->
-            val height = (event.end.format(Formatter).toInt() - event.start.format(Formatter).toInt()) * 50
+            val height = (event.end.format(FormatterHours).toInt() - event.start.format(FormatterHours).toInt()) * 50
+            Log.d("height", (event.end.format(FormatterMinuts).toInt()).toString())
             Layout(
-                content = { EventDisplay(event, height) }
+                content = { EventDisplay(event) }
             ) { measureables, constraints ->
                 val placeables = measureables.map { measurable ->
-                    measurable.measure(constraints.copy(maxHeight = (height).dp.roundToPx()))
+                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMinuts).toInt() - 5).dp.roundToPx()))
                 }
                 layout(constraints.maxWidth, height) {
-                    var y = event.start.format(Formatter).toInt() * 50
+                    var y = (event.start.format(FormatterHours).toInt()) * 50
+                    if (event.start.format(FormatterHours).toInt() > 12){
+                        y = (event.start.format(FormatterHours).toInt()) * 100
+                    }
                     placeables.forEach { placeable ->
                         placeable.place(0, y)
-                        y += placeable.height
                     }
                 }
             }
@@ -130,16 +135,15 @@ fun HourDisplay() {
     Column(modifier = Modifier.fillMaxSize()) {
         while (i <= 18) {
             color = if (i % 2 == 0) {
-                MaterialTheme.colorScheme.outlineVariant
-            } else {
                 MaterialTheme.colorScheme.onPrimary
+            } else {
+                Color.LightGray
             }
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .height(50.dp)
-                    .border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline))
                     .fillMaxWidth()
                     .background(color)
             )
