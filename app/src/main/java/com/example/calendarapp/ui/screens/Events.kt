@@ -31,14 +31,19 @@ import com.example.calendarapp.Event
          ??? (probably nothing else)
         */
         Column(){
-            EventInputField("Title")
-            EventInputField("Description")
-            EventInputField("Location")
+
+
+
+            var titleString = EventInputField("Title")
+            var descriptionString = EventInputField("Description")
+            var locationString = EventInputField("Location")
             EventTimeDisplay()
             Button(
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
-                onClick={}
+                onClick={
+                    //saves the event somehow with the specified params
+                }
             )
             Button(
                 content={Text(text = "Quit without saving")},
@@ -56,6 +61,8 @@ import com.example.calendarapp.Event
     @Composable
     fun EventDisplay(event: Event){
         Column(){
+
+
             Text(text=event.title)
             Text(text="@ " + event.location)
             Text(text=event.date + " - " + event.time)
@@ -105,6 +112,7 @@ import com.example.calendarapp.Event
             onValueChange = { inputText = it },
             label = { Text(name) }
         )
+        return inputText
     }
 
 
