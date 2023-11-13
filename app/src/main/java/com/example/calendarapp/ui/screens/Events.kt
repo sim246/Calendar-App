@@ -139,7 +139,7 @@ import java.time.LocalDateTime
 @Preview(showBackground = true)
     @Composable
     fun EventDisplayPreview(){
-    val ev = Event("title",LocalDateTime.parse("2021-05-18T15:15:00"),LocalDateTime.parse("2021-05-18T15:16:00"),"desc","client","location")
+        val ev = Event("title",LocalDateTime.parse("2021-05-18T15:15:00"),LocalDateTime.parse("2021-05-18T15:16:00"),"desc","client","location")
         EventDisplay(ev)
     }
 
