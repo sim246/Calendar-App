@@ -18,18 +18,23 @@ class AppViewmodel() : ViewModel(){
 
     //the placeholder event to be obtained by the Events composable.
     //In the future, there will be a list of events, but this one describes the one
-    //currently being viewed / edited
+    //currently being viewed / edited.
+    //Should be edited by functions in this viewmodel.
     @RequiresApi(Build.VERSION_CODES.O)
-    var currentViewingEvent = mutableStateOf(Event("Placeholder Event", LocalDateTime.parse("2021-05-18T15:15:00"), LocalDateTime.parse("2021-05-18T15:15:00")))
+    var currentlyViewingEvent = Event("Placeholder Event", LocalDateTime.parse("2021-05-18T15:15:00"), LocalDateTime.parse("2021-05-18T15:15:00"))
 
     //Func to delete the event from the event list
-    fun DeleteEvent(event: Event){
-
+    fun DeleteEvent(event: Event): Boolean{
+        //Should return a bool if it was successful or not.
+        //For now, always return true.
+        return true
     }
 
     //function to add a new event to the db / event list
-    fun AddEvent(event: Event){
-
+    fun AddEvent(event: Event): Boolean{
+        //Should return a bool if it was successful or not.
+        //For now, always return true.
+        return true
     }
 
 

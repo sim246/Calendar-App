@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.example.calendarapp.ui.resources.Event
 import java.time.LocalDateTime
 
@@ -22,21 +23,11 @@ import java.time.LocalDateTime
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun CreateEventMenu(event: Event = Event("", LocalDateTime.parse("2021-05-18T15:15:00"),
-    LocalDateTime.parse("2021-05-18T15:16:00"),"","")){
+    fun SingleEventEdit(event: Event = Event("", LocalDateTime.parse("2021-05-18T15:15:00"),
+    LocalDateTime.parse("2021-05-18T15:16:00"),"",""), navController: NavController,
+                        viewModel: AppViewmodel){
 
-        /*
-        Required:
-        Title + Description
-        Location
-        Time
-        Day (auto-specified by adding from day view or user-specified)
-         ??? (probably nothing else)
-        */
         Column(){
-
-
-
             var titleString = EventInputField("Title")
             var descriptionString = EventInputField("Description")
             var locationString = EventInputField("Location")
@@ -46,6 +37,9 @@ import java.time.LocalDateTime
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
                 onClick={
+                    if(viewModel.AddEvent(event)){
+                        navController.popBackStack()
+                    }
                     //isEditing = false
                     //saves the event somehow with the specified params
                 }
@@ -66,7 +60,7 @@ import java.time.LocalDateTime
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun EventDisplay(event: Event){
+    fun SingleEventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel){
         Column(){
 
 
@@ -76,7 +70,7 @@ import java.time.LocalDateTime
             Text(text=event.description)
             Button(
                 content={Text(text = "Edit Event")},
-                onClick={}
+                onClick={navController.navigate(Routes.EventEdit.route)}
             )
             Button(
                 content={Text(text = "Delete Event")},
@@ -93,8 +87,6 @@ import java.time.LocalDateTime
         //val time = event.start.hour.toString() + ":"+ event.start.minute +":"+ event.start.second
 
         //Text("Time: $time")
-
-
         if (showTimePicker) {
 
             Button(onClick={showTimePicker = false}, content={Text(text = "Save")})
@@ -125,13 +117,15 @@ import java.time.LocalDateTime
 
 
 
+/*
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
     @Composable
     fun CreateEventMenuPreview(){
         val ev = Event("title",LocalDateTime.parse("2021-05-18T15:15:00"),
             LocalDateTime.parse("2021-05-18T15:16:00"),"desc","client","location")
-        CreateEventMenu(ev)
+        SingleEventEdit(ev)
     }
 
 
@@ -140,8 +134,9 @@ import java.time.LocalDateTime
     @Composable
     fun EventDisplayPreview(){
         val ev = Event("title",LocalDateTime.parse("2021-05-18T15:15:00"),LocalDateTime.parse("2021-05-18T15:16:00"),"desc","client","location")
-        EventDisplay(ev)
+        SingleEventDisplay(ev)
     }
 
 
 
+*/

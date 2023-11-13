@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.calendarapp.ui.resources.Event
 import com.example.calendarapp.ui.screens.AppViewmodel
-import com.example.calendarapp.ui.screens.CreateEventMenu
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 import java.time.LocalDateTime
@@ -24,7 +23,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.calendarapp.ui.screens.EventDisplay
 import com.example.calendarapp.ui.screens.Routes
+import com.example.calendarapp.ui.screens.SingleEventDisplay
+import com.example.calendarapp.ui.screens.SingleEventEdit
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -53,21 +55,26 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(context: Context = LocalContext.current, appViewmodel: AppViewmodel){
 
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Routes.MonthOverview.route)
+    NavHost(navController = navController, startDestination = Routes.EventOverview.route)
     {
+        //Make sure to pass in the navcontroller and viewmodel!
         composable(Routes.MonthOverview.route){
-           // FirstScreen(viewModel = appViewmodel, navController, context)
+            //Put monthly composable here
         }
         composable(Routes.DayOverview.route){
-           // SecondScreen(navController, viewModel = appViewmodel)
+            //Put Daily Composable here
         }
         composable(Routes.EventOverview.route){
-
+            SingleEventDisplay(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
+        }
+        composable(Routes.EventEdit.route){
+            SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
         }
     }
 
