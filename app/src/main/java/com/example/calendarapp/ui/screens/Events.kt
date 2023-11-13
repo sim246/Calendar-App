@@ -104,8 +104,7 @@ import com.example.calendarapp.Event
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun EventInputField(name:String)
-    {
+    fun EventInputField(name:String): String {
         var inputText by rememberSaveable {mutableStateOf("")}
         TextField(
             value = inputText,
