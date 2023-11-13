@@ -1,7 +1,5 @@
 package com.example.calendarapp.ui.screens
 
-import android.app.TimePickerDialog
-import android.widget.TimePicker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,7 +18,7 @@ import com.example.calendarapp.Event
 
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun CreateEventMenu(event: Event = Event("","","","",""), isEditing: Boolean){
+    fun CreateEventMenu(event: Event = Event("","","","","")){
 
         /*
         Required:
@@ -59,23 +57,38 @@ import com.example.calendarapp.Event
 
 
     }
-
+    /*
     @Composable
     fun EventView(event: Event){
         val currentEvent by remember { mutableStateOf(event)}
-        var isEditing by remember {mutableStateOf(false)}
+        val visible by remember { mutableStateOf(false) }
+
+        /*
+        Box() {
+            if(visible){
+                Composable1()
+            }else{
+                Composable2()
+            }
+        }
+        */
+
+
+        var isEditing = remember {mutableStateOf(false)}
         if(!isEditing){
-            EventDisplay(currentEvent, isEditing)
+            EventDisplay(currentEvent)
         }
         else
         {
-            CreateEventMenu(currentEvent, isEditing)
+            CreateEventMenu(currentEvent)
         }
-    }
+
+
+    }*/
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun EventDisplay(event: Event, isEditing:Boolean){
+    fun EventDisplay(event: Event){
         Column(){
 
 
@@ -131,26 +144,21 @@ import com.example.calendarapp.Event
     }
 
 
-/*
-    @Preview
+
+@Preview(showBackground = true)
     @Composable
     fun CreateEventMenuPreview(){
-        CreateEventMenu()
+        val ev = Event("title","desc","loc","time","date")
+        CreateEventMenu(ev)
     }
 
 
-    @Preview
+@Preview(showBackground = true)
     @Composable
     fun EventDisplayPreview(){
         val ev = Event("title","desc","loc","time","date")
         EventDisplay(ev)
     }
 
-*/
 
-@Preview
-@Composable
-fun EventEditPreview(){
-    val ev = Event("title","desc","loc","time","date")
-    EventView(ev)
-}
+
