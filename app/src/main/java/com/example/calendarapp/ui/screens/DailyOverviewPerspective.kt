@@ -114,9 +114,9 @@ fun ScheduleDisplay(events: List<Event>){
                     measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMinuts).toInt() - 5).dp.roundToPx()))
                 }
                 layout(constraints.maxWidth, height) {
-                    var y = (event.start.format(FormatterHours).toInt()) * 50
+                    var y = (event.start.format(FormatterHours).toInt()) * 15
                     if (event.start.format(FormatterHours).toInt() > 12){
-                        y = (event.start.format(FormatterHours).toInt()) * 100
+                        y = ((event.start.format(FormatterHours).toInt()) * 25)
                     }
                     placeables.forEach { placeable ->
                         placeable.place(0, y)
@@ -167,14 +167,14 @@ fun TopHalf(day:String){
             painterResource(id = R.drawable.arrow_left),
             contentDescription ="Cart button icon",
             modifier = Modifier
-                .size(40.dp)
+                .size(50.dp)
                 .clickable { })
-        Text(day, modifier = Modifier.height(40.dp), fontSize = 20.sp)
+        Text(day, modifier = Modifier.height(50.dp), fontSize = 20.sp)
         Image(
             painterResource(id = R.drawable.arrow_right),
             contentDescription ="Cart button icon",
             modifier = Modifier
-                .size(40.dp)
+                .size(50.dp)
                 .clickable { })
     }
     Spacer(modifier = Modifier.height(5.dp))
@@ -183,7 +183,7 @@ fun TopHalf(day:String){
             painterResource(id = R.drawable.add_button),
             contentDescription ="Cart button icon",
             modifier = Modifier
-                .size(40.dp)
+                .size(50.dp)
                 .clickable { })
     }
     Spacer(modifier = Modifier.height(5.dp))
