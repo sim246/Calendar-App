@@ -76,7 +76,6 @@ fun ScreenSetup(context: Context, events: List<Event>) {
     }
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
