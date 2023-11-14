@@ -1,5 +1,6 @@
 package com.example.calendarapp
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,12 +9,16 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.example.calendarapp.ui.resources.Event
 import com.example.calendarapp.ui.screens.DailyOverview
+import com.example.calendarapp.ui.screens.MonthOverviewScreen
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,10 +52,26 @@ class MainActivity : ComponentActivity() {
                             "loc"
                         )
                     )
-                    DailyOverview(LocalDate.parse("2023-11-18"), events = events)
-//                    MonthOverviewScreen()
+                    val context = LocalContext.current
+                    ScreenSetup(context, events)
                 }
             }
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ScreenSetup(context: Context, events: List<Event>) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Routes.MonthOverviewScreen.route)
+    {
+        composable(Routes.MonthOverviewScreen.route) {
+            MonthOverviewScreen(navController = navController, context)
+        }
+
+        composable(Routes.DailyOverview.route) {
+            DailyOverview(LocalDate.parse("2023-11-18"), events = events)
         }
     }
 }
@@ -79,6 +100,7 @@ fun GreetingPreview() {
             "loc"
         )
     )
-    DailyOverview(LocalDate.parse("2023-11-18"), events = events)
+        val context = LocalContext.current
+        ScreenSetup(context, events)
     }
 }

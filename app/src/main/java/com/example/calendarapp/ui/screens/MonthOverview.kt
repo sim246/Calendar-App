@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.screens
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -28,13 +29,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.calendarapp.Routes
 import com.google.android.libraries.places.api.model.DayOfWeek
 import java.time.YearMonth
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MonthOverviewScreen() {
+fun MonthOverviewScreen(navController: NavController, context: Context) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
 
     Column(
@@ -105,7 +108,7 @@ fun MonthOverviewScreen() {
                             .padding(4.dp)
                             .background(Color.Transparent)
                             .clip(MaterialTheme.shapes.small)
-                            .clickable { /* WHEN DAY IS CLICKED */ }
+                            .clickable { navController.navigate(Routes.DailyOverview.route) }
                     ) {
                         Text(
                             text = if (isCurrentMonthDay) day.toString() else "",
@@ -124,6 +127,6 @@ fun MonthOverviewScreen() {
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun App() {
-        MonthOverviewScreen()
+        MonthOverviewScreen(navController, context)
     }
 }
