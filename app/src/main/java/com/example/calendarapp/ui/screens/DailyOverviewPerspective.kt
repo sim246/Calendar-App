@@ -62,7 +62,6 @@ fun DailyOverview(day:String,events: List<Event>?) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .offset(x = 40.dp, y = 0.dp)
             ) {
                 if (!events.isNullOrEmpty()) {
                     ScheduleDisplay(events)
@@ -79,10 +78,10 @@ val EventTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a"
 fun EventDisplay(event: Event) {
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.outlineVariant, shape = RoundedCornerShape(4.dp))
+                .background(Color.DarkGray, shape = RoundedCornerShape(4.dp))
                 .padding(4.dp)
-                .fillMaxHeight()
-                .width(250.dp)
+                .fillMaxSize()
+                .clickable { }
         ) {
             Text(
                 text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(EventTimeFormatter)}",
@@ -135,9 +134,9 @@ fun HourDisplay() {
     Column(modifier = Modifier.fillMaxSize()) {
         while (i <= 18) {
             color = if (i % 2 == 0) {
-                MaterialTheme.colorScheme.onPrimary
-            } else {
                 Color.LightGray
+            } else {
+                Color.White
             }
             Row(
                 horizontalArrangement = Arrangement.Start,
@@ -169,7 +168,7 @@ fun TopHalf(day:String){
             modifier = Modifier
                 .size(50.dp)
                 .clickable { })
-        Text(day, modifier = Modifier.height(50.dp), fontSize = 20.sp)
+        Text(day, modifier = Modifier.height(50.dp), fontSize = 20.sp, color = MaterialTheme.colorScheme.scrim)
         Image(
             painterResource(id = R.drawable.arrow_right),
             contentDescription ="Cart button icon",
