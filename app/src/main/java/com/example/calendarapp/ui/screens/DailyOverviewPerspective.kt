@@ -45,7 +45,7 @@ fun DailyOverview(day:String,events: List<Event>?) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.White)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     )
@@ -62,7 +62,7 @@ fun DailyOverview(day:String,events: List<Event>?) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .offset(x = 50.dp, y = 0.dp)
+                    .offset(x = 40.dp, y = 0.dp)
             ) {
                 if (!events.isNullOrEmpty()) {
                     ScheduleDisplay(events)
@@ -114,9 +114,9 @@ fun ScheduleDisplay(events: List<Event>){
                     measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMinuts).toInt() - 5).dp.roundToPx()))
                 }
                 layout(constraints.maxWidth, height) {
-                    var y = (event.start.format(FormatterHours).toInt()) * 15
+                    var y = (((event.start.format(FormatterHours).toInt()) - 6) * 50).dp.roundToPx()
                     if (event.start.format(FormatterHours).toInt() > 12){
-                        y = ((event.start.format(FormatterHours).toInt()) * 25)
+                        y = (((event.start.format(FormatterHours).toInt()) - 7.5) * 50).dp.roundToPx()
                     }
                     placeables.forEach { placeable ->
                         placeable.place(0, y)
