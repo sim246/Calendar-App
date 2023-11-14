@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.calendarapp.ui.resources.Event
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.theme.CalendarAppTheme
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val events: List<Event> = listOf(Event("event",LocalDateTime.parse("2021-05-18T15:15:00"), LocalDateTime.parse("2021-05-18T16:30:00"), "des", "name", "loc"), Event("event",LocalDateTime.parse("2021-05-18T08:15:00"), LocalDateTime.parse("2021-05-18T10:30:00"), "des", "name", "loc"))
-                    DailyOverview("year-month-day", events = events)
+                    DailyOverview(LocalDate.parse("2023-11-18"), events = events)
                 }
             }
         }
@@ -50,6 +51,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     CalendarAppTheme {
     }
-    val events: List<Event> = listOf(Event("event",LocalDateTime.parse("2021-05-18T15:15:00"), LocalDateTime.parse("2021-05-18T16:30:00"), "des", "name", "loc"), Event("event",LocalDateTime.parse("2021-05-18T08:15:00"), LocalDateTime.parse("2021-05-18T10:30:00"), "des", "name", "loc"))
-    DailyOverview("year-month-day", events = events)
+    val events: List<Event> = listOf(Event("event",LocalDateTime.parse("2023-11-18T13:15:00"), LocalDateTime.parse("2023-11-13T16:30:00"), "des", "name", "loc"), Event("event",LocalDateTime.parse("2021-05-18T08:15:00"), LocalDateTime.parse("2021-05-18T10:30:00"), "des", "name", "loc"))
+    DailyOverview(LocalDate.parse("2023-11-18"), events = events)
 }

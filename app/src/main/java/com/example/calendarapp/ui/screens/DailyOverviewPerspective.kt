@@ -3,10 +3,8 @@ package com.example.calendarapp.ui.screens
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,11 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendarapp.R
 import com.example.calendarapp.ui.resources.Event
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DailyOverview(day:String,events: List<Event>?) {
+fun DailyOverview(day: LocalDate, events: List<Event>?) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -50,7 +48,7 @@ fun DailyOverview(day:String,events: List<Event>?) {
             .verticalScroll(rememberScrollState())
     )
     {
-        TopHalf(day)
+        TopHalf(day.toString())
         Row (Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -159,31 +157,42 @@ fun HourDisplay() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TopHalf(day:String){
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
         Image(
             painterResource(id = R.drawable.arrow_left),
-            contentDescription ="Cart button icon",
+            contentDescription ="arrow button icon",
             modifier = Modifier
                 .size(50.dp)
-                .clickable { })
+                .clickable {
+                    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val date: LocalDate = LocalDate.parse(day , format)
+                    date.minusDays(1)
+                })
         Text(day, modifier = Modifier.height(50.dp), fontSize = 20.sp, color = MaterialTheme.colorScheme.scrim)
         Image(
             painterResource(id = R.drawable.arrow_right),
-            contentDescription ="Cart button icon",
+            contentDescription ="arrow button icon",
             modifier = Modifier
                 .size(50.dp)
-                .clickable { })
+                .clickable {
+                    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val date: LocalDate = LocalDate.parse(day , format)
+                    date.plusDays(1)
+                })
     }
     Spacer(modifier = Modifier.height(5.dp))
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
         Image(
             painterResource(id = R.drawable.add_button),
-            contentDescription ="Cart button icon",
+            contentDescription ="add button icon",
             modifier = Modifier
                 .size(50.dp)
-                .clickable { })
+                .clickable {
+
+                })
     }
     Spacer(modifier = Modifier.height(5.dp))
 }
