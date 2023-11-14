@@ -90,9 +90,9 @@ fun MonthOverviewScreen(navController: NavController, context: Context) {
         val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7
 
         val currentDay = Calendar.getInstance().firstDayOfWeek
-        var startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
+        val startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
 
-        val rows = ((daysInMonth + startDay - 1 + 6) / 7).toInt()
+        val rows = ((daysInMonth + startDay - 1 + 6) / 7)
         for (row in 0 until rows) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -17,11 +17,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.calendarapp.ui.resources.Event
+import com.example.calendarapp.ui.screens.AppViewmodel
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.screens.MonthOverviewScreen
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.calendarapp.ui.screens.SingleEventDisplay
+import com.example.calendarapp.ui.screens.SingleEventEdit
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -52,8 +56,9 @@ class MainActivity : ComponentActivity() {
                             "loc"
                         )
                     )
+                    val viewModel : AppViewmodel = viewModel()
                     val context = LocalContext.current
-                    ScreenSetup(context, events)
+                    ScreenSetup(context, events, viewModel)
                 }
             }
         }
@@ -62,19 +67,27 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScreenSetup(context: Context, events: List<Event>) {
+fun ScreenSetup(context: Context, events: List<Event>, appViewmodel: AppViewmodel) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Routes.MonthOverviewScreen.route)
     {
         composable(Routes.MonthOverviewScreen.route) {
             MonthOverviewScreen(navController = navController, context)
         }
-
         composable(Routes.DailyOverview.route) {
-            DailyOverview(LocalDate.parse("2023-11-18"), events = events)
+            DailyOverview(LocalDate.parse("2023-11-18"), events = events, navController)
+        }
+        composable(Routes.EventOverview.route) {
+            SingleEventDisplay(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
+        }
+        composable(Routes.EventEdit.route) {
+            SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
         }
     }
 }
+
+
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
@@ -99,7 +112,8 @@ fun GreetingPreview() {
             "loc"
         )
     )
+        val viewModel : AppViewmodel = viewModel()
         val context = LocalContext.current
-        ScreenSetup(context, events)
+        ScreenSetup(context, events, viewModel)
     }
 }

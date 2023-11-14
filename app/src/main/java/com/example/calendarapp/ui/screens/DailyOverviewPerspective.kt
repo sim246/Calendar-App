@@ -1,6 +1,5 @@
 package com.example.calendarapp.ui.screens
 
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -42,7 +41,7 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DailyOverview(day: LocalDate, events: List<Event>?, navController: NavController, context: Context) {
+fun DailyOverview(day: LocalDate, events: List<Event>?, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -51,7 +50,7 @@ fun DailyOverview(day: LocalDate, events: List<Event>?, navController: NavContro
             .verticalScroll(rememberScrollState())
     )
     {
-        TopHalf(day.toString(), navController, context)
+        TopHalf(day.toString(), navController)
         Row (Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -65,7 +64,7 @@ fun DailyOverview(day: LocalDate, events: List<Event>?, navController: NavContro
                     .fillMaxSize()
             ) {
                 if (!events.isNullOrEmpty()) {
-                    ScheduleDisplay(events)
+                    ScheduleDisplay(events, navController)
                 }
             }
         }
@@ -76,13 +75,15 @@ fun DailyOverview(day: LocalDate, events: List<Event>?, navController: NavContro
 val EventTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EventDisplay(event: Event) {
+fun EventDisplay(event: Event, navController: NavController) {
         Column(
             modifier = Modifier
                 .background(Color.DarkGray, shape = RoundedCornerShape(4.dp))
                 .padding(4.dp)
                 .fillMaxSize()
-                .clickable { }
+                .clickable {
+                    navController.navigate(Routes.EventOverview.route)
+                }
         ) {
             Text(
                 text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(EventTimeFormatter)}",
@@ -99,19 +100,19 @@ fun EventDisplay(event: Event) {
 @RequiresApi(Build.VERSION_CODES.O)
 val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
 @RequiresApi(Build.VERSION_CODES.O)
-val FormatterMinuts: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
+val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleDisplay(events: List<Event>){
+fun ScheduleDisplay(events: List<Event>, navController: NavController){
     Column(modifier = Modifier.fillMaxSize()) {
         events.sortedBy(Event::start).forEach { event ->
             val height = (event.end.format(FormatterHours).toInt() - event.start.format(FormatterHours).toInt()) * 50
-            Log.d("height", (event.end.format(FormatterMinuts).toInt()).toString())
+            Log.d("height", (event.end.format(FormatterMin).toInt()).toString())
             Layout(
-                content = { EventDisplay(event) }
+                content = { EventDisplay(event, navController) }
             ) { measureables, constraints ->
                 val placeables = measureables.map { measurable ->
-                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMinuts).toInt() - 5).dp.roundToPx()))
+                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMin).toInt() - 5).dp.roundToPx()))
                 }
                 layout(constraints.maxWidth, height) {
                     var y = (((event.start.format(FormatterHours).toInt()) - 6) * 50).dp.roundToPx()
@@ -162,7 +163,7 @@ fun HourDisplay() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TopHalf(day:String, navController: NavController, context: Context){
+fun TopHalf(day:String, navController: NavController){
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
         Image(
             painterResource(id = R.drawable.arrow_left),
