@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.calendarapp.ui.resources.Event
-import com.example.calendarapp.ui.screens.AppViewmodel
+import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.screens.MonthOverviewScreen
 import com.example.calendarapp.ui.theme.CalendarAppTheme

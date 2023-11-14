@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.example.calendarapp.Routes
+import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
 import java.time.LocalDateTime
 
@@ -24,7 +25,8 @@ import java.time.LocalDateTime
     @Composable
     fun SingleEventEdit(event: Event = Event("", LocalDateTime.parse("2021-05-18T15:15:00"),
     LocalDateTime.parse("2021-05-18T15:16:00"),"",""), navController: NavController,
-                        viewModel: AppViewmodel){
+                        viewModel: AppViewmodel
+){
 
         Column{
             var titleString = EventInputField("Title")
