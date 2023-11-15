@@ -41,7 +41,7 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DailyOverview(day: LocalDate, events: List<Event>?, navController: NavController) {
+fun DailyOverview(day: LocalDate, events: MutableList<Event>?, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier

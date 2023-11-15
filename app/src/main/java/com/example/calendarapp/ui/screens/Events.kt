@@ -23,9 +23,10 @@ import java.time.LocalDateTime
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun SingleEventEdit(event: Event = Event("", LocalDateTime.parse("2021-05-18T15:15:00"),
+    fun SingleEventEdit(
+    event: Event = Event("", LocalDateTime.parse("2021-05-18T15:15:00"),
     LocalDateTime.parse("2021-05-18T15:16:00"),"",""), navController: NavController,
-                        viewModel: AppViewmodel
+    viewModel: AppViewmodel
 ){
 
         Column{
