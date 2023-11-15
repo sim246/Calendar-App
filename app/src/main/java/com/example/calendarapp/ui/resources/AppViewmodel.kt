@@ -44,9 +44,9 @@ class AppViewmodel() : ViewModel(){
 
     var day:LocalDate by mutableStateOf(LocalDate.parse("2023-11-18"))
 
-    fun SetDay(d:LocalDate){
-        day = d
-    }
+//    fun setDay(d:LocalDate){
+//        day = d
+//    }
 
     fun SetCurrentlyViewingEvent(event:Event) {
         currentlyViewingEvent = event

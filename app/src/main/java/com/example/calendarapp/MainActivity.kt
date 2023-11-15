@@ -20,7 +20,6 @@ import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.screens.MonthOverviewScreen
 import com.example.calendarapp.ui.theme.CalendarAppTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.calendarapp.ui.screens.SingleEventDisplay
 import com.example.calendarapp.ui.screens.SingleEventEdit
 
@@ -54,7 +53,7 @@ fun ScreenSetup(context: Context, appViewmodel: AppViewmodel) {
             MonthOverviewScreen(navController = navController, context)
         }
         composable(Routes.DailyOverview.route) {
-            DailyOverview(day = appViewmodel.day, events = appViewmodel.events, navController)
+            DailyOverview(appViewmodel, navController)
         }
         composable(Routes.EventOverview.route) {
             SingleEventDisplay(appViewmodel.currentlyViewingEvent, navController, appViewmodel)

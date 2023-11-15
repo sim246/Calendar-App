@@ -35,13 +35,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.calendarapp.R
 import com.example.calendarapp.Routes
+import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DailyOverview(day: LocalDate, events: MutableList<Event>?, navController: NavController) {
+fun DailyOverview(viewModel: AppViewmodel, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -50,7 +51,7 @@ fun DailyOverview(day: LocalDate, events: MutableList<Event>?, navController: Na
             .verticalScroll(rememberScrollState())
     )
     {
-        TopHalf(day.toString(), navController)
+        TopHalf(viewModel.day.toString(), navController, viewModel)
         Row (Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -63,8 +64,8 @@ fun DailyOverview(day: LocalDate, events: MutableList<Event>?, navController: Na
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                if (!events.isNullOrEmpty()) {
-                    ScheduleDisplay(events, navController)
+                if (viewModel.events.size > 0) {
+                    ScheduleDisplay(viewModel.events, navController)
                 }
             }
         }
@@ -163,7 +164,7 @@ fun HourDisplay() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TopHalf(day:String, navController: NavController){
+fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
         Image(
             painterResource(id = R.drawable.arrow_left),
@@ -172,8 +173,9 @@ fun TopHalf(day:String, navController: NavController){
                 .size(50.dp)
                 .clickable {
                     val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val date: LocalDate = LocalDate.parse(day , format)
+                    val date: LocalDate = LocalDate.parse(day, format)
                     date.minusDays(1)
+                    viewModel.day = date
                     navController.navigate(Routes.DailyOverview.route)
                 })
         Text(day, modifier = Modifier.height(50.dp), fontSize = 20.sp, color = MaterialTheme.colorScheme.scrim)
@@ -184,8 +186,9 @@ fun TopHalf(day:String, navController: NavController){
                 .size(50.dp)
                 .clickable {
                     val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val date: LocalDate = LocalDate.parse(day , format)
+                    val date: LocalDate = LocalDate.parse(day, format)
                     date.plusDays(1)
+                    viewModel.day = date
                     navController.navigate(Routes.DailyOverview.route)
                 })
     }
