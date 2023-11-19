@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import com.example.calendarapp.Routes
 import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -24,22 +25,23 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SingleEventEdit(
-    event: Event = Event("", LocalDateTime.parse("2021-05-18T15:15:00"),
-    LocalDateTime.parse("2021-05-18T15:16:00"),"",""), navController: NavController,
+    event: Event = Event(
+        LocalDate.parse("2023-11-18"), "", LocalDateTime.parse("2023-11-18T15:15:00"),
+    LocalDateTime.parse("2023-11-18T15:16:00"),"",""), navController: NavController,
     viewModel: AppViewmodel
 ){
 
         Column{
-            var titleString = EventInputField("Title")
-            var descriptionString = EventInputField("Description")
-            var locationString = EventInputField("Location")
-            var clientString = EventInputField("Client")
+            var titleString = eventInputField("Title")
+            var descriptionString = eventInputField("Description")
+            var locationString = eventInputField("Location")
+            var clientString = eventInputField("Client")
             EventTimeDisplay(event)
             Button(
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
                 onClick={
-                    if(viewModel.AddEvent(event)){
+                    if(viewModel.addEvent(event)){
                         navController.popBackStack()
                     }
                     //isEditing = false
@@ -104,7 +106,7 @@ import java.time.LocalDateTime
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun EventInputField(name:String): String {
+    fun eventInputField(name:String): String {
         var inputText by rememberSaveable {mutableStateOf("")}
         TextField(
             value = inputText,

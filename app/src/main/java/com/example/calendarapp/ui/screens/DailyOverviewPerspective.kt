@@ -24,9 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,7 +51,7 @@ fun DailyOverview(viewModel: AppViewmodel, navController: NavController) {
             .verticalScroll(rememberScrollState())
     )
     {
-        TopHalf(viewModel.day.toString(), navController, viewModel)
+        TopHalf(viewModel.currentDay.toString(), navController, viewModel)
         Row (Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -67,7 +64,7 @@ fun DailyOverview(viewModel: AppViewmodel, navController: NavController) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                if (viewModel.events.size > 0) {
+                if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
                     ScheduleDisplay(viewModel.events, navController)
                 }
             }
@@ -116,12 +113,13 @@ fun ScheduleDisplay(events: List<Event>, navController: NavController){
                 content = { EventDisplay(event, navController) }
             ) { measureables, constraints ->
                 val placeables = measureables.map { measurable ->
-                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMin).toInt() - 5).dp.roundToPx()))
+//                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMin).toInt() - 5).dp.roundToPx()))
+                    measurable.measure(constraints.copy(maxHeight = (height.dp.roundToPx())))
                 }
                 layout(constraints.maxWidth, height) {
                     var y = (((event.start.format(FormatterHours).toInt()) - 6) * 50).dp.roundToPx()
                     if (event.start.format(FormatterHours).toInt() > 12){
-                        y = (((event.start.format(FormatterHours).toInt()) - 7.5) * 50).dp.roundToPx()
+                        y = (((event.start.format(FormatterHours).toInt()) - 7) * 50).dp.roundToPx()
                     }
                     placeables.forEach { placeable ->
                         placeable.place(0, y)
