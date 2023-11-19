@@ -36,6 +36,13 @@ import java.util.Calendar
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MonthOverviewScreen() {
+    YearAndNav()
+
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun YearAndNav() {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
 
     Column(
@@ -68,63 +75,78 @@ fun MonthOverviewScreen() {
             }
         }
 
-        // Days of the week
+        DaysOfTheWeek(selectedMonth = selectedMonth)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DaysOfTheWeek(selectedMonth: YearMonth){
+    // Days of the week
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        for (day in DayOfWeek.values()) {
+            Text(
+                text = day.name.take(3),
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+
+    DaysOfTheMonth(selectedMonth = selectedMonth)
+}
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DaysOfTheMonth(selectedMonth: YearMonth) {
+
+    // Days in the month
+    val daysInMonth = selectedMonth.lengthOfMonth()
+    val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7
+
+    val currentDay = Calendar.getInstance().firstDayOfWeek
+    var startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
+
+    val rows = ((daysInMonth + startDay - 1 + 6) / 7).toInt()
+    for (row in 0 until rows) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            for (day in DayOfWeek.values()) {
-                Text(
-                    text = day.name.take(3),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
+            for (col in 1..7) {
+                val day = row * 7 + col - startDay + 1
+                val isCurrentMonthDay = day in 1..daysInMonth
 
-        // Days in the month
-        val daysInMonth = selectedMonth.lengthOfMonth()
-        val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7
-
-        val currentDay = Calendar.getInstance().firstDayOfWeek
-        var startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
-
-        val rows = ((daysInMonth + startDay - 1 + 6) / 7).toInt()
-        for (row in 0 until rows) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                for (col in 1..7) {
-                    val day = row * 7 + col - startDay + 1
-                    val isCurrentMonthDay = day in 1..daysInMonth
-
-                    Box(
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                        .background(Color.Transparent)
+                        .clip(MaterialTheme.shapes.small)
+                        .clickable { /* WHEN DAY IS CLICKED */ }
+                ) {
+                    Text(
+                        text = if (isCurrentMonthDay) day.toString() else "",
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp)
-                            .background(Color.Transparent)
-                            .clip(MaterialTheme.shapes.small)
-                            .clickable { /* WHEN DAY IS CLICKED */ }
-                    ) {
-                        Text(
-                            text = if (isCurrentMonthDay) day.toString() else "",
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(8.dp)
-                        )
-                    }
+                            .align(Alignment.Center)
+                            .padding(8.dp)
+                    )
                 }
             }
         }
-
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Composable
-    fun App() {
-        MonthOverviewScreen()
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun App() {
+    MonthOverviewScreen()
+}
+
+
