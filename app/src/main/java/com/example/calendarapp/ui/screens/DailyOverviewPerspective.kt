@@ -24,6 +24,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -173,9 +176,8 @@ fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
                 .size(50.dp)
                 .clickable {
                     val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val date: LocalDate = LocalDate.parse(day, format)
-                    date.minusDays(1)
-                    viewModel.day = date
+                    val date: LocalDate = LocalDate.parse(day, format).minusDays(1)
+                    viewModel.setNewDay(date)
                     navController.navigate(Routes.DailyOverview.route)
                 })
         Text(day, modifier = Modifier.height(50.dp), fontSize = 20.sp, color = MaterialTheme.colorScheme.scrim)
@@ -186,9 +188,8 @@ fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
                 .size(50.dp)
                 .clickable {
                     val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val date: LocalDate = LocalDate.parse(day, format)
-                    date.plusDays(1)
-                    viewModel.day = date
+                    val date: LocalDate = LocalDate.parse(day, format).plusDays(1)
+                    viewModel.setNewDay(date)
                     navController.navigate(Routes.DailyOverview.route)
                 })
     }
@@ -200,7 +201,7 @@ fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
             modifier = Modifier
                 .size(50.dp)
                 .clickable {
-
+                    navController.navigate(Routes.EventOverview.route)
                 })
     }
     Spacer(modifier = Modifier.height(5.dp))

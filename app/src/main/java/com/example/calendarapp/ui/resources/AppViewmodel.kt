@@ -3,6 +3,7 @@ package com.example.calendarapp.ui.resources
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -42,11 +43,11 @@ class AppViewmodel() : ViewModel(){
         )
     )
 
-    var day:LocalDate by mutableStateOf(LocalDate.parse("2023-11-18"))
+    var day: LocalDate by mutableStateOf(LocalDate.parse("2023-11-18"))
 
-//    fun setDay(d:LocalDate){
-//        day = d
-//    }
+    fun setNewDay(d:LocalDate){
+        day = d
+    }
 
     fun SetCurrentlyViewingEvent(event:Event) {
         currentlyViewingEvent = event
