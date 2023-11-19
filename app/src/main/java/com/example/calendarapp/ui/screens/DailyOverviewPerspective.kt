@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -85,6 +86,7 @@ fun EventDisplay(event: Event, navController: NavController) {
                 .clickable {
                     navController.navigate(Routes.EventOverview.route)
                 }
+                .testTag("Click Event Display")
         ) {
             Text(
                 text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(EventTimeFormatter)}",
@@ -192,6 +194,7 @@ fun AddButton(navController: NavController) {
                 .clickable {
                     navController.navigate(Routes.MonthOverviewScreen.route)
                 }
+                .testTag("Click Back")
         )
         Image(
             painterResource(id = R.drawable.add_button),
@@ -201,6 +204,7 @@ fun AddButton(navController: NavController) {
                 .clickable {
                     navController.navigate(Routes.EventOverview.route)
                 }
+                .testTag("Click Add")
         )
     }
 }
@@ -221,6 +225,7 @@ fun ForwardArrowButton(day: String, navController: NavController, viewModel: App
                 viewModel.setNewDay(date)
                 navController.navigate(Routes.DailyOverview.route)
             }
+            .testTag("Click Next Day")
     )
 }
 
@@ -240,5 +245,6 @@ fun BackwardsArrowButton(day: String, navController: NavController, viewModel: A
                 viewModel.setNewDay(date)
                 navController.navigate(Routes.DailyOverview.route)
             }
+            .testTag("Click Previous Day")
     )
 }
