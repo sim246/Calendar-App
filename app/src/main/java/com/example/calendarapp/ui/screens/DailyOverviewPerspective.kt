@@ -166,33 +166,33 @@ fun HourDisplay() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
-        Image(
-            painterResource(id = R.drawable.arrow_left),
-            contentDescription ="arrow button icon",
-            modifier = Modifier
-                .size(50.dp)
-                .clickable {
-                    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val date: LocalDate = LocalDate.parse(day, format).minusDays(1)
-                    viewModel.setNewDay(date)
-                    navController.navigate(Routes.DailyOverview.route)
-                })
-        Text(day, modifier = Modifier.height(50.dp), fontSize = 20.sp, color = MaterialTheme.colorScheme.scrim)
-        Image(
-            painterResource(id = R.drawable.arrow_right),
-            contentDescription ="arrow button icon",
-            modifier = Modifier
-                .size(50.dp)
-                .clickable {
-                    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val date: LocalDate = LocalDate.parse(day, format).plusDays(1)
-                    viewModel.setNewDay(date)
-                    navController.navigate(Routes.DailyOverview.route)
-                })
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        BackwardsArrowButton(day = day, navController = navController, viewModel = viewModel)
+        Text(
+            day,
+            modifier = Modifier.height(50.dp),
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.scrim
+        )
+        ForwardArrowButton(day = day, navController = navController, viewModel = viewModel)
     }
     Spacer(modifier = Modifier.height(5.dp))
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
+    AddButton(navController = navController)
+    Spacer(modifier = Modifier.height(5.dp))
+}
+
+@Composable
+fun AddButton(navController: NavController) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+        Image(
+            painterResource(id = R.drawable.back_arrow),
+            contentDescription ="back button icon",
+            modifier = Modifier
+                .size(50.dp)
+                .clickable {
+                    navController.navigate(Routes.MonthOverviewScreen.route)
+                }
+        )
         Image(
             painterResource(id = R.drawable.add_button),
             contentDescription ="add button icon",
@@ -200,7 +200,45 @@ fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
                 .size(50.dp)
                 .clickable {
                     navController.navigate(Routes.EventOverview.route)
-                })
+                }
+        )
     }
-    Spacer(modifier = Modifier.height(5.dp))
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ForwardArrowButton(day: String, navController: NavController, viewModel: AppViewmodel) {
+    Image(
+        painterResource(id = R.drawable.arrow_right),
+        contentDescription = "arrow button icon",
+        modifier = Modifier
+            .size(50.dp)
+            .clickable {
+                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val date: LocalDate = LocalDate
+                    .parse(day, format)
+                    .plusDays(1)
+                viewModel.setNewDay(date)
+                navController.navigate(Routes.DailyOverview.route)
+            }
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun BackwardsArrowButton(day: String, navController: NavController, viewModel: AppViewmodel) {
+    Image(
+        painterResource(id = R.drawable.arrow_left),
+        contentDescription = "arrow button icon",
+        modifier = Modifier
+            .size(50.dp)
+            .clickable {
+                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val date: LocalDate = LocalDate
+                    .parse(day, format)
+                    .minusDays(1)
+                viewModel.setNewDay(date)
+                navController.navigate(Routes.DailyOverview.route)
+            }
+    )
 }
