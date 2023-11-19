@@ -28,16 +28,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendarapp.Routes
+import com.example.calendarapp.ui.resources.AppViewmodel
 import com.google.android.libraries.places.api.model.DayOfWeek
 import java.time.YearMonth
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MonthOverviewScreen(navController: NavController, context: Context) {
+fun MonthOverviewScreen(navController: NavController, context: Context,  viewModel: AppViewmodel) {
+    YearAndNav(navController, context, viewModel)
+
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun YearAndNav(navController: NavController, context: Context, viewModel: AppViewmodel) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
 
     Column(
@@ -70,63 +79,79 @@ fun MonthOverviewScreen(navController: NavController, context: Context) {
             }
         }
 
-        // Days of the week
+        DaysOfTheWeek(selectedMonth = selectedMonth, navController, context, viewModel)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, context: Context,  viewModel: AppViewmodel){
+    // Days of the week
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        for (day in DayOfWeek.values()) {
+            Text(
+                text = day.name.take(3),
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+
+    DaysOfTheMonth(selectedMonth = selectedMonth, navController, context, viewModel)
+}
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, context: Context,  viewModel: AppViewmodel) {
+
+    // Days in the month
+    val daysInMonth = selectedMonth.lengthOfMonth()
+    val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7
+
+    val currentDay = Calendar.getInstance().firstDayOfWeek
+    var startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
+
+    val rows = ((daysInMonth + startDay - 1 + 6) / 7).toInt()
+    for (row in 0 until rows) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            for (day in DayOfWeek.values()) {
-                Text(
-                    text = day.name.take(3),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
+            for (col in 1..7) {
+                val day = row * 7 + col - startDay + 1
+                val isCurrentMonthDay = day in 1..daysInMonth
 
-        // Days in the month
-        val daysInMonth = selectedMonth.lengthOfMonth()
-        val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7
-
-        val currentDay = Calendar.getInstance().firstDayOfWeek
-        val startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
-
-        val rows = ((daysInMonth + startDay - 1 + 6) / 7)
-        for (row in 0 until rows) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                for (col in 1..7) {
-                    val day = row * 7 + col - startDay + 1
-                    val isCurrentMonthDay = day in 1..daysInMonth
-
-                    Box(
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                        .background(Color.Transparent)
+                        .clip(MaterialTheme.shapes.small)
+                        .clickable {
+                            viewModel.setNewDay(selectedMonth.atDay(day))
+                            navController.navigate(Routes.DailyOverview.route)
+                        }
+                ) {
+                    Text(
+                        text = if (isCurrentMonthDay) day.toString() else "",
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp)
-                            .background(Color.Transparent)
-                            .clip(MaterialTheme.shapes.small)
-                            .clickable { navController.navigate(Routes.DailyOverview.route) }
-                    ) {
-                        Text(
-                            text = if (isCurrentMonthDay) day.toString() else "",
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(8.dp)
-                        )
-                    }
+                            .align(Alignment.Center)
+                            .padding(8.dp)
+                    )
                 }
             }
         }
-
     }
+}
 
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Composable
-    fun App() {
-        MonthOverviewScreen(navController, context)
-    }
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun App(navController: NavController, context: Context,  viewModel: AppViewmodel) {
+    MonthOverviewScreen(navController, context, viewModel)
 }

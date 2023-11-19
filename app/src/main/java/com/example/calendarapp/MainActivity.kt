@@ -50,7 +50,7 @@ fun ScreenSetup(context: Context, appViewmodel: AppViewmodel) {
     NavHost(navController = navController, startDestination = Routes.MonthOverviewScreen.route)
     {
         composable(Routes.MonthOverviewScreen.route) {
-            MonthOverviewScreen(navController = navController, context)
+            MonthOverviewScreen(navController = navController, context, appViewmodel)
         }
         composable(Routes.DailyOverview.route) {
             DailyOverview(appViewmodel, navController)
