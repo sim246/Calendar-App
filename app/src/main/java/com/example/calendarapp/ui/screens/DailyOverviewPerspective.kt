@@ -205,7 +205,7 @@ fun AddButton(navController: NavController) {
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
-                    navController.navigate(Routes.EventOverview.route)
+                    navController.navigate(Routes.AddEvent.route)
                 }
         )
     }
