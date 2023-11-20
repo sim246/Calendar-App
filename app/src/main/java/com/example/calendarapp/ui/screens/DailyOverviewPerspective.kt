@@ -124,22 +124,23 @@ val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 fun ScheduleDisplay(events: List<Event>, navController: NavController, viewModel: AppViewmodel){
     Column(modifier = Modifier.fillMaxSize()) {
         events.sortedBy(Event::start).forEach { event ->
-            val height = (event.end.format(FormatterHours).toInt() - event.start.format(FormatterHours).toInt()) * 50
+            val height = (event.end.format(FormatterHours).toInt() - event.start.format(FormatterHours).toInt()) * 60
             var heightMin = event.end.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
             Layout(
                 content = { EventDisplay(event, navController, viewModel) }
             ) { measureables, constraints ->
                 val placeables = measureables.map { measurable ->
                     measurable.measure(constraints.copy(maxHeight = (height +  heightMin).dp.roundToPx()))
-//                    measurable.measure(constraints.copy(maxHeight = (height.dp.roundToPx())))
                 }
                 layout(constraints.maxWidth, height) {
-                    var y = ((((event.start.format(FormatterHours).toInt()) - 6) * 50) + event.start.format(FormatterHours).toInt()).dp.roundToPx()
-                    if (event.start.format(FormatterHours).toInt() > 12){
-                        y = ((((event.start.format(FormatterHours).toInt()) - 7) * 50) + event.start.format(FormatterHours).toInt()).dp.roundToPx()
+                    var y = event.start.format(FormatterHours).toInt()
+                    if (y > 12){
+                        y -= 7
+                    } else{
+                        y -= 6
                     }
                     placeables.forEach { placeable ->
-                        placeable.place(0, y)
+                        placeable.place(0, ((y * 60) + heightMin).dp.roundToPx())
                     }
                 }
             }
@@ -163,7 +164,7 @@ fun HourDisplay() {
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .height(50.dp)
+                    .height(60.dp)
                     .fillMaxWidth()
                     .background(color)
             )
