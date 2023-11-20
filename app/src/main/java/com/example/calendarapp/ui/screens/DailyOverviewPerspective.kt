@@ -45,6 +45,7 @@ import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
 import com.example.calendarapp.ui.resources.Holiday
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -175,7 +176,6 @@ fun HourDisplay() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-
 fun TopHalf(holidays: List<Holiday>?, day:String, navController: NavController, viewModel: AppViewmodel){
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         BackwardsArrowButton(day = day, navController = navController, viewModel = viewModel)
@@ -197,12 +197,13 @@ fun TopHalf(holidays: List<Holiday>?, day:String, navController: NavController, 
         ForwardArrowButton(day = day, navController = navController, viewModel = viewModel)
     }
     Spacer(modifier = Modifier.height(5.dp))
-    AddButton(navController = navController)
+    AddButton(navController = navController, viewModel= viewModel)
     Spacer(modifier = Modifier.height(5.dp))
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AddButton(navController: NavController) {
+fun AddButton(navController: NavController, viewModel: AppViewmodel) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
         Image(
             painterResource(id = R.drawable.back_arrow),
@@ -220,7 +221,9 @@ fun AddButton(navController: NavController) {
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
-                    navController.navigate(Routes.AddEvent.route)
+                    if (LocalDateTime.now().format(Formatter) <= viewModel.currentDay.toString()) {
+                        navController.navigate(Routes.AddEvent.route)
+                    }
                 }
                 .testTag("Click Add")
         )
@@ -230,20 +233,6 @@ fun AddButton(navController: NavController) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ForwardArrowButton(day: String, navController: NavController, viewModel: AppViewmodel) {
-//    Image(
-//        painterResource(id = R.drawable.arrow_right),
-//        contentDescription = "arrow button icon",
-//        modifier = Modifier
-//            .size(50.dp)
-//            .clickable {
-//                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//                val date: LocalDate = LocalDate
-//                    .parse(day, format)
-//                    .plusDays(1)
-//                viewModel.setNewDay(date)
-//                navController.navigate(Routes.DailyOverview.route)
-//            }
-//    )
     IconButton(
             onClick = { val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val date: LocalDate = LocalDate
@@ -260,20 +249,6 @@ fun ForwardArrowButton(day: String, navController: NavController, viewModel: App
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BackwardsArrowButton(day: String, navController: NavController, viewModel: AppViewmodel) {
-//    Image(
-//        painterResource(id = R.drawable.arrow_left),
-//        contentDescription = "arrow button icon",
-//        modifier = Modifier
-//            .size(50.dp)
-//            .clickable {
-//                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//                val date: LocalDate = LocalDate
-//                    .parse(day, format)
-//                    .minusDays(1)
-//                viewModel.setNewDay(date)
-//                navController.navigate(Routes.DailyOverview.route)
-//            }
-//    )
     IconButton(
         onClick = { val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val date: LocalDate = LocalDate
