@@ -9,6 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Year
+import java.time.YearMonth
 
 @RequiresApi(Build.VERSION_CODES.O)
 class AppViewmodel : ViewModel(){
@@ -77,5 +79,15 @@ class AppViewmodel : ViewModel(){
             Log.d("error", e.message.toString())
             false
         }
+    }
+
+    fun getDaysWithEvents(month: YearMonth): List<LocalDate> {
+        val monthsEvents = events.filter{
+            val eventMonth = YearMonth.from(it.start)
+            eventMonth == month
+        }
+        val eventDates = monthsEvents.map { it.start.toLocalDate() }.toSet()
+
+        return eventDates.toList()
     }
 }
