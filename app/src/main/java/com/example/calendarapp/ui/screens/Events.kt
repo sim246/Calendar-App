@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -21,8 +22,9 @@ import androidx.navigation.NavController
 import com.example.calendarapp.Routes
 import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
-import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -79,6 +81,7 @@ import java.time.LocalDateTime
 
                 }
             )
+
             Button(
                 content={Text(text = "Quit without saving")},
                 onClick={
@@ -94,11 +97,7 @@ import java.time.LocalDateTime
 
     }
 
-    @Composable
-    fun TimePickerDigit(){
-        //Time picker for a specific digit (hour, minute, second)
 
-    }
 
 
 
@@ -119,7 +118,12 @@ import java.time.LocalDateTime
             )
             Button(
                 content={Text(text = "Delete Event")},
-                onClick={}
+                //realistically should have a "Are you sure??" dialog
+                onClick={
+                    if(viewModel.deleteEvent(event)){
+                        navController.popBackStack()
+                    }
+                }
             )
         }
     }
@@ -128,20 +132,51 @@ import java.time.LocalDateTime
     @Composable
     @ExperimentalMaterial3Api
     fun EventTimeDisplay(event: Event){
-        var showTimePicker by remember { mutableStateOf(false) }
-        //val time = event.start.hour.toString() + ":"+ event.start.minute +":"+ event.start.second
+        //Time Picker declatation
 
-        //Text("Time: $time")
-        if (showTimePicker) {
+        val context = LocalContext.current
+        val calendar = Calendar.getInstance()
 
-            Button(onClick={showTimePicker = false}, content={Text(text = "Save")})
+        var startTime by remember { mutableStateOf("") }
+        var endTime by remember { mutableStateOf("")}
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
 
-        }
-        else
-        {
-            Button(onClick={}, content={Text(text = "Set Start Time")})
-            Button(onClick={}, content={Text(text = "Set End Time")})
-        }
+        // Fetching current hour, and minute
+        val hour = calendar[Calendar.HOUR_OF_DAY]
+        val minute = calendar[Calendar.MINUTE]
+
+
+        val timePickerStart = TimePickerDialog(
+            context,
+            { _, selectedHour: Int, selectedMinute: Int ->
+                startTime = "$selectedHour:$selectedMinute"
+            }, hour, minute, false
+        )
+        val timePickerEnd = TimePickerDialog(context,
+            { _, selectedHour: Int, selectedMinute: Int ->
+                Log.d("time", LocalDateTime.parse(startTime).toString())
+                endTime = "$selectedHour:$selectedMinute"
+            }, hour, minute, false
+        )
+
+            Text(text=startTime.toString())
+            Text(text=endTime.toString())
+            Row(){
+                Button(onClick={
+                    timePickerStart.show()
+                }, content={Text(text = "Set Start Time")})
+                Button(onClick={
+                    timePickerEnd.show()
+                }, content={Text(text = "Set End Time")})
+            }
+
+
+            Button(onClick = {
+                Log.d("time", LocalDateTime.parse("13:11", formatter).toString())
+            }) {
+                Text("wah")
+            }
+
 
 
     }
