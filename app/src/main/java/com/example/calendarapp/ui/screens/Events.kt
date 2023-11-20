@@ -46,7 +46,7 @@ import java.util.Calendar
             val context = LocalContext.current
 
 
-            EventTimeDisplay(event)
+            var startEndTimes = EventTimeDisplay(event)
 
             Button(
                 content={Text(text = "Save Event")},
@@ -58,16 +58,21 @@ import java.util.Calendar
                     event.description = descriptionString
                     event.clientName = clientString
                     event.location = locationString
+                    event.start = startEndTimes[0]
+                    event.end = startEndTimes[1]
+
                     if(!viewModel.isEditing)
                     {
+                        val check = viewModel.checkConflictingEvents(event)
+                        if(check == null){
+                            if(viewModel.addEvent(event)){
+                                navController.popBackStack()
+                            }
 
-                        if(viewModel.addEvent(event)){
-                            navController.popBackStack()
                         }
                         else
                         {
-                            val toastText = "Something went wrong when adding the event. " +
-                                    "Try checking the times for conflicts."
+                            val toastText = "Something went wrong when adding the event: $check"
                             Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
 
                         }
@@ -136,7 +141,7 @@ import java.util.Calendar
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     @ExperimentalMaterial3Api
-    fun EventTimeDisplay(event: Event){
+    fun EventTimeDisplay(event: Event) : Array<LocalDateTime>{
         //Time Picker declatation
 
         val context = LocalContext.current
@@ -144,7 +149,7 @@ import java.util.Calendar
 
         var startTime by remember { mutableStateOf(event.start.toLocalTime()) }
         var endTime by remember { mutableStateOf(event.end.toLocalTime())}
-        val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+        val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("H:mm")
 
         // Fetching current hour, and minute
         val hour = calendar[Calendar.HOUR_OF_DAY]
@@ -174,7 +179,7 @@ import java.util.Calendar
                     timePickerEnd.show()
                 }, content={Text(text = "Set End Time")})
             }
-
+        return arrayOf(LocalDateTime.of(event.start.toLocalDate(), startTime), LocalDateTime.of(event.start.toLocalDate(), startTime))
 
     }
 

@@ -47,10 +47,16 @@ class AppViewmodel : ViewModel(){
         )
     )
 
-    fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime): Boolean{
+    fun checkConflictingEvents(event: Event): String?{
         //Given a start & end, look thru the list of events and find conflicting times & dates
-        //returns true if a conflict is found, false if not
-        return false
+        //returns an error message if a conflict is found, null if not
+
+        //validate if start is before end / equals to each other
+        if(event.start.hour*60 + event.start.minute >= event.end.hour*60 + event.end.minute){
+            return "Start time must be before the end time"
+        }
+
+        return null
     }
 
     var currentDay: LocalDate by mutableStateOf(LocalDate.parse("2023-11-18"))
@@ -79,7 +85,7 @@ class AppViewmodel : ViewModel(){
     fun addEvent(event:Event): Boolean {
         //Should return a bool if it was successful or not.
         //checks conflicting event times
-        if(!checkConflictingEvents(event.start, event.end)){
+
             return try{
                 events.add(event)
                 true
@@ -87,8 +93,8 @@ class AppViewmodel : ViewModel(){
                 Log.d("error", e.message.toString())
                 false
             }
-        }
-        return false
+
+
 
 
     }
