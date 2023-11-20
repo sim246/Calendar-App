@@ -6,12 +6,20 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 class AppViewmodel : ViewModel(){
+
+    private val repository = HolidayRepository()
+    private val _holidays = MutableLiveData<Holiday>()
+    val holydays: LiveData<Holiday> = _holidays
 
     var currentlyViewingEvent:Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00")))
 
@@ -76,6 +84,19 @@ class AppViewmodel : ViewModel(){
         } catch (e: Exception) {
             Log.d("error", e.message.toString())
             false
+        }
+    }
+
+    fun fetchHolidays() {
+        viewModelScope.launch {
+            try {
+                val cards = repository.getCreditCards()
+                _holidays.value = cards
+                Log.e("FetchHoliday", _holidays.value.toString());
+            } catch (e: Exception) {
+                // Handle error
+                Log.e("FetchHoliday", e.message.toString());
+            }
         }
     }
 }
