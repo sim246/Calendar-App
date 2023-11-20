@@ -1,6 +1,7 @@
 package com.example.calendarapp.ui.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
@@ -25,9 +26,7 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SingleEventEdit(
-    event: Event = Event(
-        LocalDate.parse("2023-11-18"), "", LocalDateTime.parse("2023-11-18T15:15:00"),
-    LocalDateTime.parse("2023-11-18T15:16:00"),"",""), navController: NavController,
+    event: Event, navController: NavController,
     viewModel: AppViewmodel
 ){
 
@@ -41,9 +40,13 @@ import java.time.LocalDateTime
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
                 onClick={
+                    Log.i("EventParams", titleString)
+                    /*
                     if(viewModel.addEvent(event)){
                         navController.popBackStack()
                     }
+
+                     */
                     //isEditing = false
                     //saves the event somehow with the specified params
                 }
@@ -52,6 +55,7 @@ import java.time.LocalDateTime
                 content={Text(text = "Quit without saving")},
                 onClick={
                     //isEditing = false
+                    navController.popBackStack()
                 }
             )
 
@@ -116,28 +120,3 @@ import java.time.LocalDateTime
         return inputText
     }
 
-
-
-/*
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-    @Composable
-    fun CreateEventMenuPreview(){
-        val ev = Event("title",LocalDateTime.parse("2021-05-18T15:15:00"),
-            LocalDateTime.parse("2021-05-18T15:16:00"),"desc","client","location")
-        SingleEventEdit(ev)
-    }
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-    @Composable
-    fun EventDisplayPreview(){
-        val ev = Event("title",LocalDateTime.parse("2021-05-18T15:15:00"),LocalDateTime.parse("2021-05-18T15:16:00"),"desc","client","location")
-        SingleEventDisplay(ev)
-    }
-
-
-
-*/

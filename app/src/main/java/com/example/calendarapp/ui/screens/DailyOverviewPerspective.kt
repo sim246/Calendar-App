@@ -2,6 +2,7 @@ package com.example.calendarapp.ui.screens
 
 import android.os.Build
 import android.util.Log
+
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,6 +44,7 @@ import com.example.calendarapp.Routes
 import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -183,12 +185,13 @@ fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
         ForwardArrowButton(day = day, navController = navController, viewModel = viewModel)
     }
     Spacer(modifier = Modifier.height(5.dp))
-    AddButton(navController = navController)
+    AddButton(navController = navController, day=day, viewModel)
     Spacer(modifier = Modifier.height(5.dp))
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AddButton(navController: NavController) {
+fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
         Image(
             painterResource(id = R.drawable.back_arrow),
@@ -205,7 +208,11 @@ fun AddButton(navController: NavController) {
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
-                    navController.navigate(Routes.EventOverview.route)
+                    //Create a new (empty) event for the selected day,
+                    // set it to the currently viewing one
+                    // and open the edit menu for it
+                    viewModel.setCurrentEvent(Event(LocalDate.parse(day), "", LocalDateTime.now(), LocalDateTime.now()))
+                    navController.navigate(Routes.EventEdit.route)
                 }
         )
     }
