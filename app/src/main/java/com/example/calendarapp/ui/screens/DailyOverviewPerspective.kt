@@ -213,6 +213,7 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
                     //Create a new (empty) event for the selected day,
                     // set it to the currently viewing one
                     // and open the edit menu for it
+                    viewModel.isEditing = false
                     viewModel.setCurrentEvent(Event(LocalDate.parse(day), "", LocalDateTime.now(), LocalDateTime.now()))
                     navController.navigate(Routes.EventEdit.route)
                 }

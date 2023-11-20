@@ -50,18 +50,26 @@ import java.time.LocalDateTime
                     event.description = descriptionString
                     event.clientName = clientString
                     event.location = locationString
-                    if(viewModel.addEvent(event)){
-                        navController.popBackStack()
+                    if(!viewModel.isEditing)
+                    {
+
+                        if(viewModel.addEvent(event)){
+                            navController.popBackStack()
+                        }
+                        else
+                        {
+                            toastText = "Something went wrong when adding the event. " +
+                                    "Try checking the times for conflicts."
+                        }
                     }
                     else
                     {
-                        toastText = "Something went wrong when adding the event. " +
-                                "Try checking the times for conflicts."
+                        //i'm sure setting the event values to the current
+                        //would save it in memory
+                        navController.popBackStack()
                     }
 
 
-                    //isEditing = false
-                    //saves the event somehow with the specified params
                 }
             )
             Button(
@@ -79,6 +87,7 @@ import java.time.LocalDateTime
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun SingleEventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel){
         Column{
@@ -88,7 +97,10 @@ import java.time.LocalDateTime
             Text(text=event.description)
             Button(
                 content={Text(text = "Edit Event")},
-                onClick={navController.navigate(Routes.EventEdit.route)}
+                onClick={
+                    viewModel.isEditing = true
+                    navController.navigate(Routes.EventEdit.route)
+                }
             )
             Button(
                 content={Text(text = "Delete Event")},

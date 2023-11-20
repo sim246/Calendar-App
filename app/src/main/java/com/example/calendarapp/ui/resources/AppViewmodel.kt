@@ -15,7 +15,8 @@ import java.time.YearMonth
 class AppViewmodel : ViewModel(){
 
     var currentlyViewingEvent:Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00")))
-
+    //var to determine if a new event gets added or just edited for the edit menu
+    var isEditing = false
     val events: MutableList<Event> = mutableListOf(
         Event(
             LocalDate.parse("2023-11-18"),
