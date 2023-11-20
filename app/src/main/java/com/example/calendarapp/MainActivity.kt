@@ -20,7 +20,6 @@ import androidx.navigation.compose.composable
 import com.example.calendarapp.ui.resources.AppViewmodel
 
 import com.example.calendarapp.ui.screens.App
-import com.example.calendarapp.ui.screens.AddEvent
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 import com.example.calendarapp.ui.screens.SingleEventDisplay
@@ -69,10 +68,6 @@ fun ScreenSetup(appViewmodel: AppViewmodel) {
         }
         composable(Routes.EventEdit.route) {
             SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
-        }
-
-        composable(Routes.AddEvent.route) {
-            AddEvent(appViewmodel.currentlyViewingEvent,navController, appViewmodel)
         }
     }
 }
