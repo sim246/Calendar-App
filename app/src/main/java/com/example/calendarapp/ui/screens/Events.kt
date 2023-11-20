@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.screens
 
+import android.app.TimePickerDialog
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.calendarapp.Routes
 import com.example.calendarapp.ui.resources.AppViewmodel
@@ -36,10 +38,13 @@ import java.time.LocalDateTime
             var descriptionString = eventInputField("Description", event.description)
             var locationString = eventInputField("Location", event.location)
             var clientString = eventInputField("Client", event.clientName)
-            var toastText = ""
+
+            // Fetching local context
+            val context = LocalContext.current
+
 
             EventTimeDisplay(event)
-            Text(text=toastText)
+            Text()
             Button(
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
@@ -58,8 +63,10 @@ import java.time.LocalDateTime
                         }
                         else
                         {
-                            toastText = "Something went wrong when adding the event. " +
+                            val toastText = "Something went wrong when adding the event. " +
                                     "Try checking the times for conflicts."
+                            Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
+
                         }
                     }
                     else
@@ -86,6 +93,14 @@ import java.time.LocalDateTime
 
 
     }
+
+    @Composable
+    fun TimePickerDigit(){
+        //Time picker for a specific digit (hour, minute, second)
+
+    }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
