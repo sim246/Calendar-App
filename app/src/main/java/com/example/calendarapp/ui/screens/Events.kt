@@ -2,6 +2,7 @@ package com.example.calendarapp.ui.screens
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
@@ -31,22 +32,34 @@ import java.time.LocalDateTime
 ){
 
         Column{
-            var titleString = eventInputField("Title")
-            var descriptionString = eventInputField("Description")
-            var locationString = eventInputField("Location")
-            var clientString = eventInputField("Client")
+            var titleString = eventInputField("Title", event.eventName)
+            var descriptionString = eventInputField("Description", event.description)
+            var locationString = eventInputField("Location", event.location)
+            var clientString = eventInputField("Client", event.clientName)
+            var toastText = ""
+
             EventTimeDisplay(event)
+            Text(text=toastText)
             Button(
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
                 onClick={
                     Log.i("EventParams", titleString)
-                    /*
+                    //set event values
+                    event.eventName = titleString
+                    event.description = descriptionString
+                    event.clientName = clientString
+                    event.location = locationString
                     if(viewModel.addEvent(event)){
                         navController.popBackStack()
                     }
+                    else
+                    {
+                        toastText = "Something went wrong when adding the event. " +
+                                "Try checking the times for conflicts."
+                    }
 
-                     */
+
                     //isEditing = false
                     //saves the event somehow with the specified params
                 }
@@ -110,11 +123,14 @@ import java.time.LocalDateTime
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun eventInputField(name:String): String {
-        var inputText by rememberSaveable {mutableStateOf("")}
+    fun eventInputField(name:String, initialValue: String): String {
+        var inputText by rememberSaveable {mutableStateOf(initialValue)}
         TextField(
             value = inputText,
-            onValueChange = { inputText = it },
+            onValueChange = {
+                inputText = it
+
+                            },
             label = { Text(name) }
         )
         return inputText
