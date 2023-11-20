@@ -38,12 +38,14 @@ import com.example.calendarapp.R
 import com.example.calendarapp.Routes
 import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
+import com.example.calendarapp.ui.resources.Holiday
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DailyOverview(viewModel: AppViewmodel, navController: NavController) {
+fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -52,7 +54,7 @@ fun DailyOverview(viewModel: AppViewmodel, navController: NavController) {
             .verticalScroll(rememberScrollState())
     )
     {
-        TopHalf(viewModel.currentDay.toString(), navController, viewModel)
+        TopHalf(holidays, viewModel.currentDay.toString(), navController, viewModel)
         Row (Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -167,15 +169,24 @@ fun HourDisplay() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
+fun TopHalf(holidays: List<Holiday>?, day:String, navController: NavController, viewModel: AppViewmodel){
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         BackwardsArrowButton(day = day, navController = navController, viewModel = viewModel)
-        Text(
-            day,
-            modifier = Modifier.height(50.dp),
-            fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.scrim
-        )
+        Column{
+            Text(
+                day,
+                modifier = Modifier.height(50.dp),
+                fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.scrim
+            )
+            if (holidays != null) {
+                for (i in holidays.indices) {
+                    if (viewModel.currentDay.toString() == holidays[i].date) {
+                        Text(holidays[i].name)
+                    }
+                }
+            }
+        }
         ForwardArrowButton(day = day, navController = navController, viewModel = viewModel)
     }
     Spacer(modifier = Modifier.height(5.dp))
