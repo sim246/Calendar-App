@@ -9,14 +9,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 import java.time.YearMonth
 
 @RequiresApi(Build.VERSION_CODES.O)
 class AppViewmodel : ViewModel(){
 
     var currentlyViewingEvent:Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00")))
-
+    //var to determine if a new event gets added or just edited for the edit menu
+    var isEditing = false
     val events: MutableList<Event> = mutableListOf(
         Event(
             LocalDate.parse("2023-11-18"),
@@ -34,7 +34,7 @@ class AppViewmodel : ViewModel(){
             LocalDateTime.parse("2023-11-18T10:30:00"),
             "description",
             "client name",
-            "location"
+            "Central Park"
         ),
         Event(
             LocalDate.parse("2023-11-18"),
@@ -43,9 +43,15 @@ class AppViewmodel : ViewModel(){
             LocalDateTime.parse("2023-11-18T07:30:00"),
             "description",
             "client name",
-            "location"
+            "DisneyLand"
         )
     )
+
+    fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime): Boolean{
+        //Given a start & end, look thru the list of events and find conflicting times & dates
+        //returns true if a conflict is found, false if not
+        return false
+    }
 
     var currentDay: LocalDate by mutableStateOf(LocalDate.parse("2023-11-18"))
 
@@ -72,13 +78,19 @@ class AppViewmodel : ViewModel(){
     //function to add a new event to the db / event list
     fun addEvent(event:Event): Boolean {
         //Should return a bool if it was successful or not.
-        return try{
-            events.add(event)
-            true
-        } catch (e: Exception) {
-            Log.d("error", e.message.toString())
-            false
+        //checks conflicting event times
+        if(!checkConflictingEvents(event.start, event.end)){
+            return try{
+                events.add(event)
+                true
+            } catch (e: Exception) {
+                Log.d("error", e.message.toString())
+                false
+            }
         }
+        return false
+
+
     }
 
     //get all days with events

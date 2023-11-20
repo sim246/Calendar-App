@@ -6,11 +6,11 @@ import java.time.LocalDateTime
 class Event(
     val day: LocalDate,
 
-    val eventName: String = "",
-    val start: LocalDateTime,
-    val end: LocalDateTime,
+    var eventName: String = "",
+    var start: LocalDateTime,
+    var end: LocalDateTime,
 
-    val description: String = "",
-    val clientName: String = "",
-    val location: String = ""
+    var description: String = "",
+    var clientName: String = "",
+    var location: String = ""
 )
