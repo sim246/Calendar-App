@@ -130,12 +130,24 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
             for (col in 1..7) {
                 val day = row * 7 + col - startDay + 1
                 val isCurrentMonthDay = day in 1..daysInMonth
+                var color = Color.White
+                var fontColor = Color.Black
+                if (holidays != null && isCurrentMonthDay) {
+                    color = Color.LightGray
+                    for (i in holidays.indices) {
+                        val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
+                        if (date.format(Formatter) == holidays[i].date) {
+                            color = Color.DarkGray
+                            fontColor = Color.White
+                        }
+                    }
+                }
 
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .padding(4.dp)
-                        .background(Color.Transparent)
+                        .background(color)
                         .clip(MaterialTheme.shapes.small)
                         .clickable {
                             viewModel.setNewDay(selectedMonth.atDay(day))
@@ -146,17 +158,9 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
                         text = if (isCurrentMonthDay) day.toString() else "",
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .padding(8.dp)
+                            .padding(8.dp),
+                        color = fontColor
                     )
-                    if (holidays != null && isCurrentMonthDay) {
-                        for (i in holidays.indices) {
-                            val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
-                            if (date.format(Formatter) == holidays[i].date)
-                            {
-                                Text(holidays[i].name, fontSize = 7.sp)
-                            }
-                        }
-                    }
                 }
             }
         }
