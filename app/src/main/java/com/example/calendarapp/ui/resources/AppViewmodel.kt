@@ -93,6 +93,7 @@ class AppViewmodel : ViewModel(){
 
     }
 
+    //get all days with events
     fun getDaysWithEvents(month: YearMonth): List<LocalDate> {
         val monthsEvents = events.filter{
             val eventMonth = YearMonth.from(it.start)
@@ -101,5 +102,13 @@ class AppViewmodel : ViewModel(){
         val eventDates = monthsEvents.map { it.start.toLocalDate() }.toSet()
 
         return eventDates.toList()
+    }
+
+    //get all the events for a date
+    fun getEventsForDay(date: LocalDate): List<Event> {
+        return events.filter { event ->
+            val eventDate = event.start.toLocalDate()
+            eventDate == date
+        }
     }
 }
