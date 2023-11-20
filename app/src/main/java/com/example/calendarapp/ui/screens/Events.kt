@@ -27,94 +27,103 @@ import java.time.LocalDateTime
     fun SingleEventEdit(
     event: Event = Event(
         LocalDate.parse("2023-11-18"), "", LocalDateTime.parse("2023-11-18T15:15:00"),
-    LocalDateTime.parse("2023-11-18T15:16:00"),"",""), navController: NavController,
-    viewModel: AppViewmodel
-){
+        LocalDateTime.parse("2023-11-18T15:16:00"),"",""), navController: NavController,
+        viewModel: AppViewmodel
+    ){
 
-        Column{
-            var titleString = eventInputField("Title")
-            var descriptionString = eventInputField("Description")
-            var locationString = eventInputField("Location")
-            var clientString = eventInputField("Client")
-            EventTimeDisplay(event)
-            Button(
-                content={Text(text = "Save Event")},
-                //should save the event at the specified date and time onclick
-                onClick={
-                    if(viewModel.addEvent(event)){
-                        navController.popBackStack()
-                    }
-                    //isEditing = false
-                    //saves the event somehow with the specified params
+    Column{
+        var titleString = eventInputField("Title")
+        var descriptionString = eventInputField("Description")
+        var locationString = eventInputField("Location")
+        var clientString = eventInputField("Client")
+        EventTimeDisplay(event)
+        Button(
+            content={Text(text = "Save Event")},
+            //should save the event at the specified date and time onclick
+            onClick={
+                if(viewModel.addEvent(event)){
+                    navController.popBackStack()
                 }
-            )
-            Button(
-                content={Text(text = "Quit without saving")},
-                onClick={
-                    //isEditing = false
-                }
-            )
-
-        }
-
-
-
-
-    }
-
-    @Composable
-    fun SingleEventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel){
-        Column{
-            Text(text=event.eventName)
-            Text(text="@ " + event.location)
-            Text(text=event.start.toString() + " to " + event.end.toString())
-            Text(text=event.description)
-            Button(
-                content={Text(text = "Edit Event")},
-                onClick={navController.navigate(Routes.EventEdit.route)}
-            )
-            Button(
-                content={Text(text = "Delete Event")},
-                onClick={}
-            )
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Composable
-    @ExperimentalMaterial3Api
-    fun EventTimeDisplay(event: Event){
-        var showTimePicker by remember { mutableStateOf(false) }
-        //val time = event.start.hour.toString() + ":"+ event.start.minute +":"+ event.start.second
-
-        //Text("Time: $time")
-        if (showTimePicker) {
-
-            Button(onClick={showTimePicker = false}, content={Text(text = "Save")})
-
-        }
-        else
-        {
-            Button(onClick={}, content={Text(text = "Set Start Time")})
-            Button(onClick={}, content={Text(text = "Set End Time")})
-        }
-
-
-    }
-
-
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun eventInputField(name:String): String {
-        var inputText by rememberSaveable {mutableStateOf("")}
-        TextField(
-            value = inputText,
-            onValueChange = { inputText = it },
-            label = { Text(name) }
+                //isEditing = false
+                //saves the event somehow with the specified params
+            }
         )
-        return inputText
+        Button(
+            content={Text(text = "Quit without saving")},
+            onClick={
+                //isEditing = false
+            }
+        )
+
     }
+
+}
+
+//WHEN CLICK THE + FROM THE DAILY OVERVIEW AND ALSO EVENT???
+@Composable
+fun SingleEventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel){
+    Column{
+        Text(text=event.eventName)
+        Text(text="@ " + event.location)
+        Text(text=event.start.toString() + " to " + event.end.toString())
+        Text(text=event.description)
+        Button(
+            content={Text(text = "Edit Event")},
+            onClick={navController.navigate(Routes.EventEdit.route)}
+        )
+        Button(
+            content={Text(text = "Delete Event")},
+            onClick={}
+        )
+    }
+}
+
+@Composable
+fun AddEvent(event: Event, navController: NavController, viewModel: AppViewmodel){
+    Column{
+
+        Button(
+            content={Text(text = "Add Event")},
+            onClick={navController.navigate(Routes.AddEvent.route)}
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+@ExperimentalMaterial3Api
+fun EventTimeDisplay(event: Event){
+    var showTimePicker by remember { mutableStateOf(false) }
+    //val time = event.start.hour.toString() + ":"+ event.start.minute +":"+ event.start.second
+
+    //Text("Time: $time")
+    if (showTimePicker) {
+
+        Button(onClick={showTimePicker = false}, content={Text(text = "Save")})
+
+    }
+    else
+    {
+        Button(onClick={}, content={Text(text = "Set Start Time")})
+        Button(onClick={}, content={Text(text = "Set End Time")})
+    }
+
+
+}
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun eventInputField(name:String): String {
+    var inputText by rememberSaveable {mutableStateOf("")}
+    TextField(
+        value = inputText,
+        onValueChange = { inputText = it },
+        label = { Text(name) }
+    )
+    return inputText
+}
 
 
 
