@@ -23,6 +23,7 @@ import com.example.calendarapp.Routes
 import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
@@ -107,7 +108,7 @@ import java.util.Calendar
         Column{
             Text(text=event.eventName)
             Text(text="@ " + event.location)
-            Text(text=event.start.toString() + " to " + event.end.toString())
+            Text(text=event.start.toLocalTime().toString() + " to " + event.end.toLocalTime().toString())
             Text(text=event.description)
             Button(
                 content={Text(text = "Edit Event")},
@@ -125,6 +126,10 @@ import java.util.Calendar
                     }
                 }
             )
+            Button(
+                content={Text(text="Return")},
+                onClick = {navController.popBackStack()}
+            )
         }
     }
 
@@ -137,9 +142,9 @@ import java.util.Calendar
         val context = LocalContext.current
         val calendar = Calendar.getInstance()
 
-        var startTime by remember { mutableStateOf("") }
-        var endTime by remember { mutableStateOf("")}
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        var startTime by remember { mutableStateOf(event.start.toLocalTime()) }
+        var endTime by remember { mutableStateOf(event.end.toLocalTime())}
+        val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
         // Fetching current hour, and minute
         val hour = calendar[Calendar.HOUR_OF_DAY]
@@ -149,18 +154,18 @@ import java.util.Calendar
         val timePickerStart = TimePickerDialog(
             context,
             { _, selectedHour: Int, selectedMinute: Int ->
-                startTime = "$selectedHour:$selectedMinute"
+                startTime = LocalTime.parse("$selectedHour:$selectedMinute", formatter)
             }, hour, minute, false
         )
         val timePickerEnd = TimePickerDialog(context,
             { _, selectedHour: Int, selectedMinute: Int ->
-                Log.d("time", LocalDateTime.parse(startTime).toString())
-                endTime = "$selectedHour:$selectedMinute"
+
+                endTime = LocalTime.parse("$selectedHour:$selectedMinute", formatter)
             }, hour, minute, false
         )
 
-            Text(text=startTime.toString())
-            Text(text=endTime.toString())
+            Text(text= "Start Time: $startTime")
+            Text(text= "End Time: $endTime")
             Row(){
                 Button(onClick={
                     timePickerStart.show()
@@ -169,14 +174,6 @@ import java.util.Calendar
                     timePickerEnd.show()
                 }, content={Text(text = "Set End Time")})
             }
-
-
-            Button(onClick = {
-                Log.d("time", LocalDateTime.parse("13:11", formatter).toString())
-            }) {
-                Text("wah")
-            }
-
 
 
     }
