@@ -66,8 +66,10 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
-                    ScheduleDisplay(viewModel.events, navController)
+                for (i in viewModel.events.indices) {
+                    if (viewModel.events.size > 0 && viewModel.events[i].day == viewModel.currentDay) {
+                        ScheduleDisplay(viewModel.events, navController)
+                    }
                 }
             }
         }
@@ -116,8 +118,8 @@ fun ScheduleDisplay(events: List<Event>, navController: NavController){
                 content = { EventDisplay(event, navController) }
             ) { measureables, constraints ->
                 val placeables = measureables.map { measurable ->
-//                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMin).toInt() - 5).dp.roundToPx()))
-                    measurable.measure(constraints.copy(maxHeight = (height.dp.roundToPx())))
+                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMin).toInt() - 5).dp.roundToPx()))
+//                    measurable.measure(constraints.copy(maxHeight = (height.dp.roundToPx())))
                 }
                 layout(constraints.maxWidth, height) {
                     var y = (((event.start.format(FormatterHours).toInt()) - 6) * 50).dp.roundToPx()

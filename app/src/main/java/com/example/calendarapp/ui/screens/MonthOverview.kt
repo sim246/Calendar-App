@@ -133,12 +133,11 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
                 var color = Color.White
                 var fontColor = Color.Black
                 if (holidays != null && isCurrentMonthDay) {
-                    color = Color.LightGray
                     for (i in holidays.indices) {
                         val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
                         if (date.format(Formatter) == holidays[i].date) {
-                            color = Color.DarkGray
-                            fontColor = Color.White
+                            color = Color.LightGray
+//                            fontColor = Color.White
                         }
                     }
                 }
