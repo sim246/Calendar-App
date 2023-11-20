@@ -44,7 +44,7 @@ import java.time.LocalDateTime
 
 
             EventTimeDisplay(event)
-            Text()
+
             Button(
                 content={Text(text = "Save Event")},
                 //should save the event at the specified date and time onclick
