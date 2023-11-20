@@ -4,6 +4,9 @@ class HolidayRepository {
     private val holidayService = RetrofitInstance.holidayService
 
     suspend fun getHolidays(): List<Holiday> {
-        return holidayService.getHolidays()
+        val holidays : MutableList<Holiday> = mutableListOf()
+        holidays.addAll(holidayService.getHolidays1())
+        holidays.addAll(holidayService.getHolidays2())
+        return holidays
     }
 }
