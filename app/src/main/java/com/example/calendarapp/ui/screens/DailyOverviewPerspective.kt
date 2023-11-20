@@ -21,6 +21,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -166,6 +171,7 @@ fun HourDisplay() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TopHalf(day:String, navController: NavController, viewModel: AppViewmodel){
+    Spacer(modifier = Modifier.height(20.dp))
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         BackwardsArrowButton(day = day, navController = navController, viewModel = viewModel)
         Text(
@@ -188,7 +194,7 @@ fun AddButton(navController: NavController) {
             painterResource(id = R.drawable.back_arrow),
             contentDescription ="back button icon",
             modifier = Modifier
-                .size(50.dp)
+                .size(40.dp)
                 .clickable {
                     navController.navigate(Routes.MonthOverviewScreen.route)
                 }
@@ -197,9 +203,9 @@ fun AddButton(navController: NavController) {
             painterResource(id = R.drawable.add_button),
             contentDescription ="add button icon",
             modifier = Modifier
-                .size(50.dp)
+                .size(40.dp)
                 .clickable {
-                    navController.navigate(Routes.EventOverview.route)
+                    navController.navigate(Routes.AddEvent.route)
                 }
         )
     }
@@ -208,37 +214,58 @@ fun AddButton(navController: NavController) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ForwardArrowButton(day: String, navController: NavController, viewModel: AppViewmodel) {
-    Image(
-        painterResource(id = R.drawable.arrow_right),
-        contentDescription = "arrow button icon",
-        modifier = Modifier
-            .size(50.dp)
-            .clickable {
-                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//    Image(
+//        painterResource(id = R.drawable.arrow_right),
+//        contentDescription = "arrow button icon",
+//        modifier = Modifier
+//            .size(50.dp)
+//            .clickable {
+//                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//                val date: LocalDate = LocalDate
+//                    .parse(day, format)
+//                    .plusDays(1)
+//                viewModel.setNewDay(date)
+//                navController.navigate(Routes.DailyOverview.route)
+//            }
+//    )
+    IconButton(
+            onClick = { val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val date: LocalDate = LocalDate
                     .parse(day, format)
                     .plusDays(1)
                 viewModel.setNewDay(date)
-                navController.navigate(Routes.DailyOverview.route)
-            }
-    )
+                navController.navigate(Routes.DailyOverview.route) }
+            ) {
+        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Day")
+    }
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BackwardsArrowButton(day: String, navController: NavController, viewModel: AppViewmodel) {
-    Image(
-        painterResource(id = R.drawable.arrow_left),
-        contentDescription = "arrow button icon",
-        modifier = Modifier
-            .size(50.dp)
-            .clickable {
-                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//    Image(
+//        painterResource(id = R.drawable.arrow_left),
+//        contentDescription = "arrow button icon",
+//        modifier = Modifier
+//            .size(50.dp)
+//            .clickable {
+//                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//                val date: LocalDate = LocalDate
+//                    .parse(day, format)
+//                    .minusDays(1)
+//                viewModel.setNewDay(date)
+//                navController.navigate(Routes.DailyOverview.route)
+//            }
+//    )
+    IconButton(
+        onClick = { val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val date: LocalDate = LocalDate
                     .parse(day, format)
                     .minusDays(1)
                 viewModel.setNewDay(date)
-                navController.navigate(Routes.DailyOverview.route)
-            }
-    )
+                navController.navigate(Routes.DailyOverview.route) }
+    ) {
+        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Day")
+    }
 }
