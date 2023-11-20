@@ -2,6 +2,6 @@ package com.example.calendarapp.ui.resources
 
 import retrofit2.http.GET
 interface HolidayService {
-    @GET("holidays")
-    suspend fun getHolidays(): Holiday
+    @GET("2023/CA")
+    suspend fun getHolidays(): List<Holiday>
 }

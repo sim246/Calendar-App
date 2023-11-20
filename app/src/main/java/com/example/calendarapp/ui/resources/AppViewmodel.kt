@@ -18,8 +18,8 @@ import java.time.LocalDateTime
 class AppViewmodel : ViewModel(){
 
     private val repository = HolidayRepository()
-    private val _holidays = MutableLiveData<Holiday>()
-    val holydays: LiveData<Holiday> = _holidays
+    private val _holidays = MutableLiveData<List<Holiday>>()
+    val holidays: LiveData<List<Holiday>> = _holidays
 
     var currentlyViewingEvent:Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00")))
 
@@ -90,8 +90,8 @@ class AppViewmodel : ViewModel(){
     fun fetchHolidays() {
         viewModelScope.launch {
             try {
-                val cards = repository.getCreditCards()
-                _holidays.value = cards
+                val hol = repository.getHolidays()
+                _holidays.value = hol
                 Log.e("FetchHoliday", _holidays.value.toString());
             } catch (e: Exception) {
                 // Handle error

@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    private const val BASE_URL = "https://date.nager.at/api/v3/PublicHolidays/2023/CA"
+    private const val BASE_URL = "https://date.nager.at/api/v3/PublicHolidays/"
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
