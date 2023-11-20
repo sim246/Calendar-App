@@ -164,22 +164,22 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
                         val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
                         if (date.format(Formatter) == holidays[i].date) {
                             color = Color.LightGray
-                            fontColor = Color.White
                         }
                     }
                 }
 
+
                 if (day in 1..daysInMonth) {
                     val hasEvent = daysWithEvents.contains(selectedMonth.atDay(day))
-
+                    if (hasEvent) {
+                        color = Color.DarkGray
+                        fontColor = Color.White
+                    }
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .padding(4.dp)
-                            .background(
-                                if (hasEvent) Color.DarkGray
-                                else color
-                            )
+                            .background(color)
                             .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 viewModel.setNewDay(selectedMonth.atDay(day))

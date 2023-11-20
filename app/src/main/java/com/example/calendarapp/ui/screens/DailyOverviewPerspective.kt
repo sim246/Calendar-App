@@ -99,11 +99,13 @@ fun EventDisplay(event: Event, navController: NavController) {
         ) {
             Text(
                 text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(EventTimeFormatter)}",
+                color = Color.White
             )
 
             Text(
                 text = event.eventName,
                 fontWeight = FontWeight.Bold,
+                color = Color.White
             )
         }
 
