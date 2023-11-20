@@ -27,10 +27,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendarapp.Routes
@@ -46,6 +50,7 @@ fun MonthOverviewScreen(navController: NavController, context: Context,  viewMod
 
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun YearAndNav(navController: NavController, context: Context, viewModel: AppViewmodel) {
@@ -67,17 +72,32 @@ fun YearAndNav(navController: NavController, context: Context, viewModel: AppVie
             IconButton(
                 onClick = { selectedMonth = selectedMonth.minusMonths(1) }
             ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Month")
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Month",
+                    modifier = Modifier.testTag("Previous Month")
+                        .semantics { testTagsAsResourceId = true }
+
+
+                )
+
+
             }
 
             Text(
-                text = "${selectedMonth.month.name} ${selectedMonth.year}"
+                text = "${selectedMonth.month.name} ${selectedMonth.year}",
+                modifier = Modifier
+                    //.semantics { testTagsAsResourceId = true },
+                    //.testTag("NOVEMBER 2023")
             )
 
             IconButton(
                 onClick = { selectedMonth = selectedMonth.plusMonths(1) }
             ) {
-                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Month")
+                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Month",
+                    modifier = Modifier.testTag("Next Month")
+                        .semantics { testTagsAsResourceId = true }
+
+
+                )
             }
         }
 

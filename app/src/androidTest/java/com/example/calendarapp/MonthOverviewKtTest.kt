@@ -10,6 +10,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.calendarapp.ui.screens.MonthOverviewScreen
 import org.junit.runner.RunWith
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.navigation.compose.rememberNavController
+
 import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 
@@ -33,6 +38,13 @@ class MonthOverviewKtTest {
 
     @Test
     fun monthOverviewScreenTest() {
+
+        composeTestRule.onNodeWithTag("Previous Month", useUnmergedTree = true)
+            .assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("Next Month", useUnmergedTree = true)
+            .assertIsDisplayed()
+
 
     }
 }
