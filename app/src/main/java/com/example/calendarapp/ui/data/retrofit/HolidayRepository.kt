@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.resources
+package com.example.calendarapp.ui.data.retrofit
 
 class HolidayRepository {
     private val holidayService = RetrofitInstance.holidayService

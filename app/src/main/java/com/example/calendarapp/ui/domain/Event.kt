@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.resources
+package com.example.calendarapp.ui.domain
 
 import java.time.LocalDate
 import java.time.LocalDateTime

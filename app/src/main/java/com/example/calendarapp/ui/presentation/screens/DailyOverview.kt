@@ -1,7 +1,6 @@
-package com.example.calendarapp.ui.screens
+package com.example.calendarapp.ui.presentation.screens
 
 import android.os.Build
-import android.util.Log
 
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -39,13 +38,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.calendarapp.R
 import com.example.calendarapp.Routes
-import com.example.calendarapp.ui.resources.AppViewmodel
-import com.example.calendarapp.ui.resources.Event
-import com.example.calendarapp.ui.resources.Holiday
+import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
+import com.example.calendarapp.ui.domain.Event
+import com.example.calendarapp.ui.data.retrofit.Holiday
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -102,7 +100,9 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
                 .testTag("Click Event Display")
         ) {
             Text(
-                text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(EventTimeFormatter)}",
+                text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(
+                    EventTimeFormatter
+                )}",
                 color = Color.White
             )
 
@@ -124,8 +124,10 @@ val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 fun ScheduleDisplay(events: List<Event>, navController: NavController, viewModel: AppViewmodel){
     Column(modifier = Modifier.fillMaxSize()) {
         events.sortedBy(Event::start).forEach { event ->
-            val height = (event.end.format(FormatterHours).toInt() - event.start.format(FormatterHours).toInt()) * 60
-            var heightMin = event.end.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
+            val height = (event.end.format(FormatterHours).toInt() - event.start.format(
+                FormatterHours
+            ).toInt()) * 60
+            val heightMin = event.end.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
             Layout(
                 content = { EventDisplay(event, navController, viewModel) }
             ) { measureables, constraints ->
@@ -134,10 +136,10 @@ fun ScheduleDisplay(events: List<Event>, navController: NavController, viewModel
                 }
                 layout(constraints.maxWidth, height) {
                     var y = event.start.format(FormatterHours).toInt()
-                    if (y > 12){
-                        y -= 7
+                    y -= if (y > 12){
+                        7
                     } else{
-                        y -= 6
+                        6
                     }
                     placeables.forEach { placeable ->
                         placeable.place(0, ((y * 60) + heightMin).dp.roundToPx())

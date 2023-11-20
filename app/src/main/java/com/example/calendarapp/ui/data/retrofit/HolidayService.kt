@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.resources
+package com.example.calendarapp.ui.data.retrofit
 
 import retrofit2.http.GET
 interface HolidayService {

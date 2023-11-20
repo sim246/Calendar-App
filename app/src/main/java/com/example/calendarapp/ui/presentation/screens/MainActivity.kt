@@ -1,4 +1,4 @@
-package com.example.calendarapp
+package com.example.calendarapp.ui.presentation.screens
 
 import android.os.Build
 import android.os.Bundle
@@ -17,13 +17,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.calendarapp.ui.resources.AppViewmodel
+import com.example.calendarapp.Routes
+import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 
-import com.example.calendarapp.ui.screens.App
-import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.theme.CalendarAppTheme
-import com.example.calendarapp.ui.screens.SingleEventDisplay
-import com.example.calendarapp.ui.screens.SingleEventEdit
 
 class MainActivity : ComponentActivity() {
     private val viewModel: AppViewmodel by viewModels()
