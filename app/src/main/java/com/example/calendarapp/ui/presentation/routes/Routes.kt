@@ -1,4 +1,4 @@
-package com.example.calendarapp
+package com.example.calendarapp.ui.presentation.routes
 
 sealed class Routes (val route: String) {
     object MonthOverviewScreen : Routes("month")

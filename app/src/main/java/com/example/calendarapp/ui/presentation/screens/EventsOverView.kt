@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.screens
+package com.example.calendarapp.ui.presentation.screens
 
 import android.app.TimePickerDialog
 import android.os.Build
@@ -19,9 +19,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import com.example.calendarapp.Routes
-import com.example.calendarapp.ui.resources.AppViewmodel
-import com.example.calendarapp.ui.resources.Event
+import com.example.calendarapp.ui.presentation.routes.Routes
+import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
+import com.example.calendarapp.ui.domain.Event
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
