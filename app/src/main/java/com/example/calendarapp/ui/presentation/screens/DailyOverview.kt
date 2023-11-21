@@ -77,11 +77,6 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                for (i in viewModel.events.indices) {
-                    if (viewModel.events.size > 0 && viewModel.events[i].day == viewModel.currentDay) {
-                        ScheduleDisplay(viewModel.events, navController, viewModel)
-                    }
-                }
                 //filter events by current day
                 val filteredEvents = viewModel.events.filter { ev -> ev.day == viewModel.currentDay}
 
