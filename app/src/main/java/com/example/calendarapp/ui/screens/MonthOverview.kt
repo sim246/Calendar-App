@@ -86,7 +86,7 @@ fun YearAndNav(navController: NavController, context: Context, viewModel: AppVie
                 text = "${selectedMonth.month.name} ${selectedMonth.year}",
                 modifier = Modifier
                     //.semantics { testTagsAsResourceId = true },
-                    //.testTag("NOVEMBER 2023")
+                    .testTag("NOVEMBER 2023")
             )
 
             IconButton(
