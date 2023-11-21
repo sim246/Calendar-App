@@ -20,7 +20,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
-
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 
 class MainActivity : ComponentActivity() {

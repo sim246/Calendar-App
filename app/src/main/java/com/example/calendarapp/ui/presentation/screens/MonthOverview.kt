@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.data.retrofit.Holiday
 import com.google.android.libraries.places.api.model.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -73,30 +75,25 @@ fun YearAndNav(holidays: List<Holiday>?, navController: NavController, viewModel
                 onClick = { selectedMonth = selectedMonth.minusMonths(1) }
             ) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Month",
-                    modifier = Modifier.testTag("Previous Month")
-                        .semantics { testTagsAsResourceId = true }
-
-
+                    modifier = Modifier
+                        .testTag("Previous Month")
+                        .semantics { contentDescription = "Previous Month" }
                 )
-
-
             }
 
             Text(
                 text = "${selectedMonth.month.name} ${selectedMonth.year}",
                 modifier = Modifier
-                    //.semantics { testTagsAsResourceId = true },
-                    //.testTag("NOVEMBER 2023")
+                    .testTag("NOVEMBER 2023")
             )
 
             IconButton(
                 onClick = { selectedMonth = selectedMonth.plusMonths(1) }
             ) {
                 Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Month",
-                    modifier = Modifier.testTag("Next Month")
-                        .semantics { testTagsAsResourceId = true }
-
-
+                    modifier = Modifier
+                        .testTag("Next Month")
+                        .semantics { contentDescription = "Next Month" }
                 )
             }
         }
@@ -145,7 +142,8 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
     //var startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
     //val startDay = (firstDayOfWeek - currentDay + 7) % 7 + 5
 
-
+    val currentDay = LocalDate.now().dayOfMonth
+    //Log.d("CURRENTDAY", currentDay.toString())
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
 
     for (row in 0 until rows) {
@@ -159,22 +157,26 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
 
                 var color = Color.White
                 var fontColor = Color.Black
-                if (holidays != null && isCurrentMonthDay) {
-                    for (i in holidays.indices) {
-                        val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
-                        if (date.format(Formatter) == holidays[i].date) {
-                            color = Color.LightGray
-                        }
-                    }
-                }
+//                if (holidays != null && isCurrentMonthDay) {
+//                    for (i in holidays.indices) {
+//                        val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
+//                        if (date.format(Formatter) == holidays[i].date) {
+//                            color = Color.LightGray
+//                        }
+//                    }
+//                }
 
-
-                if (day in 1..daysInMonth) {
+                 if (day in 1..daysInMonth) {
                     val hasEvent = daysWithEvents.contains(selectedMonth.atDay(day))
                     if (hasEvent) {
                         color = Color.DarkGray
                         fontColor = Color.White
                     }
+                     if(day == currentDay){
+                         color = Color.LightGray
+                         fontColor = Color.White
+                     }
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -185,6 +187,8 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
                                 viewModel.setNewDay(selectedMonth.atDay(day))
                                 navController.navigate(Routes.DailyOverview.route)
                             }
+                            .semantics { contentDescription = daysInMonth.toString() }
+
                     ) {
                         Text(
                             text = day.toString(),
