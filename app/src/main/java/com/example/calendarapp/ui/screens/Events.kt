@@ -53,40 +53,41 @@ import java.util.Calendar
                 //should save the event at the specified date and time onclick
                 onClick={
                     Log.i("EventParams", titleString)
-                    //set event values
-                    event.eventName = titleString
-                    event.description = descriptionString
-                    event.clientName = clientString
-                    event.location = locationString
-                    event.start = startEndTimes[0]
-                    event.end = startEndTimes[1]
+                    //set event values after checking time validity
+                    val check = viewModel.checkConflictingEvents(event.start, event.end)
+                    if(check == null){
+                        event.eventName = titleString
+                        event.description = descriptionString
+                        event.clientName = clientString
+                        event.location = locationString
+                        event.start = startEndTimes[0]
+                        event.end = startEndTimes[1]
+                        Log.d("nya", viewModel.isEditing.toString())
+                        if(!viewModel.isEditing)
+                        {
 
-                    if(!viewModel.isEditing)
-                    {
-                        val check = viewModel.checkConflictingEvents(event)
-                        if(check == null){
                             if(viewModel.addEvent(event)){
                                 navController.popBackStack()
+                            }
+                            else {
+                                val toastText = "Something went wrong when adding the event."
+                                Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
                             }
 
                         }
                         else
                         {
-                            val toastText = "Something went wrong when adding the event: $check"
-                            Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
+                            //i'm sure setting the event values to the current
+                            //would save it in memory
+                            navController.popBackStack()
 
                         }
                     }
                     else
                     {
-                        //i'm sure setting the event values to the current
-                        //would save it in memory
-                        navController.popBackStack()
-                    }
-
-
-                }
-            )
+                        val toastText = "Error: $check"
+                        Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
+                    }})
 
             Button(
                 content={Text(text = "Quit without saving")},

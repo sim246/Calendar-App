@@ -47,15 +47,31 @@ class AppViewmodel : ViewModel(){
         )
     )
 
-    fun checkConflictingEvents(event: Event): String?{
+    fun checkConflictingEvents(start:LocalDateTime, end: LocalDateTime): String?{
         //Given a start & end, look thru the list of events and find conflicting times & dates
         //returns an error message if a conflict is found, null if not
 
         //validate if start is before end / equals to each other
-        if(event.start.hour*60 + event.start.minute >= event.end.hour*60 + event.end.minute){
+        if(start.hour*60 + start.minute >= end.hour*60 + end.minute){
             return "Start time must be before the end time"
         }
 
+        //Checks if it overlaps with an existing event
+        //for now, checks every single event in the array (could be cleaner)
+        events.forEach {
+            //if the end of the it crosses the starttime of the event
+            if(end.hour*60 + end.minute >= it.start.hour*60 + it.start.minute ||
+                start.hour*60 + start.minute >= it.end.hour*60 + it.end.minute)
+            {
+               //overlaps either in the top or the bottom! send a message
+                return "Overlaps another event: Check time values"
+            }
+        }
+        //check exact date start & end
+        if(start.hour*60 + start.minute == end.hour*60 + end.minute)
+        {
+            return "Start and End times are the same"
+        }
         return null
     }
 
