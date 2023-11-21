@@ -148,8 +148,8 @@ import java.util.Calendar
         val context = LocalContext.current
         val calendar = Calendar.getInstance()
 
-        var startTime by remember { mutableStateOf(event.start.hour.toString() + ":"+ event.start.minute.toString()) }
-        var endTime by remember { mutableStateOf(event.start.hour.toString() + ":"+ event.start.minute.toString()) }
+        var startTime by remember { mutableStateOf(fixString(event.start.hour.toString()) + ":"+ fixString(event.start.minute.toString())) }
+        var endTime by remember { mutableStateOf(fixString(event.start.hour.toString()) + ":"+ fixString(event.start.minute.toString())) }
         val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("H:mm")
 
         // Fetching current hour, and minute
