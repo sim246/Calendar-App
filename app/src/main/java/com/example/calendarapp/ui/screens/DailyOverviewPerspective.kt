@@ -30,6 +30,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,6 +50,7 @@ import com.example.calendarapp.ui.resources.AppViewmodel
 import com.example.calendarapp.ui.resources.Event
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -72,9 +77,12 @@ fun DailyOverview(viewModel: AppViewmodel, navController: NavController) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
-                    ScheduleDisplay(viewModel.events, navController, viewModel)
-                }
+                //filter events by current day
+                val filteredEvents = viewModel.events.filter { ev -> ev.day == viewModel.currentDay}
+
+               // if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
+                    ScheduleDisplay(filteredEvents, navController, viewModel)
+               // }
             }
         }
     }
@@ -113,28 +121,35 @@ val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
 val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleDisplay(events: List<Event>, navController: NavController, viewModel: AppViewmodel){
+fun ScheduleDisplay(events : List<Event>, navController: NavController, viewModel: AppViewmodel){
+
     Column(modifier = Modifier.fillMaxSize()) {
+
         events.sortedBy(Event::start).forEach { event ->
-            val height = (event.end.format(FormatterHours).toInt() - event.start.format(FormatterHours).toInt()) * 50
-            Log.d("height", (event.end.format(FormatterMin).toInt()).toString())
-            Layout(
-                content = { EventDisplay(event, navController, viewModel) }
-            ) { measureables, constraints ->
-                val placeables = measureables.map { measurable ->
+            //should recompose if the event changes
+            key(event){
+                Log.d("Schedule", "Event added: ${event.eventName}")
+                val height = (event.end.format(FormatterHours).toInt() - event.start.format(FormatterHours).toInt()) * 50
+                Log.d("height", (event.end.format(FormatterMin).toInt()).toString())
+                Layout(
+                    content = { EventDisplay(event, navController, viewModel) }
+                ) { measureables, constraints ->
+                    val placeables = measureables.map { measurable ->
 //                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMin).toInt() - 5).dp.roundToPx()))
-                    measurable.measure(constraints.copy(maxHeight = (height.dp.roundToPx())))
-                }
-                layout(constraints.maxWidth, height) {
-                    var y = (((event.start.format(FormatterHours).toInt()) - 6) * 50).dp.roundToPx()
-                    if (event.start.format(FormatterHours).toInt() > 12){
-                        y = (((event.start.format(FormatterHours).toInt()) - 7) * 50).dp.roundToPx()
+                        measurable.measure(constraints.copy(maxHeight = (height.dp.roundToPx())))
                     }
-                    placeables.forEach { placeable ->
-                        placeable.place(0, y)
+                    layout(constraints.maxWidth, height) {
+                        var y = (((event.start.format(FormatterHours).toInt()) - 6) * 50).dp.roundToPx()
+                        if (event.start.format(FormatterHours).toInt() > 12){
+                            y = (((event.start.format(FormatterHours).toInt()) - 7) * 50).dp.roundToPx()
+                        }
+                        placeables.forEach { placeable ->
+                            placeable.place(0, y)
+                        }
                     }
                 }
             }
+
         }
     }
 }
@@ -214,7 +229,8 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
                     // set it to the currently viewing one
                     // and open the edit menu for it
                     viewModel.isEditing = false
-                    viewModel.setCurrentEvent(Event(LocalDate.parse(day), "", LocalDateTime.now(), LocalDateTime.now()))
+                    viewModel.setCurrentEvent(Event(LocalDate.parse(day), "", LocalDate.parse(day).atTime(
+                        LocalTime.now()), LocalDate.parse(day).atTime(LocalTime.now())))
                     navController.navigate(Routes.EventEdit.route)
                 }
         )

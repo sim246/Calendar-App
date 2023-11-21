@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.calendarapp.ui.resources.AppViewmodel
-import com.example.calendarapp.ui.screens.AddEvent
+//import com.example.calendarapp.ui.screens.AddEvent
 import com.example.calendarapp.ui.screens.DailyOverview
 import com.example.calendarapp.ui.screens.MonthOverviewScreen
 import com.example.calendarapp.ui.theme.CalendarAppTheme
@@ -61,10 +61,6 @@ fun ScreenSetup(context: Context, appViewmodel: AppViewmodel) {
         }
         composable(Routes.EventEdit.route) {
             SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
-        }
-
-        composable(Routes.AddEvent.route) {
-            AddEvent(appViewmodel.currentlyViewingEvent,navController, appViewmodel)
         }
     }
 }

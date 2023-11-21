@@ -47,10 +47,37 @@ class AppViewmodel : ViewModel(){
         )
     )
 
-    fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime): Boolean{
+    fun checkConflictingEvents(start:LocalDateTime, end: LocalDateTime): String?{
         //Given a start & end, look thru the list of events and find conflicting times & dates
-        //returns true if a conflict is found, false if not
-        return false
+        //returns an error message if a conflict is found, null if not
+
+        //validate if start is before end / equals to each other
+        Log.d("what", (start.hour*60 + start.minute).toString() + "-"+ (end.hour*60 + end.minute).toString())
+        if(start.hour*60 + start.minute >= end.hour*60 + end.minute){
+            return "Start time must be before the end time"
+        }
+
+        //Checks if it overlaps with an existing event
+        //for now, checks every single event in the array (could be cleaner)
+        events.forEach {
+            //if the same day...
+            if (it.start.dayOfYear != it.start.dayOfYear)
+            {
+                //if the end of the it crosses the starttime of the event
+                if(end.hour*60 + end.minute >= it.start.hour*60 + it.start.minute ||
+                    start.hour*60 + start.minute >= it.end.hour*60 + it.end.minute)
+                {
+                    //overlaps either in the top or the bottom! send a message
+                    return "Overlaps another event: Check time values"
+                }
+            }
+        }
+        //check exact date start & end
+        if(start.hour*60 + start.minute == end.hour*60 + end.minute)
+        {
+            return "Start and End times are the same"
+        }
+        return null
     }
 
     var currentDay: LocalDate by mutableStateOf(LocalDate.parse("2023-11-18"))
@@ -79,16 +106,18 @@ class AppViewmodel : ViewModel(){
     fun addEvent(event:Event): Boolean {
         //Should return a bool if it was successful or not.
         //checks conflicting event times
-        if(!checkConflictingEvents(event.start, event.end)){
+
             return try{
+                Log.d("eventAdd", events.size.toString())
                 events.add(event)
+                Log.d("eventAdd", events.size.toString())
                 true
             } catch (e: Exception) {
                 Log.d("error", e.message.toString())
                 false
             }
-        }
-        return false
+
+
 
 
     }
