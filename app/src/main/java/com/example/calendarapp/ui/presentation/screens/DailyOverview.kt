@@ -81,9 +81,9 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
                 //filter events by current day
                 val filteredEvents = viewModel.events.filter { ev -> ev.day == viewModel.currentDay}
 
-               // if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
+                if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
                     ScheduleDisplay(filteredEvents, navController, viewModel)
-               // }
+                }
             }
         }
     }
@@ -276,18 +276,6 @@ fun ScheduleDisplay(events : List<Event>, navController: NavController, viewMode
                             )
                             navController.navigate(Routes.EventEdit.route)
                         }
-                        //Create a new (empty) event for the selected day,
-                        // set it to the currently viewing one
-                        // and open the edit menu for it
-                        viewModel.isEditing = false
-                        viewModel.setCurrentEvent(
-                            Event(
-                                LocalDate.parse(day), "", LocalDate.parse(day).atTime(
-                                    LocalTime.now()
-                                ), LocalDate.parse(day).atTime(LocalTime.now())
-                            )
-                        )
-                        navController.navigate(Routes.EventEdit.route)
                     }
                     .testTag("Click Add")
             )
