@@ -26,36 +26,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
-import com.example.calendarapp.ui.data.retrofit.Holiday
 import com.google.android.libraries.places.api.model.DayOfWeek
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MonthOverviewScreen(holidays: List<Holiday>?, navController: NavController, viewModel: AppViewmodel) {
-    YearAndNav(holidays, navController, viewModel)
+fun MonthOverviewScreen(navController: NavController, viewModel: AppViewmodel) {
+    YearAndNav(navController, viewModel)
 
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun YearAndNav(holidays: List<Holiday>?, navController: NavController, viewModel: AppViewmodel) {
+fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
 
     Column(
@@ -98,13 +93,13 @@ fun YearAndNav(holidays: List<Holiday>?, navController: NavController, viewModel
             }
         }
 
-        DaysOfTheWeek(holidays, selectedMonth = selectedMonth, navController, viewModel)
+        DaysOfTheWeek(selectedMonth = selectedMonth, navController, viewModel)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DaysOfTheWeek(holidays: List<Holiday>?, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
+fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
     // Days of the week
     Row(
         modifier = Modifier
@@ -120,7 +115,7 @@ fun DaysOfTheWeek(holidays: List<Holiday>?, selectedMonth: YearMonth, navControl
         }
     }
 
-    DaysOfTheMonth(holidays, selectedMonth = selectedMonth, navController, viewModel)
+    DaysOfTheMonth(selectedMonth = selectedMonth, navController, viewModel)
 }
 
 
@@ -129,7 +124,7 @@ fun DaysOfTheWeek(holidays: List<Holiday>?, selectedMonth: YearMonth, navControl
 val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
+fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
 
     val daysWithEvents = viewModel.getDaysWithEvents(selectedMonth)
     Log.d("Daysofthemonth", daysWithEvents.toString())
@@ -153,8 +148,7 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
         ) {
             for (col in 1..7) {
                 val day = row * 7 + col - firstDayOfWeek + 1
-                val isCurrentMonthDay = day in 1..daysInMonth
-
+//                val isCurrentMonthDay = day in 1..daysInMonth
                 var color = Color.White
                 var fontColor = Color.Black
 //                if (holidays != null && isCurrentMonthDay) {
@@ -215,6 +209,6 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun App(holidays: List<Holiday>?, navController: NavController, viewModel: AppViewmodel) {
-    MonthOverviewScreen(holidays, navController, viewModel)
+fun App(navController: NavController, viewModel: AppViewmodel) {
+    MonthOverviewScreen(navController, viewModel)
 }
