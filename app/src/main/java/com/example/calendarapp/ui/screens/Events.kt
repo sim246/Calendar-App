@@ -54,7 +54,7 @@ import java.util.Calendar
                 onClick={
                     Log.i("EventParams", titleString)
                     //set event values after checking time validity
-                    val check = viewModel.checkConflictingEvents(event.start, event.end)
+                    val check = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1])
                     if(check == null){
                         event.eventName = titleString
                         event.description = descriptionString

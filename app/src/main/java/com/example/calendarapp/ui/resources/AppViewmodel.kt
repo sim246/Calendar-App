@@ -52,6 +52,7 @@ class AppViewmodel : ViewModel(){
         //returns an error message if a conflict is found, null if not
 
         //validate if start is before end / equals to each other
+        Log.d("what", (start.hour*60 + start.minute).toString() + "-"+ (end.hour*60 + end.minute).toString())
         if(start.hour*60 + start.minute >= end.hour*60 + end.minute){
             return "Start time must be before the end time"
         }
@@ -59,12 +60,16 @@ class AppViewmodel : ViewModel(){
         //Checks if it overlaps with an existing event
         //for now, checks every single event in the array (could be cleaner)
         events.forEach {
-            //if the end of the it crosses the starttime of the event
-            if(end.hour*60 + end.minute >= it.start.hour*60 + it.start.minute ||
-                start.hour*60 + start.minute >= it.end.hour*60 + it.end.minute)
+            //if the same day...
+            if (it.start.dayOfYear != it.start.dayOfYear)
             {
-               //overlaps either in the top or the bottom! send a message
-                return "Overlaps another event: Check time values"
+                //if the end of the it crosses the starttime of the event
+                if(end.hour*60 + end.minute >= it.start.hour*60 + it.start.minute ||
+                    start.hour*60 + start.minute >= it.end.hour*60 + it.end.minute)
+                {
+                    //overlaps either in the top or the bottom! send a message
+                    return "Overlaps another event: Check time values"
+                }
             }
         }
         //check exact date start & end
