@@ -32,11 +32,11 @@ class AppViewmodel : ViewModel(){
         Event(
             LocalDate.parse("2023-11-18"),
             "event 1",
-            LocalDateTime.parse("2023-11-18T13:15:00"),
-            LocalDateTime.parse("2023-11-18T16:30:00"),
+            LocalDateTime.parse("2023-11-18T06:15:00"),
+            LocalDateTime.parse("2023-11-18T07:30:00"),
             "description",
             "client name",
-            "location"
+            "DisneyLand"
         ),
         Event(
             LocalDate.parse("2023-11-18"),
@@ -50,11 +50,11 @@ class AppViewmodel : ViewModel(){
         Event(
             LocalDate.parse("2023-11-18"),
             "event 3",
-            LocalDateTime.parse("2023-11-18T06:15:00"),
-            LocalDateTime.parse("2023-11-18T07:30:00"),
+            LocalDateTime.parse("2023-11-18T13:15:00"),
+            LocalDateTime.parse("2023-11-18T16:30:00"),
             "description",
             "client name",
-            "DisneyLand"
+            "location"
         )
     )
 
