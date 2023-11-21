@@ -6,7 +6,4 @@ sealed class Routes (val route: String) {
     object EventOverview : Routes("event")
     //View for a singular event, for editing / creating
     object EventEdit : Routes("eventEdit")
-
-    object AddEvent : Routes("addEvent")
-
 }

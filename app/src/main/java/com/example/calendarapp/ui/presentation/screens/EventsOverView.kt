@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.os.Build
 import android.util.Log
@@ -37,16 +38,16 @@ import java.util.Calendar
 ){
 
         Column{
-            var titleString = eventInputField("Title", event.eventName)
-            var descriptionString = eventInputField("Description", event.description)
-            var locationString = eventInputField("Location", event.location)
-            var clientString = eventInputField("Client", event.clientName)
+            val titleString = eventInputField("Title", event.eventName)
+            val descriptionString = eventInputField("Description", event.description)
+            val locationString = eventInputField("Location", event.location)
+            val clientString = eventInputField("Client", event.clientName)
 
             // Fetching local context
             val context = LocalContext.current
 
 
-            var startEndTimes = EventTimeDisplay(event)
+            val startEndTimes = eventTimeDisplay(event)
 
             Button(
                 content={Text(text = "Save Event")},
@@ -139,10 +140,11 @@ import java.util.Calendar
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     @ExperimentalMaterial3Api
-    fun EventTimeDisplay(event: Event) : Array<LocalDateTime>{
+    fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
         //Time Picker declatation
 
         val context = LocalContext.current
@@ -171,7 +173,7 @@ import java.util.Calendar
 
             Text(text= "Start Time: $startTime")
             Text(text= "End Time: $endTime")
-            Row(){
+            Row{
                 Button(onClick={
                     timePickerStart.show()
                 }, content={Text(text = "Set Start Time")})

@@ -29,10 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,7 +46,6 @@ import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -81,9 +76,9 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
                 //filter events by current day
                 val filteredEvents = viewModel.events.filter { ev -> ev.day == viewModel.currentDay}
 
-                if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
+//                if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
                     ScheduleDisplay(filteredEvents, navController, viewModel)
-                }
+//                }
             }
         }
     }
