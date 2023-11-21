@@ -32,7 +32,6 @@ class MonthOverviewKtTests {
         composeTestRule.setContent {
             CalendarAppTheme {
                 val viewModel = AppViewmodel()
-//                val context = LocalContext.current
                 ScreenSetup(viewModel)
             }
         }
@@ -40,30 +39,31 @@ class MonthOverviewKtTests {
 
 
     @Test
-    fun monthOverviewScreenTest() {
+    fun monthOverviewNavigationTest() {
         composeTestRule.onRoot().printToLog("TAG")
 
-        //check if changing the months with the arrow keys leads to the right screen values
 
         //initial November screen
         composeTestRule.onNodeWithText("NOVEMBER 2023", useUnmergedTree = true).assertIsDisplayed()
-
-        //navigate to the left -- should be october
-        composeTestRule.onNodeWithContentDescription("minusMonth")
-            .performClick()
-        composeTestRule.onNodeWithText("OCTOBER 2023", useUnmergedTree = true).assertIsDisplayed()
-
-        //navigate back to the right -- should be november again
-        composeTestRule.onNodeWithContentDescription("plusMonth")
-            .performClick()
-
-
 
         composeTestRule.onNodeWithTag("Previous Month", useUnmergedTree = true)
             .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag("Next Month", useUnmergedTree = true)
             .assertIsDisplayed()
+
+
+        //previous month, should show october
+        composeTestRule.onNodeWithTag("Previous Month", useUnmergedTree = true)
+            .performClick()
+        composeTestRule.onNodeWithText("OCTOBER 2023", useUnmergedTree = true).assertIsDisplayed()
+
+
+        //next month, after october, should show november
+        composeTestRule.onNodeWithTag("Next Month", useUnmergedTree = true)
+            .performClick()
+        composeTestRule.onNodeWithText("NOVEMBER 2023", useUnmergedTree = true).assertIsDisplayed()
+
 
 
     }

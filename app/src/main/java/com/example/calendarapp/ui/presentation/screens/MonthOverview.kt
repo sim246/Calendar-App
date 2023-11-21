@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
@@ -74,19 +75,15 @@ fun YearAndNav(holidays: List<Holiday>?, navController: NavController, viewModel
                 onClick = { selectedMonth = selectedMonth.minusMonths(1) }
             ) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Month",
-                    modifier = Modifier.testTag("Previous Month")
-                        .semantics { testTagsAsResourceId = true }
-
-
+                    modifier = Modifier
+                        .testTag("Previous Month")
+                        .semantics { contentDescription = "Previous Month" }
                 )
-
-
             }
 
             Text(
                 text = "${selectedMonth.month.name} ${selectedMonth.year}",
                 modifier = Modifier
-                    //.semantics { testTagsAsResourceId = true },
                     .testTag("NOVEMBER 2023")
             )
 
@@ -94,10 +91,9 @@ fun YearAndNav(holidays: List<Holiday>?, navController: NavController, viewModel
                 onClick = { selectedMonth = selectedMonth.plusMonths(1) }
             ) {
                 Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Month",
-                    modifier = Modifier.testTag("Next Month")
-                        .semantics { testTagsAsResourceId = true }
-
-
+                    modifier = Modifier
+                        .testTag("Next Month")
+                        .semantics { contentDescription = "Next Month" }
                 )
             }
         }
