@@ -156,35 +156,6 @@ fun ScheduleDisplay(events : List<Event>, navController: NavController, viewMode
                     }
                     placeables.forEach { placeable ->
                         placeable.place(0, ((y * 60) + heightMin).dp.roundToPx())
-                        //should recompose if the event changes
-                        key(event) {
-                            //Log.d("Schedule", "Event added: ${event.eventName}")
-                            val height =
-                                (event.end.format(FormatterHours).toInt() - event.start.format(
-                                    FormatterHours
-                                ).toInt()) * 50
-                            //Log.d("height", (event.end.format(FormatterMin).toInt()).toString())
-                            Layout(
-                                content = { EventDisplay(event, navController, viewModel) }
-                            ) { measureables, constraints ->
-                                val placeables = measureables.map { measurable ->
-//                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMin).toInt() - 5).dp.roundToPx()))
-                                    measurable.measure(constraints.copy(maxHeight = (height.dp.roundToPx())))
-                                }
-                                layout(constraints.maxWidth, height) {
-                                    var y = (((event.start.format(FormatterHours)
-                                        .toInt()) - 6) * 50).dp.roundToPx()
-                                    if (event.start.format(FormatterHours).toInt() > 12) {
-                                        y = (((event.start.format(FormatterHours)
-                                            .toInt()) - 7) * 50).dp.roundToPx()
-                                    }
-                                    placeables.forEach { placeable ->
-                                        placeable.place(0, y)
-                                    }
-                                }
-                            }
-                        }
-
                     }
                 }
             }
