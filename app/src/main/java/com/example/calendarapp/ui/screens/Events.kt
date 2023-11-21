@@ -160,13 +160,12 @@ import java.util.Calendar
         val timePickerStart = TimePickerDialog(
             context,
             { _, selectedHour: Int, selectedMinute: Int ->
-                startTime = "$selectedHour:$selectedMinute"
+                startTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
             }, hour, minute, false
         )
         val timePickerEnd = TimePickerDialog(context,
             { _, selectedHour: Int, selectedMinute: Int ->
-
-                endTime = "$selectedHour:$selectedMinute"
+                endTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
             }, hour, minute, false
         )
 
@@ -180,11 +179,21 @@ import java.util.Calendar
                     timePickerEnd.show()
                 }, content={Text(text = "Set End Time")})
             }
+        //fix strings for parsings
+
+
+
         return arrayOf(LocalDateTime.of(event.start.toLocalDate(), LocalTime.parse(startTime, formatter)),
             LocalDateTime.of(event.end.toLocalDate(), LocalTime.parse(endTime, formatter)))
 
     }
 
+    fun fixString(input : String): String{
+        if(input.length == 1){
+            return "0$input"
+        }
+        return input
+    }
 
 
     @OptIn(ExperimentalMaterial3Api::class)

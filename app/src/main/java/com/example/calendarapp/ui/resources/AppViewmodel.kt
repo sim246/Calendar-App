@@ -108,7 +108,9 @@ class AppViewmodel : ViewModel(){
         //checks conflicting event times
 
             return try{
+                Log.d("eventAdd", events.size.toString())
                 events.add(event)
+                Log.d("eventAdd", events.size.toString())
                 true
             } catch (e: Exception) {
                 Log.d("error", e.message.toString())
