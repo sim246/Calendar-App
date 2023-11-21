@@ -29,6 +29,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,6 +50,7 @@ import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -77,6 +82,12 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
                         ScheduleDisplay(viewModel.events, navController, viewModel)
                     }
                 }
+                //filter events by current day
+                val filteredEvents = viewModel.events.filter { ev -> ev.day == viewModel.currentDay}
+
+               // if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
+                    ScheduleDisplay(filteredEvents, navController, viewModel)
+               // }
             }
         }
     }
@@ -120,28 +131,60 @@ val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
 val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleDisplay(events: List<Event>, navController: NavController, viewModel: AppViewmodel){
+fun ScheduleDisplay(events : List<Event>, navController: NavController, viewModel: AppViewmodel) {
+
     Column(modifier = Modifier.fillMaxSize()) {
+
         events.sortedBy(Event::start).forEach { event ->
             val height = (event.end.format(FormatterHours).toInt() - event.start.format(
                 FormatterHours
             ).toInt()) * 60
-            val heightMin = event.end.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
+            val heightMin =
+                event.end.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
             Layout(
                 content = { EventDisplay(event, navController, viewModel) }
             ) { measureables, constraints ->
                 val placeables = measureables.map { measurable ->
-                    measurable.measure(constraints.copy(maxHeight = (height +  heightMin).dp.roundToPx()))
+                    measurable.measure(constraints.copy(maxHeight = (height + heightMin).dp.roundToPx()))
                 }
                 layout(constraints.maxWidth, height) {
                     var y = event.start.format(FormatterHours).toInt()
-                    y -= if (y > 12){
+                    y -= if (y > 12) {
                         7
-                    } else{
+                    } else {
                         6
                     }
                     placeables.forEach { placeable ->
                         placeable.place(0, ((y * 60) + heightMin).dp.roundToPx())
+                        //should recompose if the event changes
+                        key(event) {
+                            //Log.d("Schedule", "Event added: ${event.eventName}")
+                            val height =
+                                (event.end.format(FormatterHours).toInt() - event.start.format(
+                                    FormatterHours
+                                ).toInt()) * 50
+                            //Log.d("height", (event.end.format(FormatterMin).toInt()).toString())
+                            Layout(
+                                content = { EventDisplay(event, navController, viewModel) }
+                            ) { measureables, constraints ->
+                                val placeables = measureables.map { measurable ->
+//                    measurable.measure(constraints.copy(maxHeight = (height + event.end.format(FormatterMin).toInt() - 5).dp.roundToPx()))
+                                    measurable.measure(constraints.copy(maxHeight = (height.dp.roundToPx())))
+                                }
+                                layout(constraints.maxWidth, height) {
+                                    var y = (((event.start.format(FormatterHours)
+                                        .toInt()) - 6) * 50).dp.roundToPx()
+                                    if (event.start.format(FormatterHours).toInt() > 12) {
+                                        y = (((event.start.format(FormatterHours)
+                                            .toInt()) - 7) * 50).dp.roundToPx()
+                                    }
+                                    placeables.forEach { placeable ->
+                                        placeable.place(0, y)
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
             }
@@ -149,112 +192,150 @@ fun ScheduleDisplay(events: List<Event>, navController: NavController, viewModel
     }
 }
 
-@Composable
-fun HourDisplay() {
-    var i = 0
-    var hour = 6
-    var color: Color
-    Column(modifier = Modifier.fillMaxSize()) {
-        while (i <= 18) {
-            color = if (i % 2 == 0) {
-                Color.LightGray
-            } else {
-                Color.White
+    @Composable
+    fun HourDisplay() {
+        var i = 0
+        var hour = 6
+        var color: Color
+        Column(modifier = Modifier.fillMaxSize()) {
+            while (i <= 18) {
+                color = if (i % 2 == 0) {
+                    Color.LightGray
+                } else {
+                    Color.White
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .height(60.dp)
+                        .fillMaxWidth()
+                        .background(color)
+                )
+                {
+                    Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
+                }
+                i++
+                if (hour == 12) {
+                    hour = 1
+                } else {
+                    hour++
+                }
             }
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun TopHalf(
+        holidays: List<Holiday>?,
+        day: String,
+        navController: NavController,
+        viewModel: AppViewmodel
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            BackwardsArrowButton(
+                day = day,
+                navController = navController,
+                viewModel = viewModel
+            )
+            Column {
+                Text(
+                    day,
+                    modifier = Modifier.height(50.dp),
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.scrim
+                )
+                if (holidays != null) {
+                    for (i in holidays.indices) {
+                        if (viewModel.currentDay.toString() == holidays[i].date) {
+                            Text(holidays[i].name)
+                        }
+                    }
+                }
+            }
+            ForwardArrowButton(
+                day = day,
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        AddButton(navController = navController, day = day, viewModel)
+        Spacer(modifier = Modifier.height(5.dp))
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painterResource(id = R.drawable.back_arrow),
+                contentDescription = "back button icon",
                 modifier = Modifier
-                    .height(60.dp)
-                    .fillMaxWidth()
-                    .background(color)
-            )
-            {
-                Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
-            }
-            i++
-            if (hour == 12) {
-                hour = 1
-            } else {
-                hour++
-            }
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun TopHalf(holidays: List<Holiday>?, day:String, navController: NavController, viewModel: AppViewmodel){
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        BackwardsArrowButton(day = day, navController = navController, viewModel = viewModel)
-        Column{
-            Text(
-                day,
-                modifier = Modifier.height(50.dp),
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.scrim
-            )
-            if (holidays != null) {
-                for (i in holidays.indices) {
-                    if (viewModel.currentDay.toString() == holidays[i].date) {
-                        Text(holidays[i].name)
+                    .size(40.dp)
+                    .clickable {
+                        navController.navigate(Routes.MonthOverviewScreen.route)
                     }
-                }
-            }
-        }
-        ForwardArrowButton(day = day, navController = navController, viewModel = viewModel)
-    }
-    Spacer(modifier = Modifier.height(5.dp))
-    AddButton(navController = navController, day=day, viewModel)
-    Spacer(modifier = Modifier.height(5.dp))
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
-        Image(
-            painterResource(id = R.drawable.back_arrow),
-            contentDescription ="back button icon",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable {
-                    navController.navigate(Routes.MonthOverviewScreen.route)
-                }
-                .testTag("Click Back")
-        )
-        Image(
-            painterResource(id = R.drawable.add_button),
-            contentDescription ="add button icon",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable {
-                    if (LocalDateTime.now().format(Formatter) <= viewModel.currentDay.toString()) {
+                    .testTag("Click Back")
+            )
+            Image(
+                painterResource(id = R.drawable.add_button),
+                contentDescription = "add button icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+                        if (LocalDateTime.now()
+                                .format(Formatter) <= viewModel.currentDay.toString()
+                        ) {
+                            //Create a new (empty) event for the selected day,
+                            // set it to the currently viewing one
+                            // and open the edit menu for it
+                            viewModel.isEditing = false
+                            viewModel.setCurrentEvent(
+                                Event(
+                                    LocalDate.parse(day),
+                                    "",
+                                    LocalDateTime.now(),
+                                    LocalDateTime.now()
+                                )
+                            )
+                            navController.navigate(Routes.EventEdit.route)
+                        }
                         //Create a new (empty) event for the selected day,
                         // set it to the currently viewing one
                         // and open the edit menu for it
                         viewModel.isEditing = false
                         viewModel.setCurrentEvent(
                             Event(
-                                LocalDate.parse(day),
-                                "",
-                                LocalDateTime.now(),
-                                LocalDateTime.now()
+                                LocalDate.parse(day), "", LocalDate.parse(day).atTime(
+                                    LocalTime.now()
+                                ), LocalDate.parse(day).atTime(LocalTime.now())
                             )
                         )
                         navController.navigate(Routes.EventEdit.route)
                     }
-                }
-                .testTag("Click Add")
-        )
+                    .testTag("Click Add")
+            )
+        }
     }
-}
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ForwardArrowButton(day: String, navController: NavController, viewModel: AppViewmodel) {
-    IconButton(
-            onClick = { val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun ForwardArrowButton(
+        day: String,
+        navController: NavController,
+        viewModel: AppViewmodel
+    ) {
+        IconButton(
+            onClick = {
+                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val date: LocalDate = LocalDate
                     .parse(day, format)
                     .plusDays(1)
@@ -262,24 +343,33 @@ fun ForwardArrowButton(day: String, navController: NavController, viewModel: App
                 navController.navigate(Routes.DailyOverview.route)
             },
             modifier = Modifier.testTag("Next Day")
-            ) {
-        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Day")
+        ) {
+            Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Day")
+        }
     }
-}
 
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun BackwardsArrowButton(day: String, navController: NavController, viewModel: AppViewmodel) {
-    IconButton(
-        onClick = { val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun BackwardsArrowButton(
+        day: String,
+        navController: NavController,
+        viewModel: AppViewmodel
+    ) {
+        IconButton(
+            onClick = {
+                val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val date: LocalDate = LocalDate
                     .parse(day, format)
                     .minusDays(1)
                 viewModel.setNewDay(date)
-                navController.navigate(Routes.DailyOverview.route) },
-                modifier = Modifier.testTag("Previous Day")
-    ) {
-        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Day")
+                navController.navigate(Routes.DailyOverview.route)
+            },
+            modifier = Modifier.testTag("Previous Day")
+        ) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Day")
+        }
     }
-}
+
+
+
