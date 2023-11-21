@@ -62,6 +62,7 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
             .background(Color.White)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .testTag("DailyOverviewUI")
     )
     {
         TopHalf(holidays, viewModel.currentDay.toString(), navController, viewModel)
@@ -92,17 +93,18 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
 val EventTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel) {
+fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel, height:Int) {
         Column(
             modifier = Modifier
                 .background(Color.DarkGray, shape = RoundedCornerShape(4.dp))
                 .padding(4.dp)
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(height.dp)
                 .clickable {
                     viewModel.setCurrentEvent(event)
                     navController.navigate(Routes.EventOverview.route)
                 }
-                .testTag("Click Event Display")
+                .testTag("Click Event Display " + event.eventName)
         ) {
             Text(
                 text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(
@@ -137,7 +139,7 @@ fun ScheduleDisplay(events : List<Event>, navController: NavController, viewMode
             val heightMin =
                 event.end.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
             Layout(
-                content = { EventDisplay(event, navController, viewModel) }
+                content = { EventDisplay(event, navController, viewModel, (height +  heightMin)) }
             ) { measureables, constraints ->
                 val placeables = measureables.map { measurable ->
                     measurable.measure(constraints.copy(maxHeight = (height + heightMin).dp.roundToPx()))
