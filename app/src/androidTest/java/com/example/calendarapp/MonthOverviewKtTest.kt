@@ -64,7 +64,19 @@ class MonthOverviewKtTests {
             .performClick()
         composeTestRule.onNodeWithText("NOVEMBER 2023", useUnmergedTree = true).assertIsDisplayed()
 
+    }
 
+    @Test
+    fun monthOverviewNumberOfDaysTest() {
+        //november is 30 days
+        composeTestRule.onNodeWithText("30", useUnmergedTree = true).assertIsDisplayed()
+
+        //december is 31 days
+        composeTestRule.onNodeWithTag("Next Month", useUnmergedTree = true)
+            .performClick()
+        composeTestRule.onNodeWithText("31", useUnmergedTree = true).assertIsDisplayed()
 
     }
+
+
 }

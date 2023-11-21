@@ -187,6 +187,8 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
                                 viewModel.setNewDay(selectedMonth.atDay(day))
                                 navController.navigate(Routes.DailyOverview.route)
                             }
+                            .semantics { contentDescription = daysInMonth.toString() }
+
                     ) {
                         Text(
                             text = day.toString(),
