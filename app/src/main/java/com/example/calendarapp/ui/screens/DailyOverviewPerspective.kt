@@ -77,9 +77,12 @@ fun DailyOverview(viewModel: AppViewmodel, navController: NavController) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
-                    ScheduleDisplay(navController, viewModel)
-                }
+                //filter events by current day
+                val filteredEvents = viewModel.events.filter { ev -> ev.day == viewModel.currentDay}
+
+               // if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
+                    ScheduleDisplay(filteredEvents, navController, viewModel)
+               // }
             }
         }
     }
@@ -118,13 +121,11 @@ val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
 val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleDisplay(navController: NavController, viewModel: AppViewmodel){
+fun ScheduleDisplay(events : List<Event>, navController: NavController, viewModel: AppViewmodel){
 
-
-    val eventCount = remember { mutableIntStateOf(viewModel.events.size) }
     Column(modifier = Modifier.fillMaxSize()) {
 
-        viewModel.events.sortedBy(Event::start).forEach { event ->
+        events.sortedBy(Event::start).forEach { event ->
             //should recompose if the event changes
             key(event){
                 Log.d("Schedule", "Event added: ${event.eventName}")
