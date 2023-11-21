@@ -148,8 +148,8 @@ import java.util.Calendar
         val context = LocalContext.current
         val calendar = Calendar.getInstance()
 
-        var startTime by remember { mutableStateOf(event.start.toLocalTime()) }
-        var endTime by remember { mutableStateOf(event.end.toLocalTime())}
+        var startTime by remember { mutableStateOf(event.start.hour.toString() + ":"+ event.start.minute.toString()) }
+        var endTime by remember { mutableStateOf(event.start.hour.toString() + ":"+ event.start.minute.toString()) }
         val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("H:mm")
 
         // Fetching current hour, and minute
@@ -160,13 +160,13 @@ import java.util.Calendar
         val timePickerStart = TimePickerDialog(
             context,
             { _, selectedHour: Int, selectedMinute: Int ->
-                startTime = LocalTime.parse("$selectedHour:$selectedMinute", formatter)
+                startTime = "$selectedHour:$selectedMinute"
             }, hour, minute, false
         )
         val timePickerEnd = TimePickerDialog(context,
             { _, selectedHour: Int, selectedMinute: Int ->
 
-                endTime = LocalTime.parse("$selectedHour:$selectedMinute", formatter)
+                endTime = "$selectedHour:$selectedMinute"
             }, hour, minute, false
         )
 
@@ -180,7 +180,8 @@ import java.util.Calendar
                     timePickerEnd.show()
                 }, content={Text(text = "Set End Time")})
             }
-        return arrayOf(LocalDateTime.of(event.start.toLocalDate(), startTime), LocalDateTime.of(event.start.toLocalDate(), startTime))
+        return arrayOf(LocalDateTime.of(event.start.toLocalDate(), LocalTime.parse(startTime, formatter)),
+            LocalDateTime.of(event.end.toLocalDate(), LocalTime.parse(endTime, formatter)))
 
     }
 
