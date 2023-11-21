@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.calendarapp.ui.presentation.routes.Routes
@@ -67,4 +68,12 @@ fun ScreenSetup(appViewmodel: AppViewmodel) {
             SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
         }
     }
+}
+
+@Preview
+@Composable
+@RequiresApi(Build.VERSION_CODES.O)
+fun SimpleComposablePreview() {
+    val viewModel = AppViewmodel()
+    ScreenSetup(viewModel)
 }
