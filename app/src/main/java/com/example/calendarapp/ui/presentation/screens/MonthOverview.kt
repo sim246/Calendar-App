@@ -147,6 +147,7 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
     //val startDay = (firstDayOfWeek - currentDay + 7) % 7 + 5
 
     val currentDay = LocalDate.now().dayOfMonth
+    //Log.d("CURRENTDAY", currentDay.toString())
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
 
     for (row in 0 until rows) {
@@ -169,13 +170,17 @@ fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navContro
 //                    }
 //                }
 
-
-                if (day in 1..daysInMonth) {
+                 if (day in 1..daysInMonth) {
                     val hasEvent = daysWithEvents.contains(selectedMonth.atDay(day))
                     if (hasEvent) {
                         color = Color.DarkGray
                         fontColor = Color.White
                     }
+                     if(day == currentDay){
+                         color = Color.LightGray
+                         fontColor = Color.White
+                     }
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
