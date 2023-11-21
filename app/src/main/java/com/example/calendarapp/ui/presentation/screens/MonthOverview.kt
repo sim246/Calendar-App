@@ -1,6 +1,5 @@
-package com.example.calendarapp.ui.screens
+package com.example.calendarapp.ui.presentation.screens
 
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -31,29 +30,31 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.calendarapp.Routes
-import com.example.calendarapp.ui.resources.AppViewmodel
+import com.example.calendarapp.ui.presentation.routes.Routes
+import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
+import com.example.calendarapp.ui.data.retrofit.Holiday
 import com.google.android.libraries.places.api.model.DayOfWeek
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
-import java.util.Calendar
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MonthOverviewScreen(navController: NavController, context: Context,  viewModel: AppViewmodel) {
-    YearAndNav(navController, context, viewModel)
+fun MonthOverviewScreen(holidays: List<Holiday>?, navController: NavController, viewModel: AppViewmodel) {
+    YearAndNav(holidays, navController, viewModel)
 
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun YearAndNav(navController: NavController, context: Context, viewModel: AppViewmodel) {
+fun YearAndNav(holidays: List<Holiday>?, navController: NavController, viewModel: AppViewmodel) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
 
     Column(
@@ -101,13 +102,13 @@ fun YearAndNav(navController: NavController, context: Context, viewModel: AppVie
             }
         }
 
-        DaysOfTheWeek(selectedMonth = selectedMonth, navController, context, viewModel)
+        DaysOfTheWeek(holidays, selectedMonth = selectedMonth, navController, viewModel)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, context: Context,  viewModel: AppViewmodel){
+fun DaysOfTheWeek(holidays: List<Holiday>?, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
     // Days of the week
     Row(
         modifier = Modifier
@@ -123,17 +124,19 @@ fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, contex
         }
     }
 
-    DaysOfTheMonth(selectedMonth = selectedMonth, navController, context, viewModel)
+    DaysOfTheMonth(holidays, selectedMonth = selectedMonth, navController, viewModel)
 }
 
 
 
 @RequiresApi(Build.VERSION_CODES.O)
+val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, context: Context,  viewModel: AppViewmodel) {
+fun DaysOfTheMonth(holidays: List<Holiday>?, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
 
     val daysWithEvents = viewModel.getDaysWithEvents(selectedMonth)
-    Log.d("Daysofthemonth", daysWithEvents.toString());
+    Log.d("Daysofthemonth", daysWithEvents.toString())
 
     // Days in the month
     val daysInMonth = selectedMonth.lengthOfMonth()
@@ -143,7 +146,7 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, conte
     //var startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
     //val startDay = (firstDayOfWeek - currentDay + 7) % 7 + 5
 
-
+    val currentDay = LocalDate.now().dayOfMonth
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
 
     for (row in 0 until rows) {
@@ -153,30 +156,44 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, conte
         ) {
             for (col in 1..7) {
                 val day = row * 7 + col - firstDayOfWeek + 1
+                val isCurrentMonthDay = day in 1..daysInMonth
+
+                var color = Color.White
+                var fontColor = Color.Black
+//                if (holidays != null && isCurrentMonthDay) {
+//                    for (i in holidays.indices) {
+//                        val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
+//                        if (date.format(Formatter) == holidays[i].date) {
+//                            color = Color.LightGray
+//                        }
+//                    }
+//                }
+
 
                 if (day in 1..daysInMonth) {
                     val hasEvent = daysWithEvents.contains(selectedMonth.atDay(day))
-
+                    if (hasEvent) {
+                        color = Color.DarkGray
+                        fontColor = Color.White
+                    }
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .padding(4.dp)
-                            .background(
-                                if (hasEvent) Color.LightGray
-                                else Color.Transparent
-                            )
+                            .background(color)
                             .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 viewModel.setNewDay(selectedMonth.atDay(day))
                                 navController.navigate(Routes.DailyOverview.route)
                             }
                     ) {
-                    Text(
-                        text = day.toString(),
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(8.dp)
-                    )
+                        Text(
+                            text = day.toString(),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(8.dp),
+                            color = fontColor
+                        )
                     }
                 }
                 else {
@@ -195,6 +212,6 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, conte
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun App(navController: NavController, context: Context,  viewModel: AppViewmodel) {
-    MonthOverviewScreen(navController, context, viewModel)
+fun App(holidays: List<Holiday>?, navController: NavController, viewModel: AppViewmodel) {
+    MonthOverviewScreen(holidays, navController, viewModel)
 }
