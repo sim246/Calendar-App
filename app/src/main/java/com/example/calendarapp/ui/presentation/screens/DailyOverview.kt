@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.calendarapp.R
-import com.example.calendarapp.Routes
+import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
@@ -72,7 +72,6 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-
                 for (i in viewModel.events.indices) {
                     if (viewModel.events.size > 0 && viewModel.events[i].day == viewModel.currentDay) {
                         ScheduleDisplay(viewModel.events, navController, viewModel)
@@ -212,7 +211,6 @@ fun TopHalf(holidays: List<Holiday>?, day:String, navController: NavController, 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-
 fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
         Image(
@@ -232,8 +230,6 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
                 .size(40.dp)
                 .clickable {
                     if (LocalDateTime.now().format(Formatter) <= viewModel.currentDay.toString()) {
-
-
                         //Create a new (empty) event for the selected day,
                         // set it to the currently viewing one
                         // and open the edit menu for it
@@ -263,7 +259,9 @@ fun ForwardArrowButton(day: String, navController: NavController, viewModel: App
                     .parse(day, format)
                     .plusDays(1)
                 viewModel.setNewDay(date)
-                navController.navigate(Routes.DailyOverview.route) }
+                navController.navigate(Routes.DailyOverview.route)
+            },
+            modifier = Modifier.testTag("Next Day")
             ) {
         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Day")
     }
@@ -279,7 +277,8 @@ fun BackwardsArrowButton(day: String, navController: NavController, viewModel: A
                     .parse(day, format)
                     .minusDays(1)
                 viewModel.setNewDay(date)
-                navController.navigate(Routes.DailyOverview.route) }
+                navController.navigate(Routes.DailyOverview.route) },
+                modifier = Modifier.testTag("Previous Day")
     ) {
         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Day")
     }
