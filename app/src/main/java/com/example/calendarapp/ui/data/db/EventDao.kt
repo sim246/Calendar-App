@@ -10,7 +10,7 @@ import com.example.calendarapp.ui.domain.Event
 interface EventDao {
     @Insert
     fun insertEvent(event: Event)
-    /*
+
     @Query("SELECT * FROM events WHERE eventName = :name")
     fun findProduct(name: String): List<Event>
 
@@ -19,5 +19,7 @@ interface EventDao {
 
     @Query("SELECT * FROM events")
     fun getAllProducts(): LiveData<List<Event>>
-    */
+
+
+
 }
