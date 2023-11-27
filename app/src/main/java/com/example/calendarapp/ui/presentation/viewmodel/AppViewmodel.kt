@@ -58,6 +58,24 @@ class AppViewmodel : ViewModel(){
         )
     )
 
+    //DB FUNCTIONS
+
+    /*
+    fun insertProduct(event: Event) {
+        dbRepository.insertEvent(event)
+        repo
+    }
+
+    fun findProduct(name: String) {
+        dbRepository.findEvent(name)
+    }
+
+    fun deleteProduct(name: String) {
+        dbRepository.deleteEvent(name)
+    }
+    */
+
+
     fun checkConflictingEvents(start:LocalDateTime, end: LocalDateTime): String?{
         //Given a start & end, look thru the list of events and find conflicting times & dates
         //returns an error message if a conflict is found, null if not
