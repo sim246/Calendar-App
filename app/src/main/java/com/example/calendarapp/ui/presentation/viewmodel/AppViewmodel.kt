@@ -59,21 +59,29 @@ class AppViewmodel : ViewModel(){
     )
 
     //DB FUNCTIONS
-
     /*
-    fun insertProduct(event: Event) {
-        dbRepository.insertEvent(event)
-        repo
-    }
+        val productDb = ProductRoomDatabase.getInstance(application)
 
-    fun findProduct(name: String) {
-        dbRepository.findEvent(name)
-    }
+        val productDao = productDb.productDao()
 
-    fun deleteProduct(name: String) {
-        dbRepository.deleteEvent(name)
-    }
-    */
+        dbRepository = ProductRepository(productDao)
+
+
+
+
+        fun insertProduct(event: Event) {
+            dbRepository.insertEvent(event)
+            repo
+        }
+
+        fun findProduct(name: String) {
+            dbRepository.findEvent(name)
+        }
+
+        fun deleteProduct(name: String) {
+            dbRepository.deleteEvent(name)
+        }
+        */
 
 
     fun checkConflictingEvents(start:LocalDateTime, end: LocalDateTime): String?{
