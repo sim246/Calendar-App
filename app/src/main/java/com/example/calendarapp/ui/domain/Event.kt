@@ -23,8 +23,8 @@ class Event{
     @ColumnInfo(name = "start")
     var start: LocalDateTime = LocalDateTime.parse("2023-11-18T06:15:00")
 
-    @ColumnInfo(name = "end")
-    var end: LocalDateTime = LocalDateTime.parse("2023-11-18T07:15:00")
+    @ColumnInfo(name = "theEnd")
+    var theEnd: LocalDateTime = LocalDateTime.parse("2023-11-18T07:15:00")
 
     @ColumnInfo(name = "description")
     var description: String = ""
@@ -37,11 +37,11 @@ class Event{
 
     constructor()
 
-    constructor(day: LocalDate, eventName: String, start: LocalDateTime, end: LocalDateTime, description: String, clientName: String, location: String) {
+    constructor(day: LocalDate, eventName: String, start: LocalDateTime, theEnd: LocalDateTime, description: String, clientName: String, location: String) {
         this.day = day
         this.eventName = eventName
         this.start = start
-        this.end = end
+        this.theEnd = theEnd
         this.description = description
         this.clientName = clientName
     }
