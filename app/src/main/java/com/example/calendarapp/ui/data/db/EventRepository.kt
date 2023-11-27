@@ -11,7 +11,10 @@ import kotlinx.coroutines.launch
 
 class EventRepository (private val eventDao: EventDao) {
 
+    val allProducts: LiveData<List<Event>> = eventDao.getAllEvents()
+
     val searchResults = MutableLiveData<List<Event>>()
+
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     fun insertProduct(newevent: Event) {
