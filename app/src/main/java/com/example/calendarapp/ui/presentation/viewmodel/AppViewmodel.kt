@@ -1,6 +1,7 @@
 package com.example.calendarapp.ui.presentation.viewmodel
 
 import android.os.Build
+import android.app.Application
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
@@ -10,6 +11,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.compose.ui.platform.LocalContext
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
@@ -21,7 +23,7 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 
 @RequiresApi(Build.VERSION_CODES.O)
-class AppViewmodel : ViewModel(){
+class AppViewmodel(application: Application) : ViewModel(){
 
     private val repository = HolidayRepository()
     private val _holidays = MutableLiveData<List<Holiday>>()
@@ -62,6 +64,7 @@ class AppViewmodel : ViewModel(){
 
     //DB FUNCTIONS
 
+
         val eventDb = EventRoomDatabase.getInstance(application)
 
         val eventDao = eventDb.productDao()
@@ -83,7 +86,7 @@ class AppViewmodel : ViewModel(){
         fun deleteProduct(name: String) {
             dbRepository.deleteEvent(name)
         }
-        */
+
 
 
     fun checkConflictingEvents(start:LocalDateTime, end: LocalDateTime): String?{

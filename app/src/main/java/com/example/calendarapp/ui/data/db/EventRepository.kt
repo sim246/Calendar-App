@@ -11,25 +11,25 @@ import kotlinx.coroutines.launch
 
 class EventRepository (private val eventDao: EventDao) {
 
-    val allProducts: LiveData<List<Event>> = eventDao.getAllEvents()
+    val allEvents: LiveData<List<Event>> = eventDao.getAllEvents()
 
     val searchResults = MutableLiveData<List<Event>>()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    fun insertProduct(newevent: Event) {
+    fun insertEvent(newevent: Event) {
         coroutineScope.launch(Dispatchers.IO) {
             eventDao.insertEvent(newevent)
         }
     }
 
-    fun deleteProduct(name: String) {
+    fun deleteEvent(name: String) {
         coroutineScope.launch(Dispatchers.IO) {
             eventDao.deleteEvents(name)
         }
     }
 
-    fun findProduct(name: String) {
+    fun findEvent(name: String) {
         coroutineScope.launch(Dispatchers.Main) {
             searchResults.value = asyncFind(name).await()
         }
