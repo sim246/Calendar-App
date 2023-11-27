@@ -102,7 +102,7 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
             .testTag("Click Event Display " + event.eventName)
     ) {
         Text(
-            text = "${event.start.format(EventTimeFormatter)} - ${event.end.format(
+            text = "${event.start.format(EventTimeFormatter)} - ${event.theEnd.format(
                 EventTimeFormatter
             )}",
             color = Color.White
@@ -128,11 +128,11 @@ fun ScheduleDisplay(events : List<Event>, navController: NavController, viewMode
     Column(modifier = Modifier.fillMaxSize()) {
 
         events.sortedBy(Event::start).forEach { event ->
-            val height = (event.end.format(FormatterHours).toInt() - event.start.format(
+            val height = (event.theEnd.format(FormatterHours).toInt() - event.start.format(
                 FormatterHours
             ).toInt()) * 60
             val heightMin =
-                event.end.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
+                event.theEnd.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
             Layout(
                 content = { EventDisplay(event, navController, viewModel, (height +  heightMin)) }
             ) { measureables, constraints ->

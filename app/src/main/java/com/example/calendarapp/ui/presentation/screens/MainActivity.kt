@@ -70,6 +70,7 @@ fun ScreenSetup(appViewmodel: AppViewmodel) {
     }
 }
 
+/*
 @Preview
 @Composable
 @RequiresApi(Build.VERSION_CODES.O)
@@ -77,3 +78,5 @@ fun SimpleComposablePreview() {
     val viewModel = AppViewmodel()
     ScreenSetup(viewModel)
 }
+
+ */

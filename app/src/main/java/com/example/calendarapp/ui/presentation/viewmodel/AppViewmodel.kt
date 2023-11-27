@@ -107,7 +107,7 @@ class AppViewmodel(application: Application) : ViewModel(){
             {
                 //if the end of the it crosses the starttime of the event
                 if(end.hour*60 + end.minute >= it.start.hour*60 + it.start.minute ||
-                    start.hour*60 + start.minute >= it.end.hour*60 + it.end.minute)
+                    start.hour*60 + start.minute >= it.theEnd.hour*60 + it.theEnd.minute)
                 {
                     //overlaps either in the top or the bottom! send a message
                     return "Overlaps another event: Check time values"

@@ -62,7 +62,7 @@ import java.util.Calendar
                         event.clientName = clientString
                         event.location = locationString
                         event.start = startEndTimes[0]
-                        event.end = startEndTimes[1]
+                        event.theEnd = startEndTimes[1]
                         Log.d("nya", viewModel.isEditing.toString())
                         if(!viewModel.isEditing)
                         {
@@ -115,7 +115,7 @@ import java.util.Calendar
         Column{
             Text(text=event.eventName)
             Text(text="@ " + event.location)
-            Text(text=event.start.toLocalTime().toString() + " to " + event.end.toLocalTime().toString())
+            Text(text=event.start.toLocalTime().toString() + " to " + event.theEnd.toLocalTime().toString())
             Text(text=event.description)
             Button(
                 content={Text(text = "Edit Event")},
@@ -186,7 +186,7 @@ import java.util.Calendar
 
 
         return arrayOf(LocalDateTime.of(event.start.toLocalDate(), LocalTime.parse(startTime, formatter)),
-            LocalDateTime.of(event.end.toLocalDate(), LocalTime.parse(endTime, formatter)))
+            LocalDateTime.of(event.theEnd.toLocalDate(), LocalTime.parse(endTime, formatter)))
 
     }
 
