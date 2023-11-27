@@ -27,4 +27,5 @@ interface EventDao {
 
     @Query("SELECT * FROM events WHERE day = :day")
     fun getAllEventsByDay(day: LocalDate): LiveData<List<Event>>
+
 }

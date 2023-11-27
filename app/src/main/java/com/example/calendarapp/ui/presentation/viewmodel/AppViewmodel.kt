@@ -10,6 +10,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.calendarapp.ui.data.db.EventRepository
+import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
@@ -59,19 +61,19 @@ class AppViewmodel : ViewModel(){
     )
 
     //DB FUNCTIONS
-    /*
-        val productDb = ProductRoomDatabase.getInstance(application)
 
-        val productDao = productDb.productDao()
+        val eventDb = EventRoomDatabase.getInstance(application)
 
-        dbRepository = ProductRepository(productDao)
+        val eventDao = eventDb.productDao()
+
+        var dbRepository = EventRepository(eventDao)
 
 
 
 
         fun insertProduct(event: Event) {
             dbRepository.insertEvent(event)
-            repo
+
         }
 
         fun findProduct(name: String) {
