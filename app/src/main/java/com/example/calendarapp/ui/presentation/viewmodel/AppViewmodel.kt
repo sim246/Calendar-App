@@ -25,7 +25,7 @@ class AppViewmodel : ViewModel(){
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
 
-    var currentlyViewingEvent: Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00")))
+    var currentlyViewingEvent: Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00"), "", "Name", "Location"))
     //var to determine if a new event gets added or just edited for the edit menu
     var isEditing = false
     val events: MutableList<Event> = mutableListOf(

@@ -266,7 +266,10 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
                                 LocalDate.parse(day),
                                 "",
                                 LocalDateTime.now(),
-                                LocalDateTime.now()
+                                LocalDateTime.now(),
+                                "",
+                                "",
+                                ""
                             )
                         )
                         navController.navigate(Routes.EventEdit.route)
