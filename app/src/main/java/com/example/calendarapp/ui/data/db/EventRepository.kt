@@ -14,9 +14,9 @@ class EventRepository(private val eventDao: EventDao) {
     private val searchResults = MutableLiveData<List<Event>>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    fun insertEvent(newevent: Event) {
+    fun insertEvent(newEvent: Event) {
         coroutineScope.launch(Dispatchers.IO) {
-            eventDao.insertEvent(newevent)
+            eventDao.insertEvent(newEvent)
         }
     }
 
