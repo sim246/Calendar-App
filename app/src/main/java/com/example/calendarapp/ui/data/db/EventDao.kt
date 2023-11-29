@@ -22,10 +22,7 @@ interface EventDao {
     @Query("SELECT * FROM events")
     fun getAllEvents(): LiveData<List<Event>>
 
-    @Query("INSERT INTO events (day, eventName, start,theEnd, description, clientName, location) VALUES (:day, :eventName, :start, :end, :description, :clientName, :location)")
-    fun addEvent(day: LocalDate, eventName: String, start: LocalDateTime, end: LocalDateTime, description: String, clientName: String, location: String)
-
     @Query("SELECT * FROM events WHERE day = :day")
-    fun getAllEventsByDay(day: LocalDate): LiveData<List<Event>>
+    fun findAllEventsByDay(day: LocalDate): List<Event>
 
 }

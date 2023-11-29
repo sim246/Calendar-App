@@ -11,7 +11,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.compose.ui.platform.LocalContext
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
@@ -63,29 +62,26 @@ class AppViewmodel(application: Application) : ViewModel(){
     )
 
     //DB FUNCTIONS
+    private val eventDb = EventRoomDatabase.getInstance(application)
+    private val eventDao = eventDb.productDao()
+    private var dbRepository = EventRepository(eventDao)
+
+    fun insertProduct(event: Event) {
+        dbRepository.insertEvent(event)
+    }
+
+    fun findProductByName(name: String) {
+        dbRepository.findEvent(name)
+    }
+
+    fun findProductByDay(day: LocalDate) {
+        dbRepository.findEventByDay(day)
+    }
 
 
-        val eventDb = EventRoomDatabase.getInstance(application)
-
-        val eventDao = eventDb.productDao()
-
-        var dbRepository = EventRepository(eventDao)
-
-
-
-
-        fun insertProduct(event: Event) {
-            dbRepository.insertEvent(event)
-
-        }
-
-        fun findProduct(name: String) {
-            dbRepository.findEvent(name)
-        }
-
-        fun deleteProduct(name: String) {
-            dbRepository.deleteEvent(name)
-        }
+    fun deleteProduct(name: String) {
+        dbRepository.deleteEvent(name)
+    }
 
 
 
@@ -105,7 +101,7 @@ class AppViewmodel(application: Application) : ViewModel(){
             //if the same day...
             if (it.start.dayOfYear != it.start.dayOfYear)
             {
-                //if the end of the it crosses the starttime of the event
+                //if the end of the it crosses the start time of the event
                 if(end.hour*60 + end.minute >= it.start.hour*60 + it.start.minute ||
                     start.hour*60 + start.minute >= it.theEnd.hour*60 + it.theEnd.minute)
                 {
