@@ -2,10 +2,8 @@ package com.example.calendarapp.ui.presentation.screens
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
@@ -28,8 +26,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SingleEventEdit(
@@ -97,19 +93,9 @@ import java.util.Calendar
                     navController.popBackStack()
                 }
             )
-
         }
-
-
-
-
     }
 
-
-
-
-
-    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun SingleEventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel){
         Column{
@@ -141,7 +127,6 @@ import java.util.Calendar
     }
 
     @SuppressLint("SuspiciousIndentation")
-    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     @ExperimentalMaterial3Api
     fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{

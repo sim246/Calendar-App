@@ -7,7 +7,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "events")
-@androidx.annotation.RequiresApi(android.os.Build.VERSION_CODES.O)
 class Event{
 
     @PrimaryKey(autoGenerate = true)

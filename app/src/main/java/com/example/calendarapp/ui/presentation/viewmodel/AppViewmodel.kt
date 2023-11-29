@@ -66,8 +66,14 @@ class AppViewmodel(application: Application) : ViewModel(){
     private val eventDao = eventDb.productDao()
     private var dbRepository = EventRepository(eventDao)
 
-    fun insertProduct(event: Event) {
-        dbRepository.insertEvent(event)
+    fun insertEvent(event: Event): Boolean {
+        return try {
+            dbRepository.insertEvent(event)
+            true
+        } catch (e: Exception) {
+            Log.d("error", e.message.toString())
+            false
+        }
     }
 
     fun findProductByName(name: String) {

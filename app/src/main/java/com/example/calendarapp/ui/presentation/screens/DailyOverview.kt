@@ -1,8 +1,5 @@
 package com.example.calendarapp.ui.presentation.screens
 
-import android.os.Build
-
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,7 +45,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
 fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
     Column(
@@ -84,9 +81,7 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 val EventTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel, height:Int) {
     Column(
@@ -117,11 +112,8 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
-@RequiresApi(Build.VERSION_CODES.O)
 val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleDisplay(events : List<Event>, navController: NavController, viewModel: AppViewmodel) {
 
@@ -188,7 +180,6 @@ fun HourDisplay() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TopHalf(
     holidays: List<Holiday>?,
@@ -231,7 +222,6 @@ fun TopHalf(
     Spacer(modifier = Modifier.height(5.dp))
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel) {
     Row(
@@ -280,7 +270,6 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ForwardArrowButton(
     day: String,
@@ -302,8 +291,6 @@ fun ForwardArrowButton(
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BackwardsArrowButton(
     day: String,
