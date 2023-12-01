@@ -8,7 +8,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class EventRepository(private val eventDao: EventDao) {
 
@@ -40,13 +40,13 @@ class EventRepository(private val eventDao: EventDao) {
             return@async eventDao.findEvents(name)
         }
 
-    fun findEventByDay(day: LocalDate) {
+    fun findEventByDay(day: LocalDateTime) {
         coroutineScope.launch(Dispatchers.Main) {
             this@EventRepository.searchResults.value = findDayEventsAsync(day).await()
         }
     }
 
-    private fun findDayEventsAsync(day: LocalDate): Deferred<List<Event>?> =
+    private fun findDayEventsAsync(day: LocalDateTime): Deferred<List<Event>?> =
         coroutineScope.async(Dispatchers.IO) {
             return@async eventDao.findAllEventsByDay(day)
         }

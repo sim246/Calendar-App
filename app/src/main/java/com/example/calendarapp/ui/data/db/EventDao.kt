@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.calendarapp.ui.domain.Event
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Dao
 interface EventDao {
@@ -22,6 +22,6 @@ interface EventDao {
     fun getAllEvents(): LiveData<List<Event>>
 
     @Query("SELECT * FROM events WHERE day = :day")
-    fun findAllEventsByDay(day: LocalDate): List<Event>
+    fun findAllEventsByDay(day: LocalDateTime): List<Event>
 
 }

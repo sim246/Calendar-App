@@ -15,7 +15,6 @@ import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 
@@ -59,12 +58,14 @@ class AppViewmodel(application: Application) : ViewModel(){
         }
     }
 
-    fun findProductByName(name: String) {
+    fun findEventsByName(name: String):List<Event>? {
         dbRepository.findEvent(name)
+        return searchResults.value
     }
 
-    fun findProductByDay(day: LocalDate) {
+    fun findEventsByDay(day: LocalDateTime):List<Event>? {
         dbRepository.findEventByDay(day)
+        return searchResults.value
     }
 
 
