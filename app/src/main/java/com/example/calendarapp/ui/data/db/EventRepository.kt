@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.data.db
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.calendarapp.ui.domain.Event
 import kotlinx.coroutines.CoroutineScope
@@ -11,8 +12,10 @@ import java.time.LocalDate
 
 class EventRepository(private val eventDao: EventDao) {
 
-    private val searchResults = MutableLiveData<List<Event>>()
+    val allEvents : LiveData<List<Event>> = eventDao.getAllEvents()
+    val searchResults = MutableLiveData<List<Event>>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
+
 
     fun insertEvent(newEvent: Event) {
         coroutineScope.launch(Dispatchers.IO) {
