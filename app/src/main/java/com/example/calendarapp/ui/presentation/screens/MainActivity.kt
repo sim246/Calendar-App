@@ -97,10 +97,10 @@ class MainActivity : ComponentActivity() {
                 DailyOverview(holidays, appViewmodel, navController)
             }
             composable(Routes.EventOverview.route) {
-                SingleEventDisplay(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
+                appViewmodel.currentlyViewingEvent?.let { it1 -> SingleEventDisplay(it1, navController, appViewmodel) }
             }
             composable(Routes.EventEdit.route) {
-                SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
+                appViewmodel.currentlyViewingEvent?.let { it1 -> SingleEventEdit(it1, navController, appViewmodel) }
             }
         }
     }
