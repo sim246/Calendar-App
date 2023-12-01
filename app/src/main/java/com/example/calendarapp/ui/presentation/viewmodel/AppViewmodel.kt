@@ -69,7 +69,7 @@ class AppViewmodel(application: Application) : ViewModel(){
     }
 
 
-    fun deleteProduct(name: String): Boolean {
+    fun deleteEvent(name: String): Boolean {
         return try {
             dbRepository.deleteEvent(name)
             true

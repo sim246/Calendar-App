@@ -63,7 +63,7 @@ import java.util.Calendar
                         if(!viewModel.isEditing)
                         {
 
-                            if(viewModel.addEvent(event)){
+                            if(viewModel.insertEvent(event)){
                                 navController.popBackStack()
                             }
                             else {
@@ -114,7 +114,7 @@ import java.util.Calendar
                 content={Text(text = "Delete Event")},
                 //realistically should have a "Are you sure??" dialog
                 onClick={
-                    if(viewModel.deleteEvent(event)){
+                    if(viewModel.deleteEvent(event.eventName)){
                         navController.popBackStack()
                     }
                 }
