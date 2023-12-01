@@ -1,8 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,15 +38,15 @@ import com.google.android.libraries.places.api.model.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Date
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MonthOverviewScreen(navController: NavController, viewModel: AppViewmodel) {
     YearAndNav(navController, viewModel)
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
@@ -97,7 +95,6 @@ fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
     // Days of the week
@@ -118,11 +115,7 @@ fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, viewMo
     DaysOfTheMonth(selectedMonth = selectedMonth, navController, viewModel)
 }
 
-
-
-@RequiresApi(Build.VERSION_CODES.O)
 val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
 
@@ -132,13 +125,7 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
     // Days in the month
     val daysInMonth = selectedMonth.lengthOfMonth()
     val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7 + 1
-
-    //val currentDay = Calendar.getInstance().firstDayOfWeek
-    //var startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
-    //val startDay = (firstDayOfWeek - currentDay + 7) % 7 + 5
-
     val currentDay = LocalDate.now().dayOfMonth
-    //Log.d("CURRENTDAY", currentDay.toString())
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
 
     for (row in 0 until rows) {
@@ -148,24 +135,21 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
         ) {
             for (col in 1..7) {
                 val day = row * 7 + col - firstDayOfWeek + 1
-//                val isCurrentMonthDay = day in 1..daysInMonth
                 var color = Color.White
                 var fontColor = Color.Black
-//                if (holidays != null && isCurrentMonthDay) {
-//                    for (i in holidays.indices) {
-//                        val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
-//                        if (date.format(Formatter) == holidays[i].date) {
-//                            color = Color.LightGray
-//                        }
-//                    }
-//                }
 
-                 if (day in 1..daysInMonth) {
-                    val hasEvent = daysWithEvents.contains(selectedMonth.atDay(day))
-                    if (hasEvent) {
-                        color = Color.DarkGray
-                        fontColor = Color.White
-                    }
+                 if (day in 1..daysInMonth && daysWithEvents != null) {
+
+                     val cal: Calendar = Calendar.getInstance()
+                     cal.set(Calendar.YEAR, selectedMonth.year)
+                     cal.set(Calendar.MONTH, selectedMonth.monthValue)
+                     cal.set(Calendar.DAY_OF_MONTH, day)
+                     val date: Date = cal.time
+                     val hasEvent:Boolean = daysWithEvents.contains(date)
+                     if (hasEvent) {
+                         color = Color.DarkGray
+                         fontColor = Color.White
+                     }
                      if(day == currentDay){
                          color = Color.LightGray
                          fontColor = Color.White
@@ -178,7 +162,7 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
                             .background(color)
                             .clip(MaterialTheme.shapes.small)
                             .clickable {
-                                viewModel.setNewDay(selectedMonth.atDay(day))
+                                viewModel.setNewDay(date)
                                 navController.navigate(Routes.DailyOverview.route)
                             }
                             .semantics { contentDescription = daysInMonth.toString() }
@@ -207,7 +191,6 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun App(navController: NavController, viewModel: AppViewmodel) {
     MonthOverviewScreen(navController, viewModel)

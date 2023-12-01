@@ -1,29 +1,29 @@
 package com.example.calendarapp.ui.domain
 
-import java.time.LocalDate
-import java.time.LocalDateTime
+import java.util.Calendar
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity(tableName = "events")
 class Event{
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "productId")
-    var id: Int = 0
+    @ColumnInfo(name = "_id")
+    var _id: Int = 0
 
     @ColumnInfo(name = "day")
-    var day: LocalDate = LocalDate.parse("2023-11-18")
+    var day: Date = Calendar.getInstance().time
 
     @ColumnInfo(name = "eventName")
     var eventName: String = ""
 
     @ColumnInfo(name = "start")
-    var start: LocalDateTime = LocalDateTime.parse("2023-11-18T06:15:00")
+    var start: Date = day
 
     @ColumnInfo(name = "theEnd")
-    var theEnd: LocalDateTime = LocalDateTime.parse("2023-11-18T07:15:00")
+    var theEnd: Date = day
 
     @ColumnInfo(name = "description")
     var description: String = ""
@@ -36,7 +36,7 @@ class Event{
 
     constructor()
 
-    constructor(day: LocalDate, eventName: String, start: LocalDateTime, theEnd: LocalDateTime, description: String, clientName: String, location: String) {
+    constructor(day:Date, eventName: String, start: Date, theEnd: Date, description: String, clientName: String, location: String) {
         this.day = day
         this.eventName = eventName
         this.start = start

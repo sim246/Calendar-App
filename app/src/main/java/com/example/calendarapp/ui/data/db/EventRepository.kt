@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.data.db
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.calendarapp.ui.domain.Event
 import kotlinx.coroutines.CoroutineScope
@@ -7,11 +8,13 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import java.util.Date
 
 class EventRepository(private val eventDao: EventDao) {
 
-    private val searchResults = MutableLiveData<List<Event>>()
+    val allEvents: LiveData<List<Event>> = eventDao.getAllEvents()
+    val searchResults = MutableLiveData<List<Event>>()
+
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     fun insertEvent(newEvent: Event) {
@@ -26,24 +29,24 @@ class EventRepository(private val eventDao: EventDao) {
         }
     }
 
-    fun findEvent(name: String) {
+    fun findEventsByName(name: String) {
         coroutineScope.launch(Dispatchers.Main) {
-            this@EventRepository.searchResults.value = findEventAsync(name).await()
+            this@EventRepository.searchResults.value = findEventsByNameAsync(name).await()
         }
     }
 
-    private fun findEventAsync(name: String): Deferred<List<Event>?> =
+    private fun findEventsByNameAsync(name: String): Deferred<List<Event>?> =
         coroutineScope.async(Dispatchers.IO) {
             return@async eventDao.findEvents(name)
         }
 
-    fun findEventByDay(day: LocalDate) {
+    fun findEventsByDay(day: Date) {
         coroutineScope.launch(Dispatchers.Main) {
-            this@EventRepository.searchResults.value = findDayEventsAsync(day).await()
+            this@EventRepository.searchResults.value = findEventsByDayAsync(day).await()
         }
     }
 
-    private fun findDayEventsAsync(day: LocalDate): Deferred<List<Event>?> =
+    private fun findEventsByDayAsync(day: Date): Deferred<List<Event>?> =
         coroutineScope.async(Dispatchers.IO) {
             return@async eventDao.findAllEventsByDay(day)
         }

@@ -1,74 +1,47 @@
 package com.example.calendarapp.ui.presentation.viewmodel
 
-import android.os.Build
 import android.app.Application
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
-import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
+import com.example.calendarapp.ui.domain.Event
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.YearMonth
+import java.util.Calendar
+import java.util.Date
 
-@RequiresApi(Build.VERSION_CODES.O)
 class AppViewmodel(application: Application) : ViewModel(){
 
-    private val repository = HolidayRepository()
+    val allEvents: LiveData<List<Event>>
+    private val eventRepository: EventRepository
+    val searchResults: MutableLiveData<List<Event>>
+    var currentDay:Date = Date()
+
+    init {
+        val productDb = EventRoomDatabase.getInstance(application)
+        val productDao = productDb.productDao()
+        eventRepository = EventRepository(productDao)
+
+        allEvents = eventRepository.allEvents
+        searchResults = eventRepository.searchResults
+    }
+
+
+    private val holidayRepository = HolidayRepository()
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
 
-    var currentlyViewingEvent: Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00"), "", "Name", "Location"))
-    //var to determine if a new event gets added or just edited for the edit menu
-    var isEditing = false
-    val events: MutableList<Event> = mutableListOf(
-        Event(
-            LocalDate.parse("2023-11-18"),
-            "event 1",
-            LocalDateTime.parse("2023-11-18T06:15:00"),
-            LocalDateTime.parse("2023-11-18T07:30:00"),
-            "description",
-            "client name",
-            "DisneyLand"
-        ),
-        Event(
-            LocalDate.parse("2023-11-18"),
-            "event 2",
-            LocalDateTime.parse("2023-11-18T08:15:00"),
-            LocalDateTime.parse("2023-11-18T10:30:00"),
-            "description",
-            "client name",
-            "Central Park"
-        ),
-        Event(
-            LocalDate.parse("2023-11-18"),
-            "event 3",
-            LocalDateTime.parse("2023-11-18T13:15:00"),
-            LocalDateTime.parse("2023-11-18T16:30:00"),
-            "description",
-            "client name",
-            "location"
-        )
-    )
 
-    //DB FUNCTIONS
-    private val eventDb = EventRoomDatabase.getInstance(application)
-    private val eventDao = eventDb.productDao()
-    private var dbRepository = EventRepository(eventDao)
 
     fun insertEvent(event: Event): Boolean {
         return try {
-            dbRepository.insertEvent(event)
+            eventRepository.insertEvent(event)
             true
         } catch (e: Exception) {
             Log.d("error", e.message.toString())
@@ -76,100 +49,23 @@ class AppViewmodel(application: Application) : ViewModel(){
         }
     }
 
-    fun findProductByName(name: String) {
-        dbRepository.findEvent(name)
+    fun findEventByName(name: String) {
+        eventRepository.findEventsByName(name)
     }
 
-    fun findProductByDay(day: LocalDate) {
-        dbRepository.findEventByDay(day)
+    fun findEventByDay(day: Date) {
+        eventRepository.findEventsByDay(day)
     }
 
 
     fun deleteProduct(name: String) {
-        dbRepository.deleteEvent(name)
-    }
-
-
-
-    fun checkConflictingEvents(start:LocalDateTime, end: LocalDateTime): String?{
-        //Given a start & end, look thru the list of events and find conflicting times & dates
-        //returns an error message if a conflict is found, null if not
-
-        //validate if start is before end / equals to each other
-        Log.d("what", (start.hour*60 + start.minute).toString() + "-"+ (end.hour*60 + end.minute).toString())
-        if(start.hour*60 + start.minute >= end.hour*60 + end.minute){
-            return "Start time must be before the end time"
-        }
-
-        //Checks if it overlaps with an existing event
-        //for now, checks every single event in the array (could be cleaner)
-        events.forEach {
-            //if the same day...
-            if (it.start.dayOfYear != it.start.dayOfYear)
-            {
-                //if the end of the it crosses the start time of the event
-                if(end.hour*60 + end.minute >= it.start.hour*60 + it.start.minute ||
-                    start.hour*60 + start.minute >= it.theEnd.hour*60 + it.theEnd.minute)
-                {
-                    //overlaps either in the top or the bottom! send a message
-                    return "Overlaps another event: Check time values"
-                }
-            }
-        }
-        //check exact date start & end
-        if(start.hour*60 + start.minute == end.hour*60 + end.minute)
-        {
-            return "Start and End times are the same"
-        }
-        return null
-    }
-
-    var currentDay: LocalDate by mutableStateOf(LocalDate.parse("2023-11-18"))
-
-    fun setNewDay(d:LocalDate){
-        currentDay = d
-    }
-
-    fun setCurrentEvent(event: Event) {
-        currentlyViewingEvent = event
-    }
-
-    //Func to delete the event from the event list
-    fun deleteEvent(event: Event): Boolean {
-        //Should return a bool if it was successful or not.
-        return try {
-            events.remove(event)
-            true
-        } catch (e: Exception) {
-            Log.d("error", e.message.toString())
-            false
-        }
-    }
-
-    //function to add a new event to the db / event list
-    fun addEvent(event: Event): Boolean {
-        //Should return a bool if it was successful or not.
-        //checks conflicting event times
-
-            return try{
-                Log.d("eventAdd", events.size.toString())
-                events.add(event)
-                Log.d("eventAdd", events.size.toString())
-                true
-            } catch (e: Exception) {
-                Log.d("error", e.message.toString())
-                false
-            }
-
-
-
-
+        eventRepository.deleteEvent(name)
     }
 
     fun fetchHolidays() {
         viewModelScope.launch {
             try {
-                val hol = repository.getHolidays()
+                val hol = holidayRepository.getHolidays()
                 _holidays.value = hol
                 Log.e("FetchHoliday", _holidays.value.toString())
             } catch (e: Exception) {
@@ -179,22 +75,26 @@ class AppViewmodel(application: Application) : ViewModel(){
         }
     }
 
-    //get all days with events
-    fun getDaysWithEvents(month: YearMonth): List<LocalDate> {
-        val monthsEvents = events.filter{
-            val eventMonth = YearMonth.from(it.start)
-            eventMonth == month
-        }
-        val eventDates = monthsEvents.map { it.start.toLocalDate() }.toSet()
+    fun getDaysWithEvents(month: YearMonth): List<Date>? {
+        val events: List<Event>? = allEvents.value
+        return if (events != null) {
+            val monthsEvents = events.filter {
 
-        return eventDates.toList()
+                val c: Calendar = Calendar.getInstance()
+                c.time = it.day
+                val theDay: Int = c.get(Calendar.DAY_OF_WEEK)
+                val theMonth: Int = c.get(Calendar.MONTH)
+                val eventMonth = YearMonth.of(theDay, theMonth)
+                eventMonth == month
+            }
+            val eventDates = monthsEvents.map { it.start }.toSet()
+            eventDates.toList()
+        } else {
+            null
+        }
     }
 
-    //get all the events for a date
-    fun getEventsForDay(date: LocalDate): List<Event> {
-        return events.filter { event ->
-            val eventDate = event.start.toLocalDate()
-            eventDate == date
-        }
+    fun setNewDay(d:Date){
+        currentDay = d
     }
 }
