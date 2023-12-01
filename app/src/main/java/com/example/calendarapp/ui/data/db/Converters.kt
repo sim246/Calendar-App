@@ -13,9 +13,4 @@ class Converters {
     fun dateToTimestamp(date: LocalDateTime?): String? {
         return date?.toString()
     }
-
-    @TypeConverter
-    fun dateToTimestamp(date: LocalDate?): String? {
-        return date?.toString()
-    }
 }
