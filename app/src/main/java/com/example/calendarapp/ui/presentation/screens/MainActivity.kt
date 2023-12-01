@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.app.Application
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,6 +15,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 //import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,7 +29,7 @@ import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: AppViewmodel by viewModels()
+    //    private val viewModel: AppViewmodel by viewModels()
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,38 +40,58 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ScreenSetup(viewModel)
+                    val owner = LocalViewModelStoreOwner.current
+
+                    owner?.let {
+                        val viewModel: AppViewmodel = viewModel(
+                            it,
+                            "MainViewModel",
+                            MainViewModelFactory(
+                                LocalContext.current.applicationContext
+                                        as Application
+                            )
+                        )
+
+                        ScreenSetup(viewModel)
+                    }
                 }
             }
         }
     }
-}
 
-@Composable
-@RequiresApi(Build.VERSION_CODES.O)
-fun ScreenSetup(appViewmodel: AppViewmodel) {
-    val navController = rememberNavController()
+    @Composable
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun ScreenSetup(appViewmodel: AppViewmodel) {
+        val navController = rememberNavController()
 
-    val holidays by appViewmodel.holidays.observeAsState(null)
+        val holidays by appViewmodel.holidays.observeAsState(null)
 
-    LaunchedEffect(Unit) {
-        appViewmodel.fetchHolidays()
-    }
-
-    NavHost(navController = navController, startDestination = Routes.MonthOverviewScreen.route)
-    {
-        composable(Routes.MonthOverviewScreen.route) {
-            App(navController = navController, appViewmodel)
+        LaunchedEffect(Unit) {
+            appViewmodel.fetchHolidays()
         }
-        composable(Routes.DailyOverview.route) {
-            DailyOverview(holidays, appViewmodel, navController)
-        }
+
+        NavHost(navController = navController, startDestination = Routes.MonthOverviewScreen.route)
+        {
+            composable(Routes.MonthOverviewScreen.route) {
+                App(navController = navController, appViewmodel)
+            }
+            composable(Routes.DailyOverview.route) {
+                DailyOverview(holidays, appViewmodel, navController)
+            }
 //        composable(Routes.EventOverview.route) {
 //            SingleEventDisplay(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
 //        }
 //        composable(Routes.EventEdit.route) {
 //            SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
 //        }
+        }
+    }
+}
+
+class MainViewModelFactory(val application: Application) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return AppViewmodel(application) as T
     }
 }
 

@@ -34,7 +34,7 @@ class Event{
     @ColumnInfo(name = "location")
     var location: String = ""
 
-    constructor()
+//    constructor()
 
     constructor(day:Date, eventName: String, start: Date, theEnd: Date, description: String, clientName: String, location: String) {
         this.day = day
