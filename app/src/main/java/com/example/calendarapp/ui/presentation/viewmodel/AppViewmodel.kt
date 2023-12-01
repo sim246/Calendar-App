@@ -22,8 +22,6 @@ class AppViewmodel(application: Application) : ViewModel(){
     private val eventRepository: EventRepository
     val searchResults: MutableLiveData<List<Event>>
     var currentDay:Date = Date()
-    var currentlyViewingEvent:Event? = null
-    var isEditing = false
 
     init {
         val productDb = EventRoomDatabase.getInstance(application)
@@ -55,19 +53,13 @@ class AppViewmodel(application: Application) : ViewModel(){
         eventRepository.findEventsByName(name)
     }
 
-    fun findEventByDay(day: Date):List<Event>? {
+    fun findEventByDay(day: Date) {
         eventRepository.findEventsByDay(day)
-        return allEvents.value
     }
 
 
-    fun deleteEvent(name: String):Boolean {
-        return try {
-            eventRepository.deleteEvent(name)
-            true
-        } catch (e:Exception){
-            false
-        }
+    fun deleteProduct(name: String) {
+        eventRepository.deleteEvent(name)
     }
 
     fun fetchHolidays() {
@@ -104,59 +96,5 @@ class AppViewmodel(application: Application) : ViewModel(){
 
     fun setNewDay(d:Date){
         currentDay = d
-    }
-
-    fun setCurrentEvent(event: Event) {
-        currentlyViewingEvent = event
-    }
-
-    fun checkConflictingEvents(start: Date, end: Date): String? {
-        //Given a start & end, look thru the list of events and find conflicting times & dates
-        //returns an error message if a conflict is found, null if not
-
-        //validate if start is before end / equals to each other
-        //Log.d("what", (start.hour*60 + start.minute).toString() + "-"+ (end.hour*60 + end.minute).toString())
-
-        val calStart: Calendar = Calendar.getInstance()
-        calStart.time = start
-        val calEnd: Calendar = Calendar.getInstance()
-        calEnd.time = end
-
-        if (calStart.get(Calendar.HOUR_OF_DAY) * 60 + calStart.get(Calendar.MINUTE) >= calEnd.get(
-                Calendar.HOUR_OF_DAY
-            ) * 60 + calEnd.get(Calendar.MINUTE)
-        ) {
-            return "Start time must be before the end time"
-        }
-
-        //Checks if it overlaps with an existing event
-        //for now, checks every single event in the array (could be cleaner)
-        allEvents.value?.forEach {
-            //if the same day...
-            val calStartEv: Calendar = Calendar.getInstance()
-            calStartEv.time = it.start
-            val calEndEv: Calendar = Calendar.getInstance()
-            calEndEv.time = it.theEnd
-            if (calStartEv.get(Calendar.DAY_OF_WEEK) != calStartEv.get(Calendar.HOUR_OF_DAY)) {
-                //if the end of the it crosses the starttime of the event
-                if (calEndEv.get(Calendar.HOUR_OF_DAY) * 60 + calEndEv.get(Calendar.MINUTE) >= calStartEv.get(
-                        Calendar.HOUR_OF_DAY
-                    ) * 60 + calStartEv.get(Calendar.MINUTE) ||
-                    calStartEv.get(Calendar.HOUR_OF_DAY) * 60 + calStartEv.get(Calendar.MINUTE) >= calEndEv.get(
-                        Calendar.HOUR_OF_DAY
-                    ) * 60 + calEndEv.get(Calendar.MINUTE)
-                ) {
-                    //overlaps either in the top or the bottom! send a message
-                    return "Overlaps another event: Check time values"
-                }
-            }
-        }
-
-        //check exact date start & end
-        if(calStart.get(Calendar.HOUR_OF_DAY)*60 + calStart.get(Calendar.MINUTE) == calEnd.get(Calendar.HOUR_OF_DAY)*60 + calEnd.get(Calendar.MINUTE))
-        {
-            return "Start and End times are the same"
-        }
-        return null
     }
 }

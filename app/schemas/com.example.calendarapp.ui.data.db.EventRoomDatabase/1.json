@@ -2,22 +2,22 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f81495b41acc41684792baf9be938a3d",
+    "identityHash": "10a613a5677e267b9b2e0f7078557bad",
     "entities": [
       {
         "tableName": "events",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `day` INTEGER NOT NULL, `eventName` TEXT NOT NULL, `start` INTEGER NOT NULL, `theEnd` INTEGER NOT NULL, `description` TEXT NOT NULL, `clientName` TEXT NOT NULL, `location` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `day` TEXT NOT NULL, `eventName` TEXT NOT NULL, `start` TEXT NOT NULL, `theEnd` TEXT NOT NULL, `description` TEXT NOT NULL, `clientName` TEXT NOT NULL, `location` TEXT NOT NULL)",
         "fields": [
           {
-            "fieldPath": "_id",
-            "columnName": "_id",
+            "fieldPath": "id",
+            "columnName": "productId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "day",
             "columnName": "day",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -29,13 +29,13 @@
           {
             "fieldPath": "start",
             "columnName": "start",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "theEnd",
             "columnName": "theEnd",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -60,7 +60,7 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "_id"
+            "productId"
           ]
         },
         "indices": [],
@@ -70,7 +70,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f81495b41acc41684792baf9be938a3d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '10a613a5677e267b9b2e0f7078557bad')"
     ]
   }
 }
