@@ -60,12 +60,12 @@ fun ScreenSetup(appViewmodel: AppViewmodel) {
         composable(Routes.DailyOverview.route) {
             DailyOverview(holidays, appViewmodel, navController)
         }
-        composable(Routes.EventOverview.route) {
-            SingleEventDisplay(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
-        }
-        composable(Routes.EventEdit.route) {
-            SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
-        }
+//        composable(Routes.EventOverview.route) {
+//            SingleEventDisplay(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
+//        }
+//        composable(Routes.EventEdit.route) {
+//            SingleEventEdit(appViewmodel.currentlyViewingEvent, navController, appViewmodel)
+//        }
     }
 }
 

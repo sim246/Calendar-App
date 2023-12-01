@@ -145,6 +145,7 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
                      cal.set(Calendar.MONTH, selectedMonth.monthValue)
                      cal.set(Calendar.DAY_OF_MONTH, day)
                      val date: Date = cal.time
+
                      val hasEvent:Boolean = daysWithEvents.contains(date)
                      if (hasEvent) {
                          color = Color.DarkGray

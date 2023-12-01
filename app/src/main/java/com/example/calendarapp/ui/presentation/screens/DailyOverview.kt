@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,14 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.calendarapp.R
+import com.example.calendarapp.ui.data.retrofit.Holiday
+import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
-import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
-import java.time.LocalDate
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
+import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
@@ -57,7 +58,7 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
             .testTag("DailyOverviewUI")
     )
     {
-        TopHalf(holidays, viewModel.currentDay.toString(), navController, viewModel)
+        TopHalf(holidays, viewModel.currentDay, navController, viewModel)
         Row (Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -70,20 +71,21 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                //filter events by current day
-                val filteredEvents = viewModel.events.filter { ev -> ev.day == viewModel.currentDay}
-
-//                if (viewModel.events.size > 0 && viewModel.events[0].day == viewModel.currentDay) {
-                ScheduleDisplay(filteredEvents, navController, viewModel)
-//                }
+                val events = viewModel.findEventByDay(viewModel.currentDay)
+                ScheduleDisplay(events, navController, viewModel)
             }
         }
     }
 }
 
-val EventTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
+@SuppressLint("SimpleDateFormat")
 @Composable
 fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel, height:Int) {
+
+    val sdf = SimpleDateFormat("hh:mm")
+    val start = sdf.format(event.start)
+    val end = sdf.format(event.theEnd)
+
     Column(
         modifier = Modifier
             .background(Color.DarkGray, shape = RoundedCornerShape(4.dp))
@@ -97,9 +99,7 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
             .testTag("Click Event Display " + event.eventName)
     ) {
         Text(
-            text = "${event.start.format(EventTimeFormatter)} - ${event.theEnd.format(
-                EventTimeFormatter
-            )}",
+            text = "$start - $end",
             color = Color.White
         )
 
@@ -112,27 +112,33 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
 
 }
 
-val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
-val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @Composable
-fun ScheduleDisplay(events : List<Event>, navController: NavController, viewModel: AppViewmodel) {
+fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewModel: AppViewmodel) {
 
     Column(modifier = Modifier.fillMaxSize()) {
+        events?.sortedBy(Event::start)?.forEach { event ->
+            val calStart: Calendar = Calendar.getInstance()
+            calStart.time = event.start
+            val calEnd: Calendar = Calendar.getInstance()
+            calEnd.time = event.theEnd
 
-        events.sortedBy(Event::start).forEach { event ->
-            val height = (event.theEnd.format(FormatterHours).toInt() - event.start.format(
-                FormatterHours
-            ).toInt()) * 60
-            val heightMin =
-                event.theEnd.format(FormatterMin).toInt() - event.start.format(FormatterMin).toInt()
+            val height = (calEnd.get(Calendar.HOUR_OF_DAY) + calStart.get(Calendar.HOUR_OF_DAY)) * 60
+            val heightMin = calEnd.get(Calendar.MINUTE) - calStart.get(Calendar.HOUR_OF_DAY)
             Layout(
-                content = { EventDisplay(event, navController, viewModel, (height +  heightMin)) }
+                content = {
+                    EventDisplay(
+                        event,
+                        navController,
+                        viewModel,
+                        (height + heightMin)
+                    )
+                }
             ) { measureables, constraints ->
                 val placeables = measureables.map { measurable ->
                     measurable.measure(constraints.copy(maxHeight = (height + heightMin).dp.roundToPx()))
                 }
                 layout(constraints.maxWidth, height) {
-                    var y = event.start.format(FormatterHours).toInt()
+                    var y = calStart.get(Calendar.HOUR_OF_DAY)
                     y -= if (y > 12) {
                         7
                     } else {
@@ -183,7 +189,7 @@ fun HourDisplay() {
 @Composable
 fun TopHalf(
     holidays: List<Holiday>?,
-    day: String,
+    day: Date,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
@@ -198,7 +204,7 @@ fun TopHalf(
         )
         Column {
             Text(
-                day,
+                day.toString(),
                 modifier = Modifier.height(50.dp),
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.scrim
@@ -223,7 +229,7 @@ fun TopHalf(
 }
 
 @Composable
-fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel) {
+fun AddButton(navController: NavController, day: Date, viewModel: AppViewmodel) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -244,7 +250,8 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
-                    if (LocalDateTime.now()
+                    if (LocalDateTime
+                            .now()
                             .format(Formatter) <= viewModel.currentDay.toString()
                     ) {
                         //Create a new (empty) event for the selected day,
@@ -253,10 +260,10 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
                         viewModel.isEditing = false
                         viewModel.setCurrentEvent(
                             Event(
-                                LocalDate.parse(day),
+                                day,
                                 "",
-                                LocalDateTime.now(),
-                                LocalDateTime.now(),
+                                day,
+                                day,
                                 "",
                                 "",
                                 ""
@@ -272,16 +279,17 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
 
 @Composable
 fun ForwardArrowButton(
-    day: String,
+    day: Date,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
     IconButton(
         onClick = {
-            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val date: LocalDate = LocalDate
-                .parse(day, format)
-                .plusDays(1)
+            val c = Calendar.getInstance()
+            c.time = day
+            c.add(Calendar.DATE, 1)
+            val date = c.time
+
             viewModel.setNewDay(date)
             navController.navigate(Routes.DailyOverview.route)
         },
@@ -293,16 +301,16 @@ fun ForwardArrowButton(
 
 @Composable
 fun BackwardsArrowButton(
-    day: String,
+    day: Date,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
     IconButton(
         onClick = {
-            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val date: LocalDate = LocalDate
-                .parse(day, format)
-                .minusDays(1)
+            val c = Calendar.getInstance()
+            c.time = day
+            c.add(Calendar.DATE, -1)
+            val date = c.time
             viewModel.setNewDay(date)
             navController.navigate(Routes.DailyOverview.route)
         },
