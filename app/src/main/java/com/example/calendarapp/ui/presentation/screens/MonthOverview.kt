@@ -38,6 +38,7 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.google.android.libraries.places.api.model.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
@@ -133,12 +134,6 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
     val daysInMonth = selectedMonth.lengthOfMonth()
     val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7 + 1
 
-    //val currentDay = Calendar.getInstance().firstDayOfWeek
-    //var startDay = ((firstDayOfWeek - currentDay + 8) % 7 + 1) % 7
-    //val startDay = (firstDayOfWeek - currentDay + 7) % 7 + 5
-
-    val currentDay = LocalDate.now().dayOfMonth
-    //Log.d("CURRENTDAY", currentDay.toString())
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
 
     for (row in 0 until rows) {
@@ -161,12 +156,16 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
 //                }
 
                  if (day in 1..daysInMonth) {
-                    val hasEvent = daysWithEvents.contains(selectedMonth.atDay(day))
-                    if (hasEvent) {
+                     val currentDate = LocalDate.now()
+                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
+
+                     val hasEvent = daysWithEvents?.map { it.toLocalDate() }?.contains(selectedMonth.atDay(day))
+
+                     if (hasEvent == true) {
                         color = Color.DarkGray
                         fontColor = Color.White
                     }
-                     if(day == currentDay){
+                     else if(isCurrentDay){
                          color = Color.LightGray
                          fontColor = Color.White
                      }
@@ -178,7 +177,9 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
                             .background(color)
                             .clip(MaterialTheme.shapes.small)
                             .clickable {
-                                viewModel.setNewDay(selectedMonth.atDay(day))
+                                val localDateTime = selectedMonth.atDay(day).atStartOfDay()
+                                viewModel.setNewDay(localDateTime)
+                                // viewModel.setNewDay(selectedMonth.atDay(day))
                                 navController.navigate(Routes.DailyOverview.route)
                             }
                             .semantics { contentDescription = daysInMonth.toString() }
