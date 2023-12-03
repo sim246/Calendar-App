@@ -97,10 +97,22 @@ class MainActivity : ComponentActivity() {
                 DailyOverview(holidays, appViewmodel, navController)
             }
             composable(Routes.EventOverview.route) {
-                appViewmodel.currentlyViewingEvent?.let { it1 -> SingleEventDisplay(it1, navController, appViewmodel) }
+                appViewmodel.currentlyViewingEvent?.let { it1 ->
+                    SingleEventDisplay(
+                        it1,
+                        navController,
+                        appViewmodel
+                    )
+                }
             }
             composable(Routes.EventEdit.route) {
-                appViewmodel.currentlyViewingEvent?.let { it1 -> SingleEventEdit(it1, navController, appViewmodel) }
+                appViewmodel.currentlyViewingEvent?.let { it1 ->
+                    SingleEventEdit(
+                        it1,
+                        navController,
+                        appViewmodel
+                    )
+                }
             }
         }
     }
@@ -111,8 +123,8 @@ class MainActivity : ComponentActivity() {
             return AppViewmodel(application) as T
         }
     }
-}
 
+}
 
 
 /*
