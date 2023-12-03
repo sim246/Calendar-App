@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +48,7 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
+    Log.d("day", viewModel.currentDay.toString())
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -56,7 +58,7 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
             .testTag("DailyOverviewUI")
     )
     {
-        TopHalf(holidays, viewModel.currentDay.toString(), navController, viewModel)
+        TopHalf(holidays, navController, viewModel)
         Row (Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -185,19 +187,21 @@ fun HourDisplay() {
     }
 }
 
+val DayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 @Composable
 fun TopHalf(
     holidays: List<Holiday>?,
-    day: String,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
+    val format = DateTimeFormatter.ofPattern("yyyy-mm-dd")
+    val day = viewModel.currentDay.format(DayFormatter).toString()
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         BackwardsArrowButton(
-            day = day,
             navController = navController,
             viewModel = viewModel
         )
@@ -217,18 +221,17 @@ fun TopHalf(
             }
         }
         ForwardArrowButton(
-            day = day,
             navController = navController,
             viewModel = viewModel
         )
     }
     Spacer(modifier = Modifier.height(5.dp))
-    AddButton(navController = navController, day = day, viewModel)
+    AddButton(navController = navController, viewModel)
     Spacer(modifier = Modifier.height(5.dp))
 }
 
 @Composable
-fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel) {
+fun AddButton(navController: NavController, viewModel: AppViewmodel) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -252,13 +255,14 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
                     if (LocalDateTime.now()
                             .format(Formatter) <= viewModel.currentDay.toString()
                     ) {
+//                        val format = DateTimeFormatter.ofPattern("yyyy-mm-ddTHH:mm:ss")
                         //Create a new (empty) event for the selected day,
                         // set it to the currently viewing one
                         // and open the edit menu for it
                         viewModel.isEditing = false
                         viewModel.setCurrentEvent(
                             Event(
-                                LocalDateTime.parse(day),
+                                viewModel.currentDay,
                                 "",
                                 LocalDateTime.now(),
                                 LocalDateTime.now(),
@@ -277,15 +281,13 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
 
 @Composable
 fun ForwardArrowButton(
-    day: String,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
     IconButton(
         onClick = {
-            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val date: LocalDateTime = LocalDateTime
-                .parse(day, format)
+            val date: LocalDateTime =
+                viewModel.currentDay
                 .plusDays(1)
             viewModel.setNewDay(date)
             navController.navigate(Routes.DailyOverview.route)
@@ -298,15 +300,13 @@ fun ForwardArrowButton(
 
 @Composable
 fun BackwardsArrowButton(
-    day: String,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
     IconButton(
         onClick = {
-            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val date: LocalDateTime = LocalDateTime
-                .parse(day, format)
+            val date: LocalDateTime =
+                viewModel.currentDay
                 .minusDays(1)
             viewModel.setNewDay(date)
             navController.navigate(Routes.DailyOverview.route)

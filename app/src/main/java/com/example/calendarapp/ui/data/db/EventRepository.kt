@@ -2,6 +2,7 @@ package com.example.calendarapp.ui.data.db
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.room.TypeConverters
 import com.example.calendarapp.ui.domain.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred

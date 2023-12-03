@@ -7,11 +7,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database (entities = [(Event::class)], version = 1)
+@Database (entities = [(Event::class)], version = 2)
 @TypeConverters(Converters::class)
 abstract class EventRoomDatabase: RoomDatabase() {
 
-    abstract fun productDao(): EventDao
+    abstract fun eventDao(): EventDao
     companion object {
         private var INSTANCE: EventRoomDatabase? = null
 
@@ -22,10 +22,9 @@ abstract class EventRoomDatabase: RoomDatabase() {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                         EventRoomDatabase::class.java,
-                        "event_database"
+                        "events_db"
                     ).fallbackToDestructiveMigration()
                         .build()
-
                     INSTANCE = instance
                 }
                 return instance

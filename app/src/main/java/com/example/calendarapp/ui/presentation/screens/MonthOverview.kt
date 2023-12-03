@@ -1,8 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +32,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.google.android.libraries.places.api.model.DayOfWeek
@@ -42,14 +41,12 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MonthOverviewScreen(navController: NavController, viewModel: AppViewmodel) {
     YearAndNav(navController, viewModel)
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
@@ -98,7 +95,6 @@ fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
     // Days of the week
@@ -119,16 +115,20 @@ fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, viewMo
     DaysOfTheMonth(selectedMonth = selectedMonth, navController, viewModel)
 }
 
-
-
-@RequiresApi(Build.VERSION_CODES.O)
 val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
 
+    val en: Event? = viewModel.findEventsByName("Placeholder Event")?.get(0)
+    if (en != null) {
+        Log.d("day event", en.eventName)
+    } else{
+        Log.d("day event not", en.toString())
+    }
+
     val daysWithEvents = viewModel.getDaysWithEvents(selectedMonth)
-    Log.d("Daysofthemonth", daysWithEvents.toString())
+//    Log.d("day", daysWithEvents.toString())
+    Log.d("day", viewModel.currentDay.toString())
 
     // Days in the month
     val daysInMonth = selectedMonth.lengthOfMonth()
@@ -143,17 +143,8 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
         ) {
             for (col in 1..7) {
                 val day = row * 7 + col - firstDayOfWeek + 1
-//                val isCurrentMonthDay = day in 1..daysInMonth
                 var color = Color.White
                 var fontColor = Color.Black
-//                if (holidays != null && isCurrentMonthDay) {
-//                    for (i in holidays.indices) {
-//                        val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
-//                        if (date.format(Formatter) == holidays[i].date) {
-//                            color = Color.LightGray
-//                        }
-//                    }
-//                }
 
                  if (day in 1..daysInMonth) {
                      val currentDate = LocalDate.now()
@@ -177,9 +168,8 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
                             .background(color)
                             .clip(MaterialTheme.shapes.small)
                             .clickable {
-                                val localDateTime = selectedMonth.atDay(day).atStartOfDay()
+                                val localDateTime:LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
                                 viewModel.setNewDay(localDateTime)
-                                // viewModel.setNewDay(selectedMonth.atDay(day))
                                 navController.navigate(Routes.DailyOverview.route)
                             }
                             .semantics { contentDescription = daysInMonth.toString() }
@@ -207,8 +197,6 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
         }
     }
 }
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun App(navController: NavController, viewModel: AppViewmodel) {
     MonthOverviewScreen(navController, viewModel)

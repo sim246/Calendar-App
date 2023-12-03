@@ -30,7 +30,7 @@ class AppViewmodel(application: Application) : ViewModel(){
 
     init {
         val productDb = EventRoomDatabase.getInstance(application)
-        val productDao = productDb.productDao()
+        val productDao = productDb.eventDao()
         roomRepository = EventRepository(productDao)
 
         allEvents = roomRepository.allEvents
@@ -45,7 +45,7 @@ class AppViewmodel(application: Application) : ViewModel(){
 
     //DB FUNCTIONS
     private val eventDb = EventRoomDatabase.getInstance(application)
-    private val eventDao = eventDb.productDao()
+    private val eventDao = eventDb.eventDao()
     private var dbRepository = EventRepository(eventDao)
 
     fun insertEvent(event: Event): Boolean {
@@ -143,12 +143,15 @@ class AppViewmodel(application: Application) : ViewModel(){
     fun getDaysWithEvents(month: YearMonth): List<LocalDateTime>? {
 
         val events:List<Event>? = allEvents.value
+        Log.d("day m", events.toString())
+
         if (events != null) {
             val monthsEvents = events.filter {
-                val eventMonth = YearMonth.from(it.start)
+                val eventMonth = YearMonth.from(it.day)
+                Log.d("day m", eventMonth.month.toString())
                 eventMonth == month
             }
-            val eventDates = monthsEvents.map { it.start }.toSet()
+            val eventDates = monthsEvents.map { it.day }.toSet()
             return eventDates.toList()
         }
         return null

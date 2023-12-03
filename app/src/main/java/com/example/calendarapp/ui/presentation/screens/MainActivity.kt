@@ -1,12 +1,9 @@
 package com.example.calendarapp.ui.presentation.screens
 
 import android.app.Application
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,26 +25,6 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 
-/*
-class MainActivity : ComponentActivity() {
-    private val viewModel: AppViewmodel by viewModels()
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            CalendarAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    ScreenSetup(viewModel)
-                }
-            }
-        }
-    }
-}
-*/
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +55,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    @RequiresApi(Build.VERSION_CODES.O)
     fun ScreenSetup(appViewmodel: AppViewmodel) {
         val navController = rememberNavController()
 
@@ -97,21 +73,33 @@ class MainActivity : ComponentActivity() {
                 DailyOverview(holidays, appViewmodel, navController)
             }
             composable(Routes.EventOverview.route) {
-                appViewmodel.currentlyViewingEvent?.let { it1 -> SingleEventDisplay(it1, navController, appViewmodel) }
+                appViewmodel.currentlyViewingEvent?.let { it1 ->
+                    SingleEventDisplay(
+                        it1,
+                        navController,
+                        appViewmodel
+                    )
+                }
             }
             composable(Routes.EventEdit.route) {
-                appViewmodel.currentlyViewingEvent?.let { it1 -> SingleEventEdit(it1, navController, appViewmodel) }
+                appViewmodel.currentlyViewingEvent?.let { it1 ->
+                    SingleEventEdit(
+                        it1,
+                        navController,
+                        appViewmodel
+                    )
+                }
             }
         }
     }
+}
 
-    class MainViewModelFactory(val application: Application) :
+    class MainViewModelFactory(private val application: Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AppViewmodel(application) as T
         }
     }
-}
 
 
 
