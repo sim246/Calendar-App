@@ -26,7 +26,7 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
 
     val allEvents: LiveData<List<Event>>
     var roomRepository: EventRepository
-    val searchResults: MutableLiveData<List<Event>>
+    var searchResults: MutableLiveData<List<Event>>
 
     init {
         val productDb = EventRoomDatabase.getInstance(application)
@@ -78,7 +78,6 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
             false
         }
     }
-
 
     fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime): String? {
         //Given a start & end, look thru the list of events and find conflicting times & dates
