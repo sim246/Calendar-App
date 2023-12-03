@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.TypeConverters
 import com.example.calendarapp.ui.domain.Event
 import java.time.LocalDateTime
 

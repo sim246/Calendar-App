@@ -18,15 +18,15 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.YearMonth
 
-class AppViewmodel(application: Application) : ViewModel(){
+class AppViewmodel(application: Application = Application()) : ViewModel(){
 
-    private val holidayRepository = HolidayRepository()
+    var holidayRepository = HolidayRepository()
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
 
-    val allEvents: LiveData<List<Event>>
-    private val roomRepository: EventRepository
-    val searchResults: MutableLiveData<List<Event>>
+    var allEvents: LiveData<List<Event>>
+    var roomRepository: EventRepository
+    var searchResults: MutableLiveData<List<Event>>
 
     init {
         val productDb = EventRoomDatabase.getInstance(application)
@@ -77,7 +77,6 @@ class AppViewmodel(application: Application) : ViewModel(){
             false
         }
     }
-
 
     fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime): String? {
         //Given a start & end, look thru the list of events and find conflicting times & dates

@@ -29,10 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,8 +50,6 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>,holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
-//    Log.d("day", viewModel.currentDay.toString())
-    var searching by remember { mutableStateOf(true) }
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -206,7 +200,6 @@ fun TopHalf(
     navController: NavController,
     viewModel: AppViewmodel
 ) {
-    val format = DateTimeFormatter.ofPattern("yyyy-mm-dd")
     val day = viewModel.currentDay.format(DayFormatter).toString()
 
     Row(

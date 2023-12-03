@@ -2,7 +2,6 @@ package com.example.calendarapp.ui.data.db
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.room.TypeConverters
 import com.example.calendarapp.ui.domain.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -11,7 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class EventRepository(private val eventDao: EventDao) {
+open class EventRepository(private val eventDao: EventDao) {
 
     val allEvents : LiveData<List<Event>> = eventDao.getAllEvents()
     val searchResults = MutableLiveData<List<Event>>()
@@ -29,17 +28,6 @@ class EventRepository(private val eventDao: EventDao) {
             eventDao.deleteEvents(name)
         }
     }
-
-    fun findAllEvent() {
-        coroutineScope.launch(Dispatchers.Main) {
-            searchResults.value = findAllEventAsync().await()
-        }
-    }
-
-    private fun findAllEventAsync(): Deferred<List<Event>?> =
-        coroutineScope.async(Dispatchers.IO) {
-            return@async eventDao.getAllEvents().value
-        }
 
     fun findEvent(name: String) {
         coroutineScope.launch(Dispatchers.Main) {

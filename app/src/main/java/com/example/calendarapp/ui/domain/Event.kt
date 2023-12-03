@@ -4,8 +4,6 @@ import java.time.LocalDateTime
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.example.calendarapp.ui.data.db.Converters
 
 @Entity(tableName = "events_db")
 class Event {

@@ -117,7 +117,7 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
         Text(text=event.eventName)
         Text(text="@ " + event.location)
         Text(text=event.start.toLocalTime().toString() + " to " + event.theEnd.toLocalTime().toString())
-        event.description?.let { Text(text= it) }
+        Text(text= event.description)
         Button(
             content={Text(text = "Edit Event")},
             onClick={
