@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +29,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +55,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>,holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
 //    Log.d("day", viewModel.currentDay.toString())
+    var searching by remember { mutableStateOf(true) }
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -71,10 +78,15 @@ fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>,holidays: L
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                //filter events by current day
-
-//                val events:List<Event>? = viewModel.findEventsByDay(viewModel.currentDay)
-//                ScheduleDisplay(events, navController, viewModel)
+                LazyColumn (modifier = Modifier.fillMaxWidth().height(1080.dp)){
+                    //filter events by current day
+                    items(searchResults) {
+                        ScheduleDisplay(searchResults, navController, viewModel)
+                    }
+                    item {
+                        Text("No Events Planned")
+                    }
+                }
             }
         }
     }
@@ -115,38 +127,38 @@ val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
 val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @Composable
 fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewModel: AppViewmodel) {
-    if (events != null) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            events.sortedBy(Event::start).forEach { event ->
-                val height = (event.theEnd.format(FormatterHours).toInt() - event.start.format(
-                    FormatterHours
-                ).toInt()) * 60
-                val heightMin =
-                    event.theEnd.format(FormatterMin).toInt() - event.start.format(FormatterMin)
-                        .toInt()
-                Layout(
-                    content = {
-                        EventDisplay(
-                            event,
-                            navController,
-                            viewModel,
-                            (height + heightMin)
-                        )
+    events?.sortedBy(Event::start)?.forEach { event ->
+        Log.d("day day", viewModel.currentDay.toString())
+        Log.d("day day event", event.day.toString())
+        if (event.day != viewModel.currentDay) {
+            val height = (event.theEnd.format(FormatterHours).toInt() - event.start.format(
+                FormatterHours
+            ).toInt()) * 60
+            val heightMin =
+                event.theEnd.format(FormatterMin).toInt() - event.start.format(FormatterMin)
+                    .toInt()
+            Layout(
+                content = {
+                    EventDisplay(
+                        event,
+                        navController,
+                        viewModel,
+                        (height + heightMin)
+                    )
+                }
+            ) { measureables, constraints ->
+                val placeables = measureables.map { measurable ->
+                    measurable.measure(constraints.copy(maxHeight = (height + heightMin).dp.roundToPx()))
+                }
+                layout(constraints.maxWidth, height) {
+                    var y = event.start.format(FormatterHours).toInt()
+                    y -= if (y > 12) {
+                        7
+                    } else {
+                        6
                     }
-                ) { measureables, constraints ->
-                    val placeables = measureables.map { measurable ->
-                        measurable.measure(constraints.copy(maxHeight = (height + heightMin).dp.roundToPx()))
-                    }
-                    layout(constraints.maxWidth, height) {
-                        var y = event.start.format(FormatterHours).toInt()
-                        y -= if (y > 12) {
-                            7
-                        } else {
-                            6
-                        }
-                        placeables.forEach { placeable ->
-                            placeable.place(0, ((y * 60) + heightMin).dp.roundToPx())
-                        }
+                    placeables.forEach { placeable ->
+                        placeable.place(0, ((y * 60) + heightMin).dp.roundToPx())
                     }
                 }
             }

@@ -138,11 +138,9 @@ fun DaysOfTheMonth(allEvents: List<Event>, searchResults: List<Event>, selectedM
                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
 
                     items(allEvents) { event ->
-                        Log.d("day", event.day.toLocalDate().toString())
+//                        Log.d("day", event.day.toLocalDate().toString())
 //                        Log.d("day", selectedMonth.atDay(day).toString())
-
                         val hasEvent = event.day.toLocalDate() == selectedMonth.atDay(day)
-
                         Show(
                             day,
                             daysInMonth,
@@ -190,6 +188,7 @@ fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selec
                 .clickable {
                     val localDateTime: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
                     viewModel.setNewDay(localDateTime)
+                    viewModel.findEventsByDay(viewModel.currentDay)
                     navController.navigate(Routes.DailyOverview.route)
                 }
                 .semantics { contentDescription = daysInMonth.toString() }
