@@ -18,14 +18,14 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.YearMonth
 
-class AppViewmodel(application: Application) : ViewModel(){
+class AppViewmodel(application: Application = Application()) : ViewModel(){
 
-    private val holidayRepository = HolidayRepository()
+    var holidayRepository = HolidayRepository()
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
 
     val allEvents: LiveData<List<Event>>
-    private val roomRepository: EventRepository
+    var roomRepository: EventRepository
     val searchResults: MutableLiveData<List<Event>>
 
     init {
