@@ -50,9 +50,19 @@ class AppViewModelTest {
         )
 
         val result = viewModel.insertEvent(event)
+        assertTrue(result)
+    }
+    
+    @Test
+    fun deleteEvent() {
+        val eventName = "Test Event"
+
+        val result = viewModel.deleteEvent(eventName)
 
         assertTrue(result)
     }
+
+
 
 
     class MockHolidayRepository : HolidayRepository() {

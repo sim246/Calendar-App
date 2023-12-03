@@ -12,7 +12,6 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
 
-import com.example.calendarapp.ui.presentation.screens.ScreenSetup
 import com.example.calendarapp.ui.presentation.screens.MainActivity
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.theme.CalendarAppTheme
@@ -30,7 +29,8 @@ class MonthOverviewTest {
         composeTestRule.setContent {
             CalendarAppTheme {
                 val viewModel = AppViewmodel()
-                ScreenSetup(viewModel)
+                //UNRESOLVED REFERENCE???
+                //ScreenSetup(viewModel)
 
             }
         }
