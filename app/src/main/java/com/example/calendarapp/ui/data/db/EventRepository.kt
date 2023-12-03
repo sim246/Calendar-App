@@ -10,7 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class EventRepository(private val eventDao: EventDao) {
+open class EventRepository(private val eventDao: EventDao) {
 
     val allEvents : LiveData<List<Event>> = eventDao.getAllEvents()
     val searchResults = MutableLiveData<List<Event>>()

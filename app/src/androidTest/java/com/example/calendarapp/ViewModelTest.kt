@@ -1,4 +1,7 @@
+import android.app.Application
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.calendarapp.ui.data.db.EventDao
 import com.example.calendarapp.ui.data.db.EventRepository
@@ -17,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
+import java.time.Month
 import java.time.YearMonth
 
 
@@ -25,7 +29,6 @@ class AppViewModelTest {
 
 
     @get:Rule
-
     private lateinit var viewModel: AppViewmodel
     private lateinit var eventRepository: EventRepository
     private lateinit var holidayRepository: HolidayRepository
@@ -35,9 +38,16 @@ class AppViewModelTest {
     fun setUp() {
         Dispatchers.setMain(Dispatchers.Unconfined)
 
-        //eventRepository = EventRepository(MockEventDao())
+//        val mockContext = ApplicationProvider.getApplicationContext<Context>()
+        val mockApplication = ApplicationProvider.getApplicationContext<Application>()
+
+        viewModel.roomRepository = eventRepository
+
+        //have to initilize this..
+        //eventRepository = MockEventRepository()
         holidayRepository = MockHolidayRepository()
-        viewModel = AppViewmodel()
+
+        viewModel = AppViewmodel(mockApplication)
         viewModel.roomRepository = eventRepository
         viewModel.holidayRepository = holidayRepository
     }
@@ -150,6 +160,62 @@ class AppViewModelTest {
         ), result)
     }
 
+    @Test
+    fun checkConflictingEvents_noConflict() {
+        val viewModel = AppViewmodel()
+
+        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
+        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 0)
+
+        // assuming there are no events in the viewModel.searchResults
+        viewModel.searchResults.value = emptyList()
+
+        val result = viewModel.checkConflictingEvents(start, end)
+
+        // should be no conflict, so the result should be null
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun checkConflictingEvents_conflict() {
+        val viewModel = AppViewmodel()
+
+        // Create an event that conflicts with the given time range
+        val conflictingEvent = Event(
+            LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 30),
+            "Conflicting Event",
+            LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 30),
+            LocalDateTime.of(2023, Month.NOVEMBER, 1, 14, 0),
+            "Description",
+            "Client",
+            "Location"
+        )
+
+        viewModel.searchResults.value = listOf(conflictingEvent)
+
+        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
+        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 0)
+
+        val result = viewModel.checkConflictingEvents(start, end)
+
+        assertEquals("Overlaps another event: Check time values", result)
+    }
+
+    @Test
+    fun checkConflictingEvents_sameStartAndEnd() {
+        val viewModel = AppViewmodel()
+
+        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
+        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
+
+        viewModel.searchResults.value = emptyList()
+
+        val result = viewModel.checkConflictingEvents(start, end)
+
+        // Start and end times are the same, conflict
+        assertEquals("Start and End times are the same", result)
+    }
+
 
 
     class MockHolidayRepository : HolidayRepository() {
@@ -161,5 +227,8 @@ class AppViewModelTest {
 
 
     }
+
+
+
 
 }
