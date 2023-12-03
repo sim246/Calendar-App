@@ -25,6 +25,7 @@ abstract class EventRoomDatabase: RoomDatabase() {
                         "events_db"
                     ).fallbackToDestructiveMigration()
                         .build()
+
                     INSTANCE = instance
                 }
                 return instance

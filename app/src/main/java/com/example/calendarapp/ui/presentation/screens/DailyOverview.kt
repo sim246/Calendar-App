@@ -47,8 +47,8 @@ import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
-    Log.d("day", viewModel.currentDay.toString())
+fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>,holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
+//    Log.d("day", viewModel.currentDay.toString())
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -73,8 +73,8 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
             ) {
                 //filter events by current day
 
-                val events:List<Event>? = viewModel.findEventsByDay(viewModel.currentDay)
-                ScheduleDisplay(events, navController, viewModel)
+//                val events:List<Event>? = viewModel.findEventsByDay(viewModel.currentDay)
+//                ScheduleDisplay(events, navController, viewModel)
             }
         }
     }

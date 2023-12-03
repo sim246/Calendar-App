@@ -30,9 +30,20 @@ class EventRepository(private val eventDao: EventDao) {
         }
     }
 
+    fun findAllEvent() {
+        coroutineScope.launch(Dispatchers.Main) {
+            searchResults.value = findAllEventAsync().await()
+        }
+    }
+
+    private fun findAllEventAsync(): Deferred<List<Event>?> =
+        coroutineScope.async(Dispatchers.IO) {
+            return@async eventDao.getAllEvents().value
+        }
+
     fun findEvent(name: String) {
         coroutineScope.launch(Dispatchers.Main) {
-            this@EventRepository.searchResults.value = findEventAsync(name).await()
+            searchResults.value = findEventAsync(name).await()
         }
     }
 
@@ -43,7 +54,7 @@ class EventRepository(private val eventDao: EventDao) {
 
     fun findEventByDay(day: LocalDateTime) {
         coroutineScope.launch(Dispatchers.Main) {
-            this@EventRepository.searchResults.value = findDayEventsAsync(day).await()
+            searchResults.value = findDayEventsAsync(day).await()
         }
     }
 

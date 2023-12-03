@@ -40,8 +40,8 @@ class MainActivity : ComponentActivity() {
                     owner?.let {
                         val viewModel: AppViewmodel = viewModel(
                             it,
-                            "MainViewModel",
-                            MainViewModelFactory(
+                            "AppViewmodel",
+                            AppViewmodelFactory(
                                 LocalContext.current.applicationContext
                                         as Application
                             )
@@ -57,8 +57,9 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun ScreenSetup(appViewmodel: AppViewmodel) {
         val navController = rememberNavController()
-
         val holidays by appViewmodel.holidays.observeAsState(null)
+        val allEvents by appViewmodel.allEvents.observeAsState(listOf())
+        val searchResults by appViewmodel.searchResults.observeAsState(listOf())
 
         LaunchedEffect(Unit) {
             appViewmodel.fetchHolidays()
@@ -67,10 +68,10 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = Routes.MonthOverviewScreen.route)
         {
             composable(Routes.MonthOverviewScreen.route) {
-                App(navController = navController, appViewmodel)
+                App(allEvents = allEvents, searchResults = searchResults,navController = navController, appViewmodel)
             }
             composable(Routes.DailyOverview.route) {
-                DailyOverview(holidays, appViewmodel, navController)
+                DailyOverview(allEvents = allEvents, searchResults = searchResults,holidays, appViewmodel, navController)
             }
             composable(Routes.EventOverview.route) {
                 appViewmodel.currentlyViewingEvent?.let { it1 ->
@@ -94,7 +95,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-    class MainViewModelFactory(private val application: Application) :
+    class AppViewmodelFactory(private val application: Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AppViewmodel(application) as T

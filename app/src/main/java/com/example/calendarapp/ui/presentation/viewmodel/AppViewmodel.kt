@@ -63,9 +63,8 @@ class AppViewmodel(application: Application) : ViewModel(){
         return searchResults.value
     }
 
-    fun findEventsByDay(day: LocalDateTime):List<Event>? {
+    fun findEventsByDay(day: LocalDateTime) {
         dbRepository.findEventByDay(day)
-        return searchResults.value
     }
 
 
@@ -121,6 +120,7 @@ class AppViewmodel(application: Application) : ViewModel(){
     }
 
     var currentlyViewingEvent:Event? = allEvents.value?.get(0)
+
     fun setCurrentEvent(event: Event) {
         currentlyViewingEvent = event
     }
@@ -137,23 +137,5 @@ class AppViewmodel(application: Application) : ViewModel(){
                 Log.e("FetchHoliday", e.message.toString())
             }
         }
-    }
-
-    //get all days with events
-    fun getDaysWithEvents(month: YearMonth): List<LocalDateTime>? {
-
-        val events:List<Event>? = allEvents.value
-        Log.d("day m", events.toString())
-
-        if (events != null) {
-            val monthsEvents = events.filter {
-                val eventMonth = YearMonth.from(it.day)
-                Log.d("day m", eventMonth.month.toString())
-                eventMonth == month
-            }
-            val eventDates = monthsEvents.map { it.day }.toSet()
-            return eventDates.toList()
-        }
-        return null
     }
 }
