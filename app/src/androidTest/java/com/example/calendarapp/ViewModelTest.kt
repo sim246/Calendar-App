@@ -17,6 +17,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 
 @RunWith(AndroidJUnit4::class)
@@ -105,6 +106,49 @@ class AppViewModelTest {
         assertEquals(events, result)
     }
 
+    @Test
+    fun getDaysWithEvents_emptyEventsList() {
+        val emptyEvents = MutableLiveData<List<Event>>()
+        emptyEvents.postValue(emptyList())
+        viewModel.allEvents = emptyEvents
+
+        val result = viewModel.getDaysWithEvents(YearMonth.of(2023, 11))
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun getDaysWithEvents() {
+        val event1 = Event(
+            LocalDateTime.of(2023, 11, 1, 12, 0),
+            "Event 1",
+            LocalDateTime.of(2023, 11, 1, 12, 0),
+            LocalDateTime.of(2023, 11, 1, 13, 0),
+            "Description",
+            "Client",
+            "Location"
+        )
+
+        val event2 = Event(
+            LocalDateTime.of(2023, 11, 2, 14, 0),
+            "Event 2",
+            LocalDateTime.of(2023, 11, 2, 14, 0),
+            LocalDateTime.of(2023, 11, 2, 15, 0),
+            "Description",
+            "Client",
+            "Location"
+        )
+
+        val allEvents = MutableLiveData<List<Event>>()
+        allEvents.postValue(listOf(event1, event2))
+        viewModel.allEvents = allEvents
+
+        val result = viewModel.getDaysWithEvents(YearMonth.of(2023, 11))
+
+        assertEquals(listOf(
+            LocalDateTime.of(2023, 11, 1, 12, 0),
+            LocalDateTime.of(2023, 11, 2, 14, 0)
+        ), result)
+    }
 
 
 
@@ -114,6 +158,7 @@ class AppViewModelTest {
         override suspend fun getHolidays(): List<Holiday> {
             return holidays.value
         }
+
 
     }
 

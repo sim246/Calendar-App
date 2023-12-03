@@ -24,7 +24,7 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
 
-    val allEvents: LiveData<List<Event>>
+    var allEvents: LiveData<List<Event>>
     var roomRepository: EventRepository
     var searchResults: MutableLiveData<List<Event>>
 
