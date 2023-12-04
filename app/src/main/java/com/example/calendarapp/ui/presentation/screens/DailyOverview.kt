@@ -43,13 +43,13 @@ import com.example.calendarapp.R
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
+import com.example.calendarapp.ui.domain.Holiday
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>,holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
+fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>, holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -78,7 +78,9 @@ fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>,holidays: L
                         ScheduleDisplay(searchResults, navController, viewModel)
                     }
                     item {
-                        Text("No Events Planned")
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                            Text("No Events Planned")
+                        }
                     }
                 }
             }
@@ -107,14 +109,12 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
             )}",
             color = Color.White
         )
-
         Text(
             text = event.eventName,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
     }
-
 }
 
 val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
@@ -193,7 +193,7 @@ fun HourDisplay() {
     }
 }
 
-val DayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+val DayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
 @Composable
 fun TopHalf(
     holidays: List<Holiday>?,
@@ -215,12 +215,12 @@ fun TopHalf(
                 day,
                 modifier = Modifier.height(50.dp),
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.scrim
+                color = Color.Black
             )
             if (holidays != null) {
                 for (i in holidays.indices) {
-                    if (viewModel.currentDay.toString() == holidays[i].date) {
-                        Text(holidays[i].name)
+                    if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date) {
+                        Text(holidays[i].name, color = Color.LightGray)
                     }
                 }
             }
@@ -297,7 +297,7 @@ fun ForwardArrowButton(
             viewModel.setNewDay(date)
             navController.navigate(Routes.DailyOverview.route)
         },
-        modifier = Modifier.testTag("Next Day")
+        modifier = Modifier.testTag("Next Day"),
     ) {
         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Day")
     }
