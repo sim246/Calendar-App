@@ -37,11 +37,8 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
         searchResults = roomRepository.searchResults
     }
 
-
-    //    var currentlyViewingEvent: Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00"), "", "Name", "Location"))
     //var to determine if a new event gets added or just edited for the edit menu
     var isEditing = false
-//    val events:
 
     //DB FUNCTIONS
     private val eventDb = EventRoomDatabase.getInstance(application)
@@ -58,9 +55,8 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
         }
     }
 
-    fun findEventsByName(name: String):List<Event>? {
+    fun findEventsByName(name: String){
         dbRepository.findEvent(name)
-        return searchResults.value
     }
 
     fun findEventsByDay(day: LocalDateTime) {
@@ -113,13 +109,11 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
     }
 
     var currentDay: LocalDateTime by mutableStateOf(LocalDateTime.now())
-
     fun setNewDay(d:LocalDateTime){
         currentDay = d
     }
 
     var currentlyViewingEvent:Event? = allEvents.value?.get(0)
-
     fun setCurrentEvent(event: Event) {
         currentlyViewingEvent = event
     }

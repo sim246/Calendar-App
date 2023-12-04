@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 //import androidx.compose.foundation.layout.ColumnScopeInstance.weight
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -137,8 +136,6 @@ fun DaysOfTheMonth(allEvents: List<Event>, searchResults: List<Event>, selectedM
                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
 
                     items(allEvents) { event ->
-//                        Log.d("day", event.day.toLocalDate().toString())
-//                        Log.d("day", selectedMonth.atDay(day).toString())
                         val hasEvent = event.day.toLocalDate() == selectedMonth.atDay(day)
                         Show(
                             day,
@@ -151,11 +148,17 @@ fun DaysOfTheMonth(allEvents: List<Event>, searchResults: List<Event>, selectedM
                         )
                     }
                     item {
-                        Spacer(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .background(Color.Transparent)
-                        )
+                        if (allEvents.isEmpty()) {
+                            Show(
+                                day,
+                                daysInMonth,
+                                false,
+                                isCurrentDay,
+                                selectedMonth,
+                                navController,
+                                viewModel
+                            )
+                        }
                     }
                 }
             }
