@@ -8,11 +8,16 @@ import com.example.calendarapp.ui.domain.UtilityHelper
 import com.example.calendarapp.ui.domain.Weather
 
 class WeatherDownloader(utilityHelper: UtilityHelper) {
-    private val theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/CA"
+    //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
+    private val APIKEY : String = "ec5cfdc73b7f456e8232bd9c29394e68"
     val utilHelper = utilityHelper
 
     fun fetchData(tempfile: String) : Weather? {
-        val url = URL(theUrl)
+        //below should be gotten by device location somehow
+        val latitude = 1
+        val longitude = 1
+
+        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${APIKEY}")
         val httpURLConnection = url.openConnection() as HttpURLConnection
         httpURLConnection.requestMethod = "GET"
         httpURLConnection.setRequestProperty("Accept", "text/json")
