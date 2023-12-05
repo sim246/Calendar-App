@@ -69,6 +69,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.foundation:foundation-android:1.5.4")
     implementation("com.google.android.libraries.places:places:3.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
     implementation("androidx.room:room-runtime:2.6.0")
     implementation("androidx.room:room-ktx:2.6.0")

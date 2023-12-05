@@ -13,6 +13,8 @@ class WeatherDownloader(utilityHelper: UtilityHelper) {
     val utilHelper = utilityHelper
 
     fun fetchData(tempfile: String) : Weather? {
+        //should check in cache if the data exists already
+
         //below should be gotten by device location somehow
         val latitude = 1
         val longitude = 1

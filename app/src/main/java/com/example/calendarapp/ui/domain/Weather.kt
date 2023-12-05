@@ -1,6 +1,6 @@
 package com.example.calendarapp.ui.domain
 
-class WeatherData(
+class Weather(
 //should describe the weather for a day.
 
     //(FOR THE WEATHER MENU: )
