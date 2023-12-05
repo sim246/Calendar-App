@@ -14,11 +14,18 @@ import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
+import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.YearMonth
 
-class AppViewmodel(application: Application = Application()) : ViewModel(){
+class AppViewmodel(application: Application = Application(), fusedLocationProvider: FusedLocationProviderClient) : ViewModel(){
+
+    //Location Context
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+
+
 
     var holidayRepository = HolidayRepository()
     private val _holidays = MutableLiveData<List<Holiday>>()
@@ -29,6 +36,7 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
     var searchResults: MutableLiveData<List<Event>>
 
     init {
+        fusedLocationClient = fusedLocationProvider
         val productDb = EventRoomDatabase.getInstance(application)
         val productDao = productDb.eventDao()
         roomRepository = EventRepository(productDao)

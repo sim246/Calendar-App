@@ -24,6 +24,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.theme.CalendarAppTheme
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +45,9 @@ class MainActivity : ComponentActivity() {
                             "AppViewmodel",
                             AppViewmodelFactory(
                                 LocalContext.current.applicationContext
-                                        as Application
+                                        as Application,
+                                LocationServices.getFusedLocationProviderClient(this)
+
                             )
                         )
 
@@ -95,10 +99,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-    class AppViewmodelFactory(private val application: Application) :
+    class AppViewmodelFactory(private val application: Application, private val fusedLocation: FusedLocationProviderClient) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AppViewmodel(application) as T
+            return AppViewmodel(application, fusedLocation) as T
         }
     }
 

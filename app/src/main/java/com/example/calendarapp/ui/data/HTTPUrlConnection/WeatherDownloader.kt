@@ -12,6 +12,7 @@ class WeatherDownloader(utilityHelper: UtilityHelper) {
     private val APIKEY : String = "ec5cfdc73b7f456e8232bd9c29394e68"
     val utilHelper = utilityHelper
 
+    //Function that gets a weather object, returns null if not findable (no location perms for example)
     fun fetchData(tempfile: String) : Weather? {
         //should check in cache if the data exists already
 
