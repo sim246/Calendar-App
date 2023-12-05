@@ -19,10 +19,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.YearMonth
 
-class AppViewmodel(application: Application = Application(), fusedLocationProvider: FusedLocationProviderClient) : ViewModel(){
+class AppViewmodel(application: Application = Application()) : ViewModel(){
 
     //Location Context
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 
 
 
@@ -36,7 +36,7 @@ class AppViewmodel(application: Application = Application(), fusedLocationProvid
     var searchResults: MutableLiveData<List<Event>>
 
     init {
-        fusedLocationClient = fusedLocationProvider
+
         val productDb = EventRoomDatabase.getInstance(application)
         val productDao = productDb.eventDao()
         roomRepository = EventRepository(productDao)

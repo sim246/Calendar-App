@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                             AppViewmodelFactory(
                                 LocalContext.current.applicationContext
                                         as Application,
-                                LocationServices.getFusedLocationProviderClient(this)
+
 
                             )
                         )
@@ -99,10 +99,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-    class AppViewmodelFactory(private val application: Application, private val fusedLocation: FusedLocationProviderClient) :
+    class AppViewmodelFactory(private val application: Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AppViewmodel(application, fusedLocation) as T
+            return AppViewmodel(application) as T
         }
     }
 
