@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,8 +45,11 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
+import java.sql.Date
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
 
 
 @Composable
@@ -224,7 +228,17 @@ fun TopHalf(
                     }
                 }
             }
+            if(viewModel.currentDay.toLocalDate() == LocalDate.now()){
+                //Viewing the current day, show forecast button
+
+                Button(onClick={
+                    //navigate to weatherview
+                }){
+                    Text("Cloudy - 28C")
+                }
+            }
         }
+
         ForwardArrowButton(
             navController = navController,
             viewModel = viewModel

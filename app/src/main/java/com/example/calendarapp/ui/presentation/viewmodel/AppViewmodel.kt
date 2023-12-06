@@ -1,6 +1,7 @@
 package com.example.calendarapp.ui.presentation.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,11 +10,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.calendarapp.ui.data.HTTPUrlConnection.WeatherDownloader
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.data.retrofit.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
+import com.example.calendarapp.ui.domain.Weather
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -26,7 +29,7 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
 
 
 
-
+    var WeatherDownloader = WeatherDownloader(application=application)
     var holidayRepository = HolidayRepository()
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
@@ -52,6 +55,8 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
     private val eventDb = EventRoomDatabase.getInstance(application)
     private val eventDao = eventDb.eventDao()
     private var dbRepository = EventRepository(eventDao)
+
+
 
     fun insertEvent(event: Event): Boolean {
         return try {
@@ -127,6 +132,7 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
     }
 
 
+
     fun fetchHolidays() {
         viewModelScope.launch {
             try {
@@ -139,4 +145,9 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
             }
         }
     }
+
+    fun getCurrentDayForecast(context: Context): Weather? {
+        return WeatherDownloader.fetchData(context)
+    }
+
 }

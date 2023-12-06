@@ -17,6 +17,6 @@ fun WeatherView(weather: Weather){
 @Preview(showBackground = true)
 @Composable
 fun WeatherViewPreview(){
-    val weather = Weather()
+    val weather = Weather("today")
     WeatherView(weather = weather)
 }
