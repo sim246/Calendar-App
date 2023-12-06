@@ -134,13 +134,13 @@ fun DaysOfTheMonth(allEvents: List<Event>, searchResults: List<Event>, selectedM
                 if (day in 1..daysInMonth) {
                     val currentDate = LocalDate.now()
                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
+                    val hasEvent = allEvents.filter {it.day.toLocalDate() == selectedMonth.atDay(day)}
 
-                    items(allEvents) { event ->
-                        val hasEvent = event.day.toLocalDate() == selectedMonth.atDay(day)
+                    items(hasEvent) {
                         Show(
                             day,
                             daysInMonth,
-                            hasEvent,
+                            true,
                             isCurrentDay,
                             selectedMonth,
                             navController,
@@ -148,17 +148,15 @@ fun DaysOfTheMonth(allEvents: List<Event>, searchResults: List<Event>, selectedM
                         )
                     }
                     item {
-                        if (allEvents.isEmpty()) {
-                            Show(
-                                day,
-                                daysInMonth,
-                                false,
-                                isCurrentDay,
-                                selectedMonth,
-                                navController,
-                                viewModel
-                            )
-                        }
+                        Show(
+                            day,
+                            daysInMonth,
+                            false,
+                            isCurrentDay,
+                            selectedMonth,
+                            navController,
+                            viewModel
+                        )
                     }
                 }
             }
