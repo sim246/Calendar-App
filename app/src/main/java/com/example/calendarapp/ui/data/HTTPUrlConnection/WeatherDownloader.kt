@@ -20,7 +20,7 @@ import com.google.android.gms.location.LocationServices
 class WeatherDownloader(application: Application) {
 
     private var fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application)
-
+    private var currentLocation:Location? = null
     //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
     private val APIKEY : String = "ec5cfdc73b7f456e8232bd9c29394e68"
 
@@ -30,9 +30,10 @@ class WeatherDownloader(application: Application) {
         //should check in cache if the data exists already
 
         //below should be gotten by device location somehow
+        updateLocation()
+        if(currentLocation === null){return null}
 
-        val location = getLocation(context) ?: return null
-        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${location.latitude}&lon=${location.longitude}&appid=${APIKEY}")
+        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
         val httpURLConnection = url.openConnection() as HttpURLConnection
         httpURLConnection.requestMethod = "GET"
         httpURLConnection.setRequestProperty("Accept", "text/json")
@@ -53,26 +54,23 @@ class WeatherDownloader(application: Application) {
             return null
         }
     }
+    //Updates currentLocation
+    private fun updateLocation(){
 
-    private fun getLocation(context: Context) : Location?{
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return null
+        Log.d("WeatherDownloader", "Attempting to fetch location")
+         try{
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location : Location? ->
+                    currentLocation = location
+                    Log.d("WeatherDownloader", "Current location updated!")
+                }
+
+        } catch(e: SecurityException){
+            Log.e("WeatherDownloader", "Security Error when obtaining location: $e")
+
         }
-        return fusedLocationClient.lastLocation.result
+
+
     }
 }
 

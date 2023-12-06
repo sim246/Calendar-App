@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +46,7 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -72,7 +75,9 @@ fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>, holidays: 
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                LazyColumn (modifier = Modifier.fillMaxWidth().height(1080.dp)){
+                LazyColumn (modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1080.dp)){
                     //filter events by current day
                     items(searchResults) {
                         ScheduleDisplay(searchResults, navController, viewModel)
@@ -217,6 +222,19 @@ fun TopHalf(
                 fontSize = 20.sp,
                 color = Color.Black
             )
+            if(viewModel.currentDay.toLocalDate() == LocalDate.now()){
+                //show button for forecast
+                val weather = viewModel.getCurrentDayForecast(LocalContext.current)
+                if(weather != null){
+                    Button(onClick = { /*TODO*/ }) {
+                        Text(weather.condition + " - " + weather.temperature)
+                    }
+                }
+                else
+                {
+                    Text("Weather not found, try again later.")
+                }
+            }
             if (holidays != null) {
                 for (i in holidays.indices) {
                     if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date) {
@@ -257,7 +275,8 @@ fun AddButton(navController: NavController, viewModel: AppViewmodel) {
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
-                    if (LocalDateTime.now()
+                    if (LocalDateTime
+                            .now()
                             .format(Formatter) <= viewModel.currentDay.toString()
                     ) {
 //                        val format = DateTimeFormatter.ofPattern("yyyy-mm-ddTHH:mm:ss")
