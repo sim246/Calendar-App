@@ -1,5 +1,7 @@
 package com.example.calendarapp.ui.data.retrofit
 
+import com.example.calendarapp.ui.domain.Holiday
+
 open class HolidayRepository {
     private val holidayService = RetrofitInstance.holidayService
 

@@ -14,13 +14,12 @@ import com.example.calendarapp.ui.data.HTTPUrlConnection.WeatherDownloader
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
+import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
 import com.example.calendarapp.ui.domain.Weather
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import java.time.YearMonth
 
 class AppViewmodel(application: Application = Application()) : ViewModel(){
 

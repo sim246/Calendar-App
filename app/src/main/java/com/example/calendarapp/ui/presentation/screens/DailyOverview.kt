@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,16 +43,13 @@ import com.example.calendarapp.R
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
-import java.sql.Date
-import java.time.LocalDate
+import com.example.calendarapp.ui.domain.Holiday
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
 
 
 @Composable
-fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>,holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
+fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>, holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -83,7 +78,9 @@ fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>,holidays: L
                         ScheduleDisplay(searchResults, navController, viewModel)
                     }
                     item {
-                        Text("No Events Planned")
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                            Text("No Events Planned")
+                        }
                     }
                 }
             }
@@ -112,14 +109,12 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
             )}",
             color = Color.White
         )
-
         Text(
             text = event.eventName,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
     }
-
 }
 
 val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
@@ -198,7 +193,7 @@ fun HourDisplay() {
     }
 }
 
-val DayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+val DayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
 @Composable
 fun TopHalf(
     holidays: List<Holiday>?,
@@ -220,32 +215,16 @@ fun TopHalf(
                 day,
                 modifier = Modifier.height(50.dp),
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.scrim
+                color = Color.Black
             )
             if (holidays != null) {
                 for (i in holidays.indices) {
-                    if (viewModel.currentDay.toString() == holidays[i].date) {
-                        Text(holidays[i].name)
+                    if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date) {
+                        Text(holidays[i].name, color = Color.LightGray)
                     }
-                }
-            }
-            if(viewModel.currentDay.toLocalDate() == LocalDate.now()){
-                //Viewing the current day, show forecast button
-                val weather = viewModel.getCurrentDayForecast(LocalContext.current)
-                if(weather != null){
-                    Button(onClick={
-                        //navigate to weatherview
-                    }){
-                        Text( weather.condition + " - " + weather.temperature)
-                    }
-                }
-                else
-                {
-                    Text("No weather found. Try again later.")
                 }
             }
         }
-
         ForwardArrowButton(
             navController = navController,
             viewModel = viewModel
@@ -318,7 +297,7 @@ fun ForwardArrowButton(
             viewModel.setNewDay(date)
             navController.navigate(Routes.DailyOverview.route)
         },
-        modifier = Modifier.testTag("Next Day")
+        modifier = Modifier.testTag("Next Day"),
     ) {
         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Day")
     }

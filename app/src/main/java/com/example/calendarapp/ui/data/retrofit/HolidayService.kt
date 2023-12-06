@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.data.retrofit
 
+import com.example.calendarapp.ui.domain.Holiday
 import retrofit2.http.GET
 interface HolidayService {
     @GET("2023/CA")

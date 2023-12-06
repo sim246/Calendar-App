@@ -3,7 +3,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
+import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import junit.framework.TestCase.assertTrue
