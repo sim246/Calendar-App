@@ -10,7 +10,8 @@ display the 5-day forecast with 3-hour step, for the location. Your app should u
 data class Weather(
 //should describe the weather for a day.
 
-    val day:String,
+    val day:String = "",
+    val condition:String = "",
     val temperature: Double = 0.0,
     val temperatureFeelsLike: Double = 0.0,
     val humidity:Double = 0.0,

@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -230,11 +231,17 @@ fun TopHalf(
             }
             if(viewModel.currentDay.toLocalDate() == LocalDate.now()){
                 //Viewing the current day, show forecast button
-
-                Button(onClick={
-                    //navigate to weatherview
-                }){
-                    Text("Cloudy - 28C")
+                val weather = viewModel.getCurrentDayForecast(LocalContext.current)
+                if(weather != null){
+                    Button(onClick={
+                        //navigate to weatherview
+                    }){
+                        Text( weather.condition + " - " + weather.temperature)
+                    }
+                }
+                else
+                {
+                    Text("No weather found. Try again later.")
                 }
             }
         }
