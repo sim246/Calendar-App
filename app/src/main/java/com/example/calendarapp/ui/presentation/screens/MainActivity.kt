@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = Routes.MonthOverviewScreen.route)
         {
             composable(Routes.MonthOverviewScreen.route) {
-                App(allEvents = allEvents, searchResults = searchResults,navController = navController, appViewmodel)
+                App(allEvents = allEvents,navController = navController, appViewmodel)
             }
             composable(Routes.DailyOverview.route) {
                 DailyOverview(allEvents = allEvents, searchResults = searchResults,holidays, appViewmodel, navController)

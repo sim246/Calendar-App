@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -43,13 +42,13 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun MonthOverviewScreen(allEvents: List<Event>, searchResults: List<Event>,navController: NavController, viewModel: AppViewmodel) {
-    YearAndNav(allEvents = allEvents, searchResults = searchResults,navController, viewModel)
+fun MonthOverviewScreen(allEvents: List<Event>, navController: NavController, viewModel: AppViewmodel) {
+    YearAndNav(allEvents = allEvents, navController, viewModel)
 
 }
 
 @Composable
-fun YearAndNav(allEvents: List<Event>, searchResults: List<Event>, navController: NavController, viewModel: AppViewmodel) {
+fun YearAndNav(allEvents: List<Event>, navController: NavController, viewModel: AppViewmodel) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
 
     Column(
@@ -92,12 +91,12 @@ fun YearAndNav(allEvents: List<Event>, searchResults: List<Event>, navController
             }
         }
 
-        DaysOfTheWeek(allEvents = allEvents, searchResults = searchResults, selectedMonth = selectedMonth, navController, viewModel)
+        DaysOfTheWeek(allEvents = allEvents, selectedMonth = selectedMonth, navController, viewModel)
     }
 }
 
 @Composable
-fun DaysOfTheWeek(allEvents: List<Event>, searchResults: List<Event>, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
+fun DaysOfTheWeek(allEvents: List<Event>, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
     // Days of the week
     Row(
         modifier = Modifier
@@ -113,12 +112,12 @@ fun DaysOfTheWeek(allEvents: List<Event>, searchResults: List<Event>, selectedMo
         }
     }
 
-    DaysOfTheMonth(allEvents = allEvents, searchResults = searchResults,selectedMonth = selectedMonth, navController, viewModel)
+    DaysOfTheMonth(allEvents = allEvents, selectedMonth = selectedMonth, navController, viewModel)
 }
 
 val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 @Composable
-fun DaysOfTheMonth(allEvents: List<Event>, searchResults: List<Event>, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
+fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
     // Days in the month
     val daysInMonth = selectedMonth.lengthOfMonth()
     val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7 + 1
@@ -134,29 +133,38 @@ fun DaysOfTheMonth(allEvents: List<Event>, searchResults: List<Event>, selectedM
                 if (day in 1..daysInMonth) {
                     val currentDate = LocalDate.now()
                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
-                    val hasEvent = allEvents.filter {it.day.toLocalDate() == selectedMonth.atDay(day)}
 
-                    items(hasEvent) {
-                        Show(
-                            day,
-                            daysInMonth,
-                            true,
-                            isCurrentDay,
-                            selectedMonth,
-                            navController,
-                            viewModel
-                        )
+                    var hasEvents:List<LocalDateTime> = mutableListOf()
+                    if (allEvents.isNotEmpty()) {
+                        val monthsEvents = allEvents.filter {
+                            val eventMonth = YearMonth.from(it.day)
+                            eventMonth == selectedMonth
+                        }
+                        val eventDates = monthsEvents.map { it.day }.toSet()
+                        hasEvents = eventDates.toList()
                     }
                     item {
-                        Show(
-                            day,
-                            daysInMonth,
-                            false,
-                            isCurrentDay,
-                            selectedMonth,
-                            navController,
-                            viewModel
-                        )
+                        if (hasEvents.contains(selectedMonth.atDay(day).atStartOfDay())){
+                            Show(
+                                day,
+                                daysInMonth,
+                                true,
+                                isCurrentDay,
+                                selectedMonth,
+                                navController,
+                                viewModel
+                            )
+                        } else {
+                            Show(
+                                day,
+                                daysInMonth,
+                                false,
+                                isCurrentDay,
+                                selectedMonth,
+                                navController,
+                                viewModel
+                            )
+                        }
                     }
                 }
             }
@@ -204,6 +212,6 @@ fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selec
     }
 }
 @Composable
-fun App(allEvents: List<Event>, searchResults: List<Event>,navController: NavController, viewModel: AppViewmodel) {
-    MonthOverviewScreen(allEvents = allEvents, searchResults = searchResults,navController, viewModel)
+fun App(allEvents: List<Event>,navController: NavController, viewModel: AppViewmodel) {
+    MonthOverviewScreen(allEvents = allEvents,navController, viewModel)
 }
