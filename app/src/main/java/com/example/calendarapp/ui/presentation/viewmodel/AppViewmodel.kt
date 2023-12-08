@@ -17,9 +17,9 @@ import com.example.calendarapp.ui.data.retrofit.HolidayRepository
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class AppViewmodel(application: Application = Application()) : ViewModel(){
+class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper) : ViewModel(){
 
-    var holidayRepository = HolidayRepository()
+    var holidayRepository = HolidayRepository(utilityHelper)
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
 

@@ -1,6 +1,7 @@
 package com.example.calendarapp.ui.presentation.screens
 
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
+import com.example.calendarapp.ui.presentation.viewmodel.UtilityHelper
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -43,7 +45,7 @@ class MainActivity : ComponentActivity() {
                             "AppViewmodel",
                             AppViewmodelFactory(
                                 LocalContext.current.applicationContext
-                                        as Application
+                                        as Application, LocalContext.current
                             )
                         )
 
@@ -95,10 +97,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-    class AppViewmodelFactory(private val application: Application) :
+    class AppViewmodelFactory(private val application: Application, private val context: Context) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AppViewmodel(application) as T
+            return AppViewmodel(application, UtilityHelper(context)) as T
         }
     }
 

@@ -219,7 +219,7 @@ fun TopHalf(
             )
             if (holidays != null) {
                 for (i in holidays.indices) {
-                    if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date) {
+                    if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date && holidays[0].types[0] == "Public") {
                         Text(holidays[i].name, color = Color.LightGray)
                     }
                 }
