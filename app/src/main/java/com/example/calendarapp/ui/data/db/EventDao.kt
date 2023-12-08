@@ -10,15 +10,15 @@ import java.time.LocalDateTime
 @Dao
 interface EventDao {
     @Insert
-    fun insertEvent(event: Event)
+    suspend fun insertEvent(event: Event)
 
 //    @Query("SELECT * FROM events WHERE eventName = :name")
     @Query("SELECT * FROM events_db WHERE eventName = :name")
-    fun findEvents(name: String): List<Event>
+    suspend fun findEvents(name: String): List<Event>
 
 //    @Query("DELETE FROM events WHERE eventName = :name")
     @Query("DELETE FROM events_db WHERE eventName = :name")
-    fun deleteEvents(name: String)
+    suspend fun deleteEvents(name: String)
 
 //    @Query("SELECT * FROM events")
     @Query("SELECT * FROM events_db")
@@ -26,6 +26,6 @@ interface EventDao {
 
 //    @Query("SELECT * FROM events WHERE day = :day")
     @Query("SELECT * FROM events_db WHERE day = :day")
-    fun findAllEventsByDay(day: LocalDateTime): List<Event>
+    suspend fun findAllEventsByDay(day: LocalDateTime): List<Event>
 
 }

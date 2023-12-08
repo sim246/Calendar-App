@@ -73,14 +73,8 @@ fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>, holidays: 
                     .fillMaxSize()
             ) {
                 LazyColumn (modifier = Modifier.fillMaxWidth().height(1080.dp)){
-                    //filter events by current day
-                    items(searchResults) {
-                        ScheduleDisplay(searchResults, navController, viewModel)
-                    }
                     item {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                            Text("No Events Planned")
-                        }
+                        ScheduleDisplay(searchResults, navController, viewModel)
                     }
                 }
             }
@@ -124,7 +118,7 @@ fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewMod
     events?.sortedBy(Event::start)?.forEach { event ->
         Log.d("day day", viewModel.currentDay.toString())
         Log.d("day day event", event.day.toString())
-        if (event.day != viewModel.currentDay) {
+        if (event.day == viewModel.currentDay) {
             val height = (event.theEnd.format(FormatterHours).toInt() - event.start.format(
                 FormatterHours
             ).toInt()) * 60

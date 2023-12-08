@@ -14,7 +14,9 @@ import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import java.time.LocalDateTime
 
 class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper) : ViewModel(){
@@ -25,15 +27,14 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 
     var allEvents: LiveData<List<Event>>
     var roomRepository: EventRepository
-    var searchResults: MutableLiveData<List<Event>>
+    var searchResults: MutableLiveData<List<Event>> = MutableLiveData()
 
     init {
         val productDb = EventRoomDatabase.getInstance(application)
         val productDao = productDb.eventDao()
         roomRepository = EventRepository(productDao)
-
-        allEvents = roomRepository.allEvents
-        searchResults = roomRepository.searchResults
+        allEvents = roomRepository.getAllEvents()
+//        searchResults =
     }
 
     //var to determine if a new event gets added or just edited for the edit menu
@@ -46,7 +47,9 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 
     fun insertEvent(event: Event): Boolean {
         return try {
-            dbRepository.insertEvent(event)
+            viewModelScope.launch (Dispatchers.IO) {
+                dbRepository.insertEvent(event)
+            }
             true
         } catch (e: Exception) {
             Log.d("error", e.message.toString())
@@ -55,17 +58,23 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     }
 
     fun findEventsByName(name: String){
-        dbRepository.findEvent(name)
+        viewModelScope.launch (Dispatchers.IO){
+            searchResults.postValue(dbRepository.findEvent(name))
+        }
     }
 
     fun findEventsByDay(day: LocalDateTime) {
-        dbRepository.findEventByDay(day)
+        viewModelScope.launch (Dispatchers.IO){
+            searchResults.postValue(dbRepository.findEventByDay(day))
+        }
     }
 
 
     fun deleteEvent(name: String): Boolean {
         return try {
-            dbRepository.deleteEvent(name)
+            viewModelScope.launch (Dispatchers.IO) {
+                dbRepository.deleteEvent(name)
+            }
             true
         } catch (e: Exception) {
             Log.d("error", e.message.toString())
@@ -88,18 +97,18 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 
         //Checks if it overlaps with an existing event
         //for now, checks every single event in the array (could be cleaner)
-        searchResults.value?.forEach {
-            //if the same day...
-            if (it.start.dayOfYear != it.start.dayOfYear) {
-                //if the end of the it crosses the start time of the event
-                if (end.hour * 60 + end.minute >= it.start.hour * 60 + it.start.minute ||
-                    start.hour * 60 + start.minute >= it.theEnd.hour * 60 + it.theEnd.minute
-                ) {
-                    //overlaps either in the top or the bottom! send a message
-                    return "Overlaps another event: Check time values"
-                }
-            }
-        }
+//        searchResults.value?.forEach {
+//            //if the same day...
+//            if (it.start.dayOfYear != it.start.dayOfYear) {
+//                //if the end of the it crosses the start time of the event
+//                if (end.hour * 60 + end.minute >= it.start.hour * 60 + it.start.minute ||
+//                    start.hour * 60 + start.minute >= it.theEnd.hour * 60 + it.theEnd.minute
+//                ) {
+//                    //overlaps either in the top or the bottom! send a message
+//                    return "Overlaps another event: Check time values"
+//                }
+//            }
+//        }
         //check exact date start & end
         if (start.hour * 60 + start.minute == end.hour * 60 + end.minute) {
             return "Start and End times are the same"
