@@ -11,21 +11,13 @@ import java.time.LocalDateTime
 interface EventDao {
     @Insert
     suspend fun insertEvent(event: Event)
-
-//    @Query("SELECT * FROM events WHERE eventName = :name")
     @Query("SELECT * FROM events_db WHERE eventName = :name")
     suspend fun findEvents(name: String): List<Event>
-
-//    @Query("DELETE FROM events WHERE eventName = :name")
     @Query("DELETE FROM events_db WHERE eventName = :name")
     suspend fun deleteEvents(name: String)
-
-//    @Query("SELECT * FROM events")
     @Query("SELECT * FROM events_db")
     fun getAllEvents(): LiveData<List<Event>>
-
-//    @Query("SELECT * FROM events WHERE day = :day")
-    @Query("SELECT * FROM events_db WHERE day = :day")
+    @Query("SELECT * FROM events_db WHERE day = :day ORDER BY start ASC")
     suspend fun findAllEventsByDay(day: LocalDateTime): List<Event>
 
 }
