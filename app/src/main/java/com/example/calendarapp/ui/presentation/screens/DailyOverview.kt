@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -49,7 +48,7 @@ import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun DailyOverview(allEvents: List<Event>, searchResults: List<Event>, holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
+fun DailyOverview(searchResults: List<Event>, holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier

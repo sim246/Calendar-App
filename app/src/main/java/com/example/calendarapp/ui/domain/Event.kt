@@ -21,12 +21,16 @@ class Event {
     @ColumnInfo(name = "theEnd")
     var theEnd: LocalDateTime = LocalDateTime.now()
 
-    var description: String = ""
-    var clientName: String = ""
-    var location: String = ""
+    @ColumnInfo(name = "description")
+    var description: String? = null
+    @ColumnInfo(name = "clientName")
+    var clientName: String? = null
+    @ColumnInfo(name = "location")
+    var location: String? = null
+
     constructor()
 
-    constructor(day:LocalDateTime, eventName:String, start: LocalDateTime, theEnd: LocalDateTime, description: String, clientName: String, location: String) {
+    constructor(day:LocalDateTime, eventName:String, start: LocalDateTime, theEnd: LocalDateTime, description: String?, clientName: String?, location: String?) {
         this.day = day
         this.eventName = eventName
         this.start = start

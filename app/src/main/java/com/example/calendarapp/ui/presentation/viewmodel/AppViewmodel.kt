@@ -16,7 +16,6 @@ import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import java.time.LocalDateTime
 
 class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper) : ViewModel(){

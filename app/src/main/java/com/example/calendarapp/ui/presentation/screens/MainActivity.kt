@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 App(allEvents = allEvents,navController = navController, appViewmodel)
             }
             composable(Routes.DailyOverview.route) {
-                DailyOverview(allEvents = allEvents, searchResults = searchResults,holidays, appViewmodel, navController)
+                DailyOverview(searchResults = searchResults,holidays, appViewmodel, navController)
             }
             composable(Routes.EventOverview.route) {
                 appViewmodel.currentlyViewingEvent?.let { it1 ->

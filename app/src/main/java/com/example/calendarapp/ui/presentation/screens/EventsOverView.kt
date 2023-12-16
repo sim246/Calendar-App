@@ -35,9 +35,9 @@ fun SingleEventEdit(
 
     Column{
         val titleString = eventInputField("Title (Required)", event.eventName)
-        val descriptionString = eventInputField("Description (Required)", event.description)
-        val locationString = eventInputField("Location (Required)", event.location)
-        val clientString = eventInputField("Client Name (Required)", event.clientName)
+        val descriptionString = event.description?.let { eventInputField("Description", it) }
+        val locationString = event.location?.let { eventInputField("Location", it) }
+        val clientString = event.clientName?.let { eventInputField("Client Name", it) }
 
 
         // Fetching local context
@@ -51,9 +51,6 @@ fun SingleEventEdit(
             //should save the event at the specified date and time onclick
             onClick={
                 Log.i("nya title", titleString)
-                Log.i("nya des", descriptionString)
-                Log.i("nya loc", locationString)
-                Log.i("nya client", clientString)
                 Log.i("nya", startEndTimes[0].toString())
                 Log.i("nya", startEndTimes[1].toString())
                 //set event values after checking time validity
@@ -117,7 +114,7 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
         Text(text=event.eventName)
         Text(text="@ " + event.location)
         Text(text=event.start.toLocalTime().toString() + " to " + event.theEnd.toLocalTime().toString())
-        Text(text= event.description)
+        event.description?.let { Text(text= it) }
         Button(
             content={Text(text = "Edit Event")},
             onClick={
