@@ -30,7 +30,7 @@ class MonthOverviewTest {
             CalendarAppTheme {
                 val viewModel = AppViewmodel()
                 //UNRESOLVED REFERENCE???
-                ScreenSetup(viewModel)
+                //(viewModel)
 
             }
         }
