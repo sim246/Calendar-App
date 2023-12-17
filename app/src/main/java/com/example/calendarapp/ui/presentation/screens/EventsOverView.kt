@@ -17,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.example.calendarapp.R
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
@@ -46,7 +48,9 @@ import java.util.Calendar
             val startEndTimes = eventTimeDisplay(event)
 
             Button(
-                content={Text(text = "Save Event")},
+                content={
+                    Text(text = stringResource(R.string.save_event))
+                        },
                 //should save the event at the specified date and time onclick
                 onClick={
                     Log.i("EventParams", titleString)
@@ -87,7 +91,9 @@ import java.util.Calendar
                     }})
 
             Button(
-                content={Text(text = "Quit without saving")},
+                content={
+                    Text(text = stringResource(R.string.quit_without_saving))
+                        },
                 onClick={
                     //isEditing = false
                     navController.popBackStack()
@@ -104,14 +110,18 @@ import java.util.Calendar
             Text(text=event.start.toLocalTime().toString() + " to " + event.theEnd.toLocalTime().toString())
             Text(text=event.description)
             Button(
-                content={Text(text = "Edit Event")},
+                content={
+                    Text(text = stringResource(R.string.edit_event))
+                        },
                 onClick={
                     viewModel.isEditing = true
                     navController.navigate(Routes.EventEdit.route)
                 }
             )
             Button(
-                content={Text(text = "Delete Event")},
+                content={
+                    Text(text = stringResource(R.string.delete_event))
+                        },
                 //realistically should have a "Are you sure??" dialog
                 onClick={
                     if(viewModel.deleteEvent(event.eventName)){
@@ -120,7 +130,9 @@ import java.util.Calendar
                 }
             )
             Button(
-                content={Text(text="Return")},
+                content={
+                    Text(text= stringResource(R.string.return_btn))
+                        },
                 onClick = {navController.popBackStack()}
             )
         }
@@ -156,15 +168,20 @@ import java.util.Calendar
             }, hour, minute, false
         )
 
-            Text(text= "Start Time: $startTime")
-            Text(text= "End Time: $endTime")
+            Text(text= stringResource(R.string.start_time, startTime))
+            //Text(text= "Start Time: $startTime")
+            Text(text= stringResource(R.string.end_time, endTime))
             Row{
                 Button(onClick={
                     timePickerStart.show()
-                }, content={Text(text = "Set Start Time")})
+                }, content={
+                    Text(text = stringResource(R.string.set_start_time))
+                })
                 Button(onClick={
                     timePickerEnd.show()
-                }, content={Text(text = "Set End Time")})
+                }, content={
+                    Text(text = stringResource(R.string.set_end_time))
+                })
             }
         //fix strings for parsings
 
