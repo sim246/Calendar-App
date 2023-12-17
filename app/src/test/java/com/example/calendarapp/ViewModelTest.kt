@@ -24,7 +24,6 @@ import java.time.Month
 import java.time.YearMonth
 
 
-@RunWith(AndroidJUnit4::class)
 class AppViewModelTest {
 
 
@@ -39,7 +38,7 @@ class AppViewModelTest {
         Dispatchers.setMain(Dispatchers.Unconfined)
 
 //        val mockContext = ApplicationProvider.getApplicationContext<Context>()
-        val mockApplication = ApplicationProvider.getApplicationContext<Application>()
+            val mockApplication = ApplicationProvider.getApplicationContext<Application>()
 
         viewModel.roomRepository = eventRepository
 
