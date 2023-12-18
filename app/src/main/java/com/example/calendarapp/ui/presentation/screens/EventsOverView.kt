@@ -179,4 +179,3 @@ fun eventInputField(name:String, initialValue: String): String {
     )
     return inputText
 }
-

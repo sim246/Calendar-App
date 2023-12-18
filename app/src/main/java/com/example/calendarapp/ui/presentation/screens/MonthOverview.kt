@@ -1,5 +1,9 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.icu.text.Collator.getDisplayName
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +44,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
+
 
 @Composable
 fun MonthOverviewScreen(allEvents: List<Event>, navController: NavController, viewModel: AppViewmodel) {
@@ -74,10 +81,15 @@ fun YearAndNav(allEvents: List<Event>, navController: NavController, viewModel: 
                 )
             }
 
+//            Text(
+//                text = "${selectedMonth.month.name} ${selectedMonth.year}",
+//                modifier = Modifier
+//                    .testTag("NOVEMBER 2023")
+//            )
+
             Text(
-                text = "${selectedMonth.month.name} ${selectedMonth.year}",
-                modifier = Modifier
-                    .testTag("NOVEMBER 2023")
+                text = "${selectedMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${selectedMonth.year}",
+                modifier = Modifier.testTag("NOVEMBER 2023")
             )
 
             IconButton(
@@ -107,8 +119,17 @@ fun DaysOfTheWeek(allEvents: List<Event>, selectedMonth: YearMonth, navControlle
         for (day in DayOfWeek.values()) {
             Text(
                 text = day.name.take(3),
+                //text = "${day.name.take(3).getDisplayName(TextStyle.SHORT, Locale.getDefault())}",
                 modifier = Modifier.weight(1f)
             )
+//            Text(
+//                text = "${selectedMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${selectedMonth.year}",
+//                modifier = Modifier.testTag("NOVEMBER 2023")
+//            )
+//           Text(
+//                text = "${day.day.getDisplayName(TextStyle.SHORT, Locale.getDefault())}",
+//                modifier = Modifier.weight(1f)
+//           )
         }
     }
 
@@ -143,6 +164,34 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                         val eventDates = monthsEvents.map { it.day }.toSet()
                         hasEvents = eventDates.toList()
                     }
+//                     else if(isCurrentDay){
+//                         color = Color.LightGray
+//                         fontColor = Color.White
+//                     }
+//
+//                    Box(
+//                        modifier = Modifier
+//                            .weight(1f)
+//                            .padding(4.dp)
+//                            .background(color)
+//                            .clip(MaterialTheme.shapes.small)
+//                            .clickable {
+//                                val localDateTime = selectedMonth.atDay(day).atStartOfDay()
+//                                viewModel.setNewDay(localDateTime)
+//                                // viewModel.setNewDay(selectedMonth.atDay(day))
+//                                navController.navigate(Routes.DailyOverview.route)
+//                            }
+//                            .semantics { contentDescription = daysInMonth.toString() }
+//
+////                    ) {
+//                        Text(
+//                            text = day.toString(),
+//                            modifier = Modifier
+//                                .align(Alignment.Center)
+//                                .padding(8.dp),
+//                            color = fontColor
+//                        )
+
                     item {
                         if (hasEvents.contains(selectedMonth.atDay(day).atStartOfDay())){
                             Show(
@@ -165,6 +214,7 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                                 viewModel
                             )
                         }
+
                     }
                 }
             }
