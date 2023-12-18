@@ -98,21 +98,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-    class AppViewmodelFactory(private val application: Application, private val context: Context) :
-        ViewModelProvider.Factory {
+class AppViewmodelFactory(private val application: Application, private val context: Context) :
+    ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AppViewmodel(application, UtilityHelper(context)) as T
         }
     }
-
-
-/*
-@Preview
-@Composable
-@RequiresApi(Build.VERSION_CODES.O)
-fun SimpleComposablePreview() {
-    val viewModel = AppViewmodel()
-    ScreenSetup(viewModel)
-}
-
- */

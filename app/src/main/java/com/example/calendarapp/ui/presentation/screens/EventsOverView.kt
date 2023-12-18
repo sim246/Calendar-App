@@ -53,11 +53,8 @@ fun SingleEventEdit(
                 Log.i("nya", startEndTimes[1].toString())
                 //set event values after checking time validity
                 if(titleString.isNotEmpty()){
-                    //check for time collisions (cannot overlap w/ each other)
-                    if (!viewModel.isEditing) {
-                        val check1 = viewModel.checkConflictingExistingEvents(titleString, allEvents)
-                        val check2 = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1])
-                        if(check1 == null && check2 == null) {
+                    val check = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1], allEvents)
+                    if(check == null) {
                             event.eventName = titleString
                             event.description = descriptionString
                             event.clientName = clientString
@@ -65,34 +62,12 @@ fun SingleEventEdit(
                             event.start = startEndTimes[0]
                             event.theEnd = startEndTimes[1]
                             viewModel.insertEvent(event)
-                            viewModel.setIsEditing(false)
+                            viewModel.findEventsByDay(viewModel.currentDay)
                             navController.navigate(Routes.DailyOverview.route)
                         } else {
-                            if (check1 == null) {
-                                Toast.makeText(context, "$check2", Toast.LENGTH_LONG).show()
-                            } else if(check2 == null) {
-                                Toast.makeText(context, "$check1", Toast.LENGTH_LONG).show()
-                            } else {
-                                Toast.makeText(context, "$check1 ans $check2", Toast.LENGTH_LONG).show()
-                            }
+                            Toast.makeText(context, "$check", Toast.LENGTH_LONG).show()
                         }
-                    } else {
-                        val check = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1])
-                        if(check == null) {
-                            event.eventName = titleString
-                            event.description = descriptionString
-                            event.clientName = clientString
-                            event.location = locationString
-                            event.start = startEndTimes[0]
-                            event.theEnd = startEndTimes[1]
-                            viewModel.insertEvent(event)
-                            navController.navigate(Routes.DailyOverview.route)
-                        } else {
-                            Toast.makeText(context, check, Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-                else{
+                } else {
                     //on unfilled required fields
                     val toastText = "Please fill all the required values."
                     Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
@@ -118,7 +93,6 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
         Button(
             content={Text(text = "Edit Event")},
             onClick={
-                viewModel.setIsEditing(true)
                 navController.navigate(Routes.EventEdit.route)
             }
         )
@@ -126,7 +100,8 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
             content={Text(text = "Delete Event")},
             //realistically should have a "Are you sure??" dialog
             onClick={
-                viewModel.deleteEvent(event.eventName)
+                viewModel.deleteEvent(event.id)
+                viewModel.findEventsByDay(viewModel.currentDay)
                 navController.navigate(Routes.DailyOverview.route)
             }
         )

@@ -41,15 +41,10 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         }
     }
 
-    fun findEventsByName(name: String) {
+    fun findEventsByName(id: Int) {
         viewModelScope.launch (Dispatchers.IO){
-            searchResults.postValue(roomRepository.findEvent(name))
+            searchResults.postValue(roomRepository.findEvent(id))
         }
-    }
-
-    var isEditing:Boolean by mutableStateOf(false)
-    fun setIsEditing(bool:Boolean) {
-        isEditing = bool
     }
 
     fun findEventsByDay(day: LocalDateTime) {
@@ -58,21 +53,13 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         }
     }
 
-    fun deleteEvent(name: String) {
+    fun deleteEvent(id: Int) {
         viewModelScope.launch (Dispatchers.IO) {
-            roomRepository.deleteEvent(name)
+            roomRepository.deleteEvent(id)
         }
     }
 
-    fun checkConflictingExistingEvents(name:String, events:List<Event>): String?{
-        for (event in events) {
-            if (name == event.eventName) {
-                return "an event with this name already exists"
-            }
-        }
-        return null
-    }
-    fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime): String? {
+    fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime, allEvents:List<Event>): String? {
         //Given a start & end, look thru the list of events and find conflicting times & dates
         //returns an error message if a conflict is found, null if not
         //validate if start is before end / equals to each other
@@ -94,9 +81,9 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 
         //Checks if it overlaps with an existing event
         //for now, checks every single event in the array (could be cleaner)
-//        searchResults.value?.forEach {
+//        allEvents.forEach {
 //            //if the same day...
-//            if (it.start.dayOfYear != it.start.dayOfYear) {
+//            if (it.start.dayOfYear != start.dayOfYear) {
 //                //if the end of the it crosses the start time of the event
 //                if (end.hour * 60 + end.minute >= it.start.hour * 60 + it.start.minute ||
 //                    start.hour * 60 + start.minute >= it.theEnd.hour * 60 + it.theEnd.minute

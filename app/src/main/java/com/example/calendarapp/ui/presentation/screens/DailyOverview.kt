@@ -121,7 +121,6 @@ fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewMod
             val height = (event.theEnd.hour - event.start.hour) * 60
             val heightMin =
                 event.theEnd.minute - event.start.minute
-                    .toInt()
             Layout(
                 content = {
                     EventDisplay(
@@ -265,7 +264,6 @@ fun AddButton(navController: NavController, viewModel: AppViewmodel) {
                                 ""
                             )
                         )
-                        viewModel.setIsEditing(false)
                         navController.navigate(Routes.EventEdit.route)
                     }
                 }

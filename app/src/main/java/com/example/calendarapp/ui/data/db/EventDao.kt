@@ -12,10 +12,10 @@ import java.time.LocalDateTime
 interface EventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: Event)
-    @Query("SELECT * FROM events_db WHERE eventName = :name")
-    suspend fun findEvents(name: String): List<Event>
-    @Query("DELETE FROM events_db WHERE eventName = :name")
-    suspend fun deleteEvents(name: String)
+    @Query("SELECT * FROM events_db WHERE _id = :id")
+    suspend fun findEvents(id: Int): List<Event>
+    @Query("DELETE FROM events_db WHERE _id = :id")
+    suspend fun deleteEvents(id: Int)
     @Query("SELECT * FROM events_db")
     fun getAllEvents(): LiveData<List<Event>>
     @Query("SELECT * FROM events_db WHERE day = :day ORDER BY start ASC")
