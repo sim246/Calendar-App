@@ -8,8 +8,11 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import java.net.HttpURLConnection
 import java.net.URL
 import com.example.calendarapp.ui.domain.Weather
@@ -30,29 +33,35 @@ class WeatherDownloader(application: Application) {
         //should check in cache if the data exists already
 
         //below should be gotten by device location somehow
-        updateLocation(fusedLocationClient)
+        updateLocation(fusedLocationClient, context)
 //        loadJSON()
 
 
     }
     //Updates currentLocation
-    private fun updateLocation(fusedLocationClient: FusedLocationProviderClient){
+    private fun updateLocation(fusedLocationClient: FusedLocationProviderClient, context:Context){
         Log.d("WeatherDownloader", "Attempting to fetch location")
-        try{
-            Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location : Location? ->
-                    // Got last known location. In some rare situations this can be null.
-                    currentLocation = location
-                    Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
-                    loadJSON()
-                }
-        } catch(e: SecurityException){
-            Log.e("WeatherDownloader", "Security Error when obtaining location: $e")
+        Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
 
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) !== PackageManager.PERMISSION_GRANTED) {
+            val requestCode = 123
+            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), requestCode)
         }
-    }
 
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                // Got last known location. In some rare situations this can be null.
+                currentLocation = location
+                Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
+                Log.d("WeatherDownloader WeatherDownloader", location.toString())
+                loadJSON()
+            }
+            .addOnFailureListener {
+                // Handle location retrieval failure here
+                it.message?.let { it1 -> Log.d("WeatherDownloader", it1) }
+            }
+
+    }
 
     fun loadJSON(): Weather?{
         Log.d("WeatherDownloader", "Runnng LoadJSON")
