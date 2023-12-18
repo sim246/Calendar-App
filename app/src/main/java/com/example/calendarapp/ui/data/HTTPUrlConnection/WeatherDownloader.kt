@@ -10,16 +10,18 @@ import android.location.Location
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.viewModelScope
 import java.net.HttpURLConnection
 import java.net.URL
 import com.example.calendarapp.ui.domain.Weather
+import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
 
-class WeatherDownloader(application: Application) {
+class WeatherDownloader(application: Application, viewmodel: AppViewmodel) {
 
-
+    private var viewmodel : AppViewmodel = viewmodel
     private var currentLocation:Location? = null
     //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
     private val APIKEY : String = "ec5cfdc73b7f456e8232bd9c29394e68"
@@ -30,8 +32,8 @@ class WeatherDownloader(application: Application) {
         //should check in cache if the data exists already
 
         //below should be gotten by device location somehow
-        updateLocation(fusedLocationClient)
-//        loadJSON()
+//        updateLocation(fusedLocationClient)
+        loadJSON()
 
 
     }
@@ -43,6 +45,7 @@ class WeatherDownloader(application: Application) {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location : Location? ->
                     // Got last known location. In some rare situations this can be null.
+                    //Sets currentlocation global var to the gotten location.
                     currentLocation = location
                     Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
                     loadJSON()
@@ -56,10 +59,11 @@ class WeatherDownloader(application: Application) {
 
     fun loadJSON(): Weather?{
         Log.d("WeatherDownloader", "Runnng LoadJSON")
-        if(currentLocation === null){
-            Log.d("WeatherDownloader", "location is null")
-            return null
-        }
+        //Uncomment the below line ONLY IF the above fn is working (will always be null and never fetch JSON otherwise)
+        //if(currentLocation === null){
+        //    Log.d("WeatherDownloader", "location is null")
+        //    return null
+        //}
         Log.d("WeatherDownloader", "location isn;t null")
 
         //val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")

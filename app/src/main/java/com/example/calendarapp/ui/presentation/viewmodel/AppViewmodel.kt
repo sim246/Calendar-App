@@ -28,7 +28,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 
     //Location Context
 
-    var WeatherDownloader: WeatherDownloader = WeatherDownloader(application=application)
+    var WeatherDownloader: WeatherDownloader = WeatherDownloader(application=application, this)
     var holidayRepository = HolidayRepository(utilityHelper)
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
@@ -128,8 +128,9 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         }
     }
 
-    fun getCurrentDayForecast(utilityHelper: UtilityHelper): Weather? {
-        WeatherDownloader.fetchData(utilityHelper.context,fusedLocationProviderClient)
-        return null
+    fun getCurrentDayForecast(utilityHelper: UtilityHelper){
+        viewModelScope.launch{
+            WeatherDownloader.fetchData(utilityHelper.context,fusedLocationProviderClient)
+        }
     }
 }
