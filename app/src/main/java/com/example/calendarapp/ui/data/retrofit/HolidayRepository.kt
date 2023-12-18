@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.presentation.viewmodel.UtilityHelper
 import java.time.LocalDateTime
+import java.util.Locale
 
 
 open class HolidayRepository(private val utilityHelper: UtilityHelper) {
@@ -11,6 +12,8 @@ open class HolidayRepository(private val utilityHelper: UtilityHelper) {
     open suspend fun getHolidays(): List<Holiday> {
         val holidays : MutableList<Holiday> = mutableListOf()
         Log.d("day", utilityHelper.locale)
+        Log.d("dayy", Locale.getDefault().toLanguageTag())
+        Locale.getDefault()
         val date: LocalDateTime = LocalDateTime.now()
 
         holidays.addAll(holidayService.getHolidays(date.year.toString(),utilityHelper.locale))
