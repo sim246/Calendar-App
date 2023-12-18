@@ -36,10 +36,10 @@ import java.util.Calendar
 ){
 
         Column{
-            val titleString = eventInputField("Title", event.eventName)
-            val descriptionString = eventInputField("Description", event.description)
-            val locationString = eventInputField("Location", event.location)
-            val clientString = eventInputField("Client", event.clientName)
+            val titleString = eventInputField(stringResource(R.string.title), event.eventName)
+            val descriptionString = eventInputField(stringResource(R.string.description), event.description)
+            val locationString = eventInputField(stringResource(R.string.location), event.location)
+            val clientString = eventInputField(stringResource(R.string.client), event.clientName)
 
             // Fetching local context
             val context = LocalContext.current

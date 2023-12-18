@@ -10,4 +10,8 @@
     <string name="end_time">Heure de fin: %1$s</string>
     <string name="set_start_time">Fixer l\'heure de début</string>
     <string name="set_end_time">Fixer l\'heure de fin</string>
+    <string name="title">Titre</string>
+    <string name="description">Description</string>
+    <string name="location">Lieu</string>
+    <string name="client">Client</string>
 </resources>

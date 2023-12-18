@@ -9,4 +9,8 @@
     <string name="end_time">End Time: %1$s</string>
     <string name="set_start_time">Set Start Time</string>
     <string name="set_end_time">Set End Time</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="location">Location</string>
+    <string name="client">Client</string>
 </resources>

@@ -41,6 +41,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -77,10 +80,15 @@ fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
                 )
             }
 
+//            Text(
+//                text = "${selectedMonth.month.name} ${selectedMonth.year}",
+//                modifier = Modifier
+//                    .testTag("NOVEMBER 2023")
+//            )
+
             Text(
-                text = "${selectedMonth.month.name} ${selectedMonth.year}",
-                modifier = Modifier
-                    .testTag("NOVEMBER 2023")
+                text = "${selectedMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${selectedMonth.year}",
+                modifier = Modifier.testTag("NOVEMBER 2023")
             )
 
             IconButton(
