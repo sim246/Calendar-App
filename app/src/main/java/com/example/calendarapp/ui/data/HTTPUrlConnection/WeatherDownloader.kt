@@ -33,7 +33,7 @@ class WeatherDownloader(application: Application, viewmodel: AppViewmodel) {
         //please pass in the current datetime of the fetch so we can get specific dates!!!
         //below should be gotten by device location somehow
         updateLocation(fusedLocationClient, context)
-        loadJSON()
+        //loadJSON()
     }
     //Updates currentLocation
     private fun updateLocation(fusedLocationClient: FusedLocationProviderClient, context:Context){
