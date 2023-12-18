@@ -1,18 +1,20 @@
 package com.example.calendarapp.ui.data.HTTPUrlConnection
 
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import java.net.HttpURLConnection
-import java.net.URL
 import com.example.calendarapp.ui.domain.Weather
 import com.google.android.gms.location.FusedLocationProviderClient
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.Manifest
+
 
 class WeatherDownloader() {
     private var currentLocation:Location? = null
@@ -20,13 +22,14 @@ class WeatherDownloader() {
     private val APIKEY : String = "ec5cfdc73b7f456e8232bd9c29394e68"
 
 
+
     //Function that gets a weather object, returns null if not findable (no location perms for example)
     fun fetchData(context: Context, fusedLocationClient: FusedLocationProviderClient){
         //should check in cache if the data exists already
-
+        //please pass in the current datetime of the fetch so we can get specific dates!!!
         //below should be gotten by device location somehow
         updateLocation(fusedLocationClient, context)
-
+        loadJSON()
     }
     //Updates currentLocation
     private fun updateLocation(fusedLocationClient: FusedLocationProviderClient, context:Context){
@@ -43,7 +46,7 @@ class WeatherDownloader() {
                 currentLocation = location
                 Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
                 Log.d("WeatherDownloader WeatherDownloader", location.toString())
-                loadJSON()
+                //loadJSON()
             }
             .addOnFailureListener {
                 // Handle location retrieval failure here
@@ -75,11 +78,25 @@ class WeatherDownloader() {
                 .use { it.readText() }
             //return weather with JSON translated data
             Log.d("WeatherDownloader", dataString)
-            return Weather("today")
+
+            var weather = Weather()
+            val jObject = JSONObject(dataString)
+            weather.condition = jObject.getJSONArray("weather").getJSONObject(1).getString("main")
+            weather.day = "Today (temp value)"
+            weather.temperature = jObject.getJSONObject("main").getString("temp").toDouble()
+            weather.temperatureFeelsLike = jObject.getJSONObject("main").getString("feels_like").toDouble()
+            //weather.UVIndex =
+
+            return weather
 
         } else {
-            Log.e("httpsURLConnection_ERROR", responseCode.toString())
+            Log.e("WeatherDownloader", "REST FETCH ERROR: $responseCode")
             return null
         }
+    }
+
+    //Below FN translates JSON string into usable data
+    fun parseJSON(){
+
     }
 }
