@@ -21,12 +21,11 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class AppViewmodel(application: Application = Application()) : ViewModel(){
+class AppViewmodel(application: Application = Application(), fusedLocationProvider: FusedLocationProviderClient) : ViewModel(){
+
+    private val fusedLocationProviderClient = fusedLocationProvider
 
     //Location Context
-
-
-
 
     var WeatherDownloader = WeatherDownloader(application=application)
     var holidayRepository = HolidayRepository()
@@ -146,7 +145,8 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
     }
 
     fun getCurrentDayForecast(context: Context): Weather? {
-        return WeatherDownloader.fetchData(context)
+        WeatherDownloader.fetchData(context,fusedLocationProviderClient)
+        return null
     }
 
 }

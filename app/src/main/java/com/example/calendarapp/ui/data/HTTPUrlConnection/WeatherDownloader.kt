@@ -16,24 +16,61 @@ import com.example.calendarapp.ui.domain.UtilityHelper
 import com.example.calendarapp.ui.domain.Weather
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Dispatchers
 
 class WeatherDownloader(application: Application) {
 
-    private var fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application)
+
     private var currentLocation:Location? = null
     //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
     private val APIKEY : String = "ec5cfdc73b7f456e8232bd9c29394e68"
 
 
     //Function that gets a weather object, returns null if not findable (no location perms for example)
-    fun fetchData(context: Context) : Weather? {
+    fun fetchData(context: Context, fusedLocationClient: FusedLocationProviderClient){
         //should check in cache if the data exists already
 
         //below should be gotten by device location somehow
-        updateLocation()
-        if(currentLocation === null){return null}
+        //updateLocation(fusedLocationClient)
+        loadJSON()
 
-        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
+
+    }
+    //Updates currentLocation
+    private fun updateLocation(fusedLocationClient: FusedLocationProviderClient){
+
+        Log.d("WeatherDownloader", "Attempting to fetch location")
+         try{
+
+             Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
+
+             fusedLocationClient.lastLocation
+                 .addOnSuccessListener { location : Location? ->
+                     // Got last known location. In some rare situations this can be null.
+                     currentLocation = location
+                     Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
+                     loadJSON()
+                 }
+
+         } catch(e: SecurityException){
+            Log.e("WeatherDownloader", "Security Error when obtaining location: $e")
+
+        }
+
+
+    }
+
+
+    fun loadJSON(): Weather?{
+        Log.d("WeatherDownloader", "Runnng LoadJSON")
+        //if(currentLocation === null){
+        //    Log.d("WeatherDownloader", "location is null")
+        //    return null
+        //}
+        Log.d("WeatherDownloader", "location isn;t null")
+
+        //val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
+        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=1&lon=1&appid=${APIKEY}")
         val httpURLConnection = url.openConnection() as HttpURLConnection
         httpURLConnection.requestMethod = "GET"
         httpURLConnection.setRequestProperty("Accept", "text/json")
@@ -44,9 +81,8 @@ class WeatherDownloader(application: Application) {
         if (responseCode == HttpURLConnection.HTTP_OK) {
             val dataString = httpURLConnection.inputStream.bufferedReader()
                 .use { it.readText() }
-
-            //Write the data string to the temp file
-            //TempStorage(utilHelper).writeDataToFile(dataString, tempfile)
+            //return weather with JSON translated data
+            Log.d("WeatherDownloader", dataString)
             return Weather("today")
 
         } else {
@@ -54,24 +90,9 @@ class WeatherDownloader(application: Application) {
             return null
         }
     }
-    //Updates currentLocation
-    private fun updateLocation(){
-
-        Log.d("WeatherDownloader", "Attempting to fetch location")
-         try{
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location : Location? ->
-                    currentLocation = location
-                    Log.d("WeatherDownloader", "Current location updated!")
-                }
-
-        } catch(e: SecurityException){
-            Log.e("WeatherDownloader", "Security Error when obtaining location: $e")
-
-        }
 
 
-    }
+
+
 }
-
 

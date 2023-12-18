@@ -28,8 +28,10 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         setContent {
             CalendarAppTheme {
                 // A surface container using the 'background' color from the theme
@@ -46,7 +48,7 @@ class MainActivity : ComponentActivity() {
                             AppViewmodelFactory(
                                 LocalContext.current.applicationContext
                                         as Application,
-
+                                 fusedLocationClient
 
                             )
                         )
@@ -99,10 +101,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-    class AppViewmodelFactory(private val application: Application) :
+    class AppViewmodelFactory(private val application: Application, private val fusedLocationProvider: FusedLocationProviderClient) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AppViewmodel(application) as T
+            return AppViewmodel(application, fusedLocationProvider) as T
         }
     }
 
