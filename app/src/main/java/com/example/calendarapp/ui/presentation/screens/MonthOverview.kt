@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.icu.text.Collator.getDisplayName
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -119,8 +120,17 @@ fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, viewMo
         for (day in DayOfWeek.values()) {
             Text(
                 text = day.name.take(3),
+                //text = "${day.name.take(3).getDisplayName(TextStyle.SHORT, Locale.getDefault())}",
                 modifier = Modifier.weight(1f)
             )
+//            Text(
+//                text = "${selectedMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${selectedMonth.year}",
+//                modifier = Modifier.testTag("NOVEMBER 2023")
+//            )
+//           Text(
+//                text = "${day.day.getDisplayName(TextStyle.SHORT, Locale.getDefault())}",
+//                modifier = Modifier.weight(1f)
+//           )
         }
     }
 
@@ -200,6 +210,7 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
                                 .padding(8.dp),
                             color = fontColor
                         )
+
                     }
                 }
                 else {
