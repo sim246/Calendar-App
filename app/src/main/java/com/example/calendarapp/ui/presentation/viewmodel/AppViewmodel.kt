@@ -12,77 +12,56 @@ import androidx.lifecycle.viewModelScope
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
+import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import java.time.YearMonth
 
-class AppViewmodel(application: Application = Application()) : ViewModel(){
+class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper) : ViewModel(){
 
-    var holidayRepository = HolidayRepository()
+    var holidayRepository = HolidayRepository(utilityHelper)
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
 
     var allEvents: LiveData<List<Event>>
     var roomRepository: EventRepository
-    var searchResults: MutableLiveData<List<Event>>
+    var searchResults: MutableLiveData<List<Event>> = MutableLiveData()
 
     init {
-        val productDb = EventRoomDatabase.getInstance(application)
-        val productDao = productDb.productDao()
-        roomRepository = EventRepository(productDao)
-
-        allEvents = roomRepository.allEvents
-        searchResults = roomRepository.searchResults
+        val eventDb = EventRoomDatabase.getInstance(application)
+        val eventDao = eventDb.eventDao()
+        roomRepository = EventRepository(eventDao)
+        allEvents = roomRepository.getAllEvents()
     }
 
-
-    //    var currentlyViewingEvent: Event by mutableStateOf(Event(LocalDate.parse("2023-11-18"),"Placeholder Event", LocalDateTime.parse("2023-11-18T15:15:00"), LocalDateTime.parse("2023-11-18T15:15:00"), "", "Name", "Location"))
-    //var to determine if a new event gets added or just edited for the edit menu
-    var isEditing = false
-//    val events:
-
-    //DB FUNCTIONS
-    private val eventDb = EventRoomDatabase.getInstance(application)
-    private val eventDao = eventDb.productDao()
-    private var dbRepository = EventRepository(eventDao)
-
-    fun insertEvent(event: Event): Boolean {
-        return try {
-            dbRepository.insertEvent(event)
-            true
-        } catch (e: Exception) {
-            Log.d("error", e.message.toString())
-            false
+    fun insertEvent(event: Event) {
+        viewModelScope.launch(Dispatchers.IO) {
+            roomRepository.insertEvent(event)
         }
     }
 
-    fun findEventsByName(name: String):List<Event>? {
-        dbRepository.findEvent(name)
-        return searchResults.value
-    }
-
-    fun findEventsByDay(day: LocalDateTime):List<Event>? {
-        dbRepository.findEventByDay(day)
-        return searchResults.value
-    }
-
-
-    fun deleteEvent(name: String): Boolean {
-        return try {
-            dbRepository.deleteEvent(name)
-            true
-        } catch (e: Exception) {
-            Log.d("error", e.message.toString())
-            false
+    fun findEventsByName(id: Int) {
+        viewModelScope.launch (Dispatchers.IO){
+            searchResults.postValue(roomRepository.findEvent(id))
         }
     }
 
-    fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime): String? {
+    fun findEventsByDay(day: LocalDateTime) {
+        viewModelScope.launch (Dispatchers.IO){
+            searchResults.postValue(roomRepository.findEventByDay(day))
+        }
+    }
+
+    fun deleteEvent(id: Int) {
+        viewModelScope.launch (Dispatchers.IO) {
+            roomRepository.deleteEvent(id)
+        }
+    }
+
+    fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime, allEvents:List<Event>): String? {
         //Given a start & end, look thru the list of events and find conflicting times & dates
         //returns an error message if a conflict is found, null if not
-
         //validate if start is before end / equals to each other
         Log.d(
             "what",
@@ -91,30 +70,33 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
         if (start.hour * 60 + start.minute >= end.hour * 60 + end.minute) {
             return "Start time must be before the end time"
         }
-
-        //Checks if it overlaps with an existing event
-        //for now, checks every single event in the array (could be cleaner)
-        searchResults.value?.forEach {
-            //if the same day...
-            if (it.start.dayOfYear != it.start.dayOfYear) {
-                //if the end of the it crosses the start time of the event
-                if (end.hour * 60 + end.minute >= it.start.hour * 60 + it.start.minute ||
-                    start.hour * 60 + start.minute >= it.theEnd.hour * 60 + it.theEnd.minute
-                ) {
-                    //overlaps either in the top or the bottom! send a message
-                    return "Overlaps another event: Check time values"
-                }
-            }
+        //validate if start and end are between 6 am and 12 pm
+        if (start.hour !in 6..24 || end.hour !in 6..24){
+            return "events must be between 6 am and 12 pm"
         }
         //check exact date start & end
         if (start.hour * 60 + start.minute == end.hour * 60 + end.minute) {
             return "Start and End times are the same"
         }
+
+        //Checks if it overlaps with an existing event
+        //for now, checks every single event in the array (could be cleaner)
+//        allEvents.forEach {
+//            //if the same day...
+//            if (it.start.dayOfYear != start.dayOfYear) {
+//                //if the end of the it crosses the start time of the event
+//                if (end.hour * 60 + end.minute >= it.start.hour * 60 + it.start.minute ||
+//                    start.hour * 60 + start.minute >= it.theEnd.hour * 60 + it.theEnd.minute
+//                ) {
+//                    //overlaps either in the top or the bottom! send a message
+//                    return "Overlaps another event: Check time values"
+//                }
+//            }
+//        }
         return null
     }
 
     var currentDay: LocalDateTime by mutableStateOf(LocalDateTime.now())
-
     fun setNewDay(d:LocalDateTime){
         currentDay = d
     }
@@ -136,20 +118,5 @@ class AppViewmodel(application: Application = Application()) : ViewModel(){
                 Log.e("FetchHoliday", e.message.toString())
             }
         }
-    }
-
-    //get all days with events
-    fun getDaysWithEvents(month: YearMonth): List<LocalDateTime>? {
-
-        val events:List<Event>? = allEvents.value
-        if (events != null) {
-            val monthsEvents = events.filter {
-                val eventMonth = YearMonth.from(it.start)
-                eventMonth == month
-            }
-            val eventDates = monthsEvents.map { it.start }.toSet()
-            return eventDates.toList()
-        }
-        return null
     }
 }
