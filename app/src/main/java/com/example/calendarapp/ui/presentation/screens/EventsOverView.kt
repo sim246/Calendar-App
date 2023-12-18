@@ -55,18 +55,17 @@ fun SingleEventEdit(
                 if(titleString.isNotEmpty()){
                     val check = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1], allEvents)
                     if(check == null) {
-                            event.eventName = titleString
-                            event.description = descriptionString
-                            event.clientName = clientString
-                            event.location = locationString
-                            event.start = startEndTimes[0]
-                            event.theEnd = startEndTimes[1]
-                            viewModel.insertEvent(event)
-                            viewModel.findEventsByDay(viewModel.currentDay)
-                            navController.navigate(Routes.DailyOverview.route)
-                        } else {
-                            Toast.makeText(context, "$check", Toast.LENGTH_LONG).show()
-                        }
+                        event.eventName = titleString
+                        event.description = descriptionString
+                        event.clientName = clientString
+                        event.location = locationString
+                        event.start = startEndTimes[0]
+                        event.theEnd = startEndTimes[1]
+                        viewModel.insertEvent(event)
+                        navController.navigate(Routes.DailyOverview.route)
+                    } else {
+                        Toast.makeText(context, "$check", Toast.LENGTH_LONG).show()
+                    }
                 } else {
                     //on unfilled required fields
                     val toastText = "Please fill all the required values."
@@ -101,13 +100,14 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
             //realistically should have a "Are you sure??" dialog
             onClick={
                 viewModel.deleteEvent(event.id)
-                viewModel.findEventsByDay(viewModel.currentDay)
                 navController.navigate(Routes.DailyOverview.route)
             }
         )
         Button(
             content={Text(text="Return")},
-            onClick = {navController.navigate(Routes.DailyOverview.route)}
+            onClick = {
+                navController.navigate(Routes.DailyOverview.route)
+            }
         )
     }
 }
@@ -122,7 +122,7 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
     val calendar = Calendar.getInstance()
 
     var startTime by remember { mutableStateOf(fixString(event.start.hour.toString()) + ":"+ fixString(event.start.minute.toString())) }
-    var endTime by remember { mutableStateOf(fixString(event.start.hour.toString()) + ":"+ fixString(event.start.minute.toString())) }
+    var endTime by remember { mutableStateOf(fixString(event.theEnd.hour.toString()) + ":"+ fixString(event.theEnd.minute.toString())) }
     val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("H:mm")
 
     // Fetching current hour, and minute

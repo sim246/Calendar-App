@@ -72,6 +72,7 @@ fun DailyOverview(searchResults: List<Event>, holidays: List<Holiday>?, viewMode
                     .fillMaxSize()
             ) {
                 LazyColumn (modifier = Modifier.fillMaxWidth().height(1080.dp)){
+                    viewModel.findEventsByDay(viewModel.currentDay)
                     item {
                         ScheduleDisplay(searchResults, navController, viewModel)
                     }
