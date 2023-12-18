@@ -1,7 +1,10 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.Manifest
+import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -52,7 +57,6 @@ class MainActivity : ComponentActivity() {
                                         as Application, LocalContext.current, fusedLocationClient
                             )
                         )
-
                         ScreenSetup(viewModel)
                     }
                 }
@@ -66,7 +70,6 @@ class MainActivity : ComponentActivity() {
         val holidays by appViewmodel.holidays.observeAsState(null)
         val allEvents by appViewmodel.allEvents.observeAsState(listOf())
         val searchResults by appViewmodel.searchResults.observeAsState(listOf())
-
         LaunchedEffect(Unit) {
             appViewmodel.fetchHolidays()
         }

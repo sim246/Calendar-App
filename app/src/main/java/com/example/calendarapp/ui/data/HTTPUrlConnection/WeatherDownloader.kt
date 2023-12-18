@@ -1,8 +1,10 @@
 package com.example.calendarapp.ui.data.HTTPUrlConnection
 
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
 import android.util.Log
 import com.example.calendarapp.ui.domain.Weather
@@ -11,6 +13,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.Manifest
 
 
 class WeatherDownloader(application: Application, viewmodel: AppViewmodel) {
@@ -21,35 +26,38 @@ class WeatherDownloader(application: Application, viewmodel: AppViewmodel) {
     private val APIKEY : String = "ec5cfdc73b7f456e8232bd9c29394e68"
 
 
+
     //Function that gets a weather object, returns null if not findable (no location perms for example)
     fun fetchData(context: Context, fusedLocationClient: FusedLocationProviderClient){
         //should check in cache if the data exists already
         //please pass in the current datetime of the fetch so we can get specific dates!!!
         //below should be gotten by device location somehow
-//        updateLocation(fusedLocationClient)
+        updateLocation(fusedLocationClient, context)
         loadJSON()
-
-
     }
     //Updates currentLocation
-    private fun updateLocation(fusedLocationClient: FusedLocationProviderClient){
+    private fun updateLocation(fusedLocationClient: FusedLocationProviderClient, context:Context){
         Log.d("WeatherDownloader", "Attempting to fetch location")
-        try{
-            Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location : Location? ->
-                    // Got last known location. In some rare situations this can be null.
-                    //Sets currentlocation global var to the gotten location.
-                    currentLocation = location
-                    Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
-                    loadJSON()
-                }
-        } catch(e: SecurityException){
-            Log.e("WeatherDownloader", "Security Error when obtaining location: $e")
 
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) !== PackageManager.PERMISSION_GRANTED) {
+            val requestCode = 123
+            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), requestCode)
         }
-    }
 
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                // Got last known location. In some rare situations this can be null.
+                currentLocation = location
+                Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
+                Log.d("WeatherDownloader WeatherDownloader", location.toString())
+                //loadJSON()
+            }
+            .addOnFailureListener {
+                // Handle location retrieval failure here
+                it.message?.let { it1 -> Log.d("WeatherDownloader", it1) }
+            }
+
+    }
 
     fun loadJSON(): Weather?{
         Log.d("WeatherDownloader", "Runnng LoadJSON")
@@ -81,7 +89,7 @@ class WeatherDownloader(application: Application, viewmodel: AppViewmodel) {
             weather.day = "Today (temp value)"
             weather.temperature = jObject.getJSONObject("main").getString("temp").toDouble()
             weather.temperatureFeelsLike = jObject.getJSONObject("main").getString("feels_like").toDouble()
-            weather.UVIndex =
+            //weather.UVIndex =
 
             return weather
 
