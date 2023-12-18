@@ -3,7 +3,6 @@ package com.example.calendarapp.ui.data.HTTPUrlConnection
 
 import android.Manifest
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -13,12 +12,9 @@ import androidx.core.content.ContextCompat
 import java.net.HttpURLConnection
 import java.net.URL
 import com.example.calendarapp.ui.domain.Weather
-import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.google.android.gms.location.FusedLocationProviderClient
 
-class WeatherDownloader(application: Application, viewmodel: AppViewmodel) {
-
-    private var viewmodel : AppViewmodel = viewmodel
+class WeatherDownloader() {
     private var currentLocation:Location? = null
     //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
     private val APIKEY : String = "ec5cfdc73b7f456e8232bd9c29394e68"
