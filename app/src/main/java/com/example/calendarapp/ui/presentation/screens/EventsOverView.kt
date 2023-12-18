@@ -141,7 +141,6 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
             endTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
         }, hour, minute, false
     )
-
     Text(text= "Start Time: $startTime")
     Text(text= "End Time: $endTime")
     Row{
@@ -153,9 +152,6 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
         }, content={Text(text = "Set End Time")})
     }
     //fix strings for parsings
-
-
-
     return arrayOf(LocalDateTime.of(event.start.toLocalDate(), LocalTime.parse(startTime, formatter)),
         LocalDateTime.of(event.theEnd.toLocalDate(), LocalTime.parse(endTime, formatter)))
 

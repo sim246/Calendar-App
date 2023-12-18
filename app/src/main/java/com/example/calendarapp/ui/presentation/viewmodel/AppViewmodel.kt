@@ -106,7 +106,6 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         currentlyViewingEvent = event
     }
 
-
     fun fetchHolidays() {
         viewModelScope.launch {
             try {

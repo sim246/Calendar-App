@@ -111,13 +111,9 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
     }
 }
 
-//val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
-//val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @Composable
 fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewModel: AppViewmodel) {
     events?.sortedBy(Event::start)?.forEach { event ->
-        Log.d("day day", viewModel.currentDay.toString())
-        Log.d("day day event", event.day.toString())
         if (event.day == viewModel.currentDay) {
             val height = (event.theEnd.hour - event.start.hour) * 60
             val heightMin =
