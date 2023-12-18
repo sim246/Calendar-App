@@ -58,14 +58,14 @@ class WeatherDownloader() {
     fun loadJSON(): Weather?{
         Log.d("WeatherDownloader", "Runnng LoadJSON")
         //Uncomment the below line ONLY IF the above fn is working (will always be null and never fetch JSON otherwise)
-        //if(currentLocation === null){
-        //    Log.d("WeatherDownloader", "location is null")
-        //    return null
-        //}
+        if(currentLocation === null){
+            Log.d("WeatherDownloader", "location is null")
+            return null
+        }
         Log.d("WeatherDownloader", "location isn;t null")
 
-        //val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
-        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=1&lon=1&appid=${APIKEY}")
+        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
+//        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=1&lon=1&appid=${APIKEY}")
         val httpURLConnection = url.openConnection() as HttpURLConnection
         httpURLConnection.requestMethod = "GET"
         httpURLConnection.setRequestProperty("Accept", "text/json")
@@ -81,7 +81,7 @@ class WeatherDownloader() {
 
             var weather = Weather()
             val jObject = JSONObject(dataString)
-            weather.condition = jObject.getJSONArray("weather").getJSONObject(1).getString("main")
+            weather.condition = jObject.getJSONArray("weather").getJSONObject(0).getString("main")
             weather.day = "Today (temp value)"
             weather.temperature = jObject.getJSONObject("main").getString("temp").toDouble()
             weather.temperatureFeelsLike = jObject.getJSONObject("main").getString("feels_like").toDouble()

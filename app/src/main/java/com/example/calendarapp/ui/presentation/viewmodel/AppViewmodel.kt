@@ -27,7 +27,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     val utilityHelper = utilityHelper
 
     //Location Context
-    var WeatherDownloader: WeatherDownloader = WeatherDownloader(application=application, this)
+    var WeatherDownloader: WeatherDownloader = WeatherDownloader()
     private val _weather = MutableLiveData<List<Weather>>()
 
     var holidayRepository = HolidayRepository(utilityHelper)
@@ -117,7 +117,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     }
 
     fun fetchHolidays() {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             try {
                 val hol = holidayRepository.getHolidays()
                 _holidays.value = hol
