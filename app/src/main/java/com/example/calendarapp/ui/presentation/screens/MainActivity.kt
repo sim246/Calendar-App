@@ -26,10 +26,14 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.presentation.viewmodel.UtilityHelper
 import com.example.calendarapp.ui.theme.CalendarAppTheme
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         setContent {
             CalendarAppTheme {
                 // A surface container using the 'background' color from the theme
@@ -45,7 +49,7 @@ class MainActivity : ComponentActivity() {
                             "AppViewmodel",
                             AppViewmodelFactory(
                                 LocalContext.current.applicationContext
-                                        as Application, LocalContext.current
+                                        as Application, LocalContext.current, fusedLocationClient
                             )
                         )
 
@@ -98,9 +102,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-class AppViewmodelFactory(private val application: Application, private val context: Context) :
+class AppViewmodelFactory(private val application: Application, private val context: Context,  private val fusedLocationProvider: FusedLocationProviderClient) :
     ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AppViewmodel(application, UtilityHelper(context)) as T
+            return AppViewmodel(application, UtilityHelper(context), fusedLocationProvider) as T
         }
     }

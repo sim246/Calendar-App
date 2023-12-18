@@ -9,17 +9,26 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.calendarapp.ui.data.HTTPUrlConnection.WeatherDownloader
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
+import com.example.calendarapp.ui.domain.Weather
+import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper) : ViewModel(){
+class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper,fusedLocationProvider: FusedLocationProviderClient) : ViewModel(){
 
+    private val fusedLocationProviderClient = fusedLocationProvider
+    val utilityHelper = utilityHelper
+
+    //Location Context
+
+    var WeatherDownloader: WeatherDownloader = WeatherDownloader(application=application)
     var holidayRepository = HolidayRepository(utilityHelper)
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
@@ -117,5 +126,10 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
                 Log.e("FetchHoliday", e.message.toString())
             }
         }
+    }
+
+    fun getCurrentDayForecast(utilityHelper: UtilityHelper): Weather? {
+        WeatherDownloader.fetchData(utilityHelper.context,fusedLocationProviderClient)
+        return null
     }
 }

@@ -4,4 +4,5 @@ import android.content.Context
 
 class UtilityHelper(context: Context) {
     val locale: String = context.resources.configuration.locales[0].country
+    val context = context
 }
