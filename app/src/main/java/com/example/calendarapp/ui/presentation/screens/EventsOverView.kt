@@ -17,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.example.calendarapp.R
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
@@ -36,16 +38,16 @@ fun SingleEventEdit(
 ){
 
     Column{
-        val titleString = eventInputField("Title (Required)", event.eventName)
-        val descriptionString = event.description?.let { eventInputField("Description", it) }
-        val locationString = event.location?.let { eventInputField("Location", it) }
-        val clientString = event.clientName?.let { eventInputField("Client Name", it) }
+        val titleString = eventInputField(stringResource(R.string.title_required), event.eventName)
+        val descriptionString = event.description?.let { eventInputField(stringResource(R.string.description), it) }
+        val locationString = event.location?.let { eventInputField(stringResource(R.string.location), it) }
+        val clientString = event.clientName?.let { eventInputField(stringResource(R.string.client_name), it) }
         // Fetching local context
         val context = LocalContext.current
         val startEndTimes = eventTimeDisplay(event)
 
         Button(
-            content={Text(text = "Save Event")},
+            content={Text(text = stringResource(R.string.save_event))},
             //should save the event at the specified date and time onclick
             onClick={
                 Log.i("nya title", titleString)
@@ -74,7 +76,7 @@ fun SingleEventEdit(
             })
 
         Button(
-            content={Text(text = "Quit without saving")},
+            content={Text(text = stringResource(R.string.quit_without_saving))},
             onClick={
                 navController.popBackStack()
             }
@@ -90,13 +92,13 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
         Text(text=event.start.toLocalTime().toString() + " to " + event.theEnd.toLocalTime().toString())
         event.description?.let { Text(text= it) }
         Button(
-            content={Text(text = "Edit Event")},
+            content={Text(text = stringResource(R.string.edit_event))},
             onClick={
                 navController.navigate(Routes.EventEdit.route)
             }
         )
         Button(
-            content={Text(text = "Delete Event")},
+            content={Text(text = stringResource(R.string.delete_event))},
             //realistically should have a "Are you sure??" dialog
             onClick={
                 viewModel.deleteEvent(event.id)
@@ -104,7 +106,7 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
             }
         )
         Button(
-            content={Text(text="Return")},
+            content={Text(text=stringResource(R.string.return_btn))},
             onClick = {
                 navController.navigate(Routes.DailyOverview.route)
             }
@@ -142,15 +144,21 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
         }, hour, minute, false
     )
 
-    Text(text= "Start Time: $startTime")
-    Text(text= "End Time: $endTime")
+    Text(
+        //text= "Start Time: $startTime"
+        text = stringResource(R.string.start_time, startTime)
+    )
+    Text(
+        //text= "End Time: $endTime"
+        text = stringResource(R.string.end_time, startTime)
+    )
     Row{
         Button(onClick={
             timePickerStart.show()
-        }, content={Text(text = "Set Start Time")})
+        }, content={Text(text = stringResource(R.string.set_start_time))})
         Button(onClick={
             timePickerEnd.show()
-        }, content={Text(text = "Set End Time")})
+        }, content={Text(text = stringResource(R.string.set_end_time))})
     }
     //fix strings for parsings
 
