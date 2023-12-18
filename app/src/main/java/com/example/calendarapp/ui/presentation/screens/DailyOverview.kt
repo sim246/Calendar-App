@@ -210,7 +210,7 @@ fun TopHalf(
                 val weather = viewModel.getCurrentDayForecast(viewModel.utilityHelper)
                 if(weather != null){
                     Button(onClick = { /*TODO*/ }) {
-                        Text(weather.condition + " - " + weather.temperature)
+                        Text("weather")
                     }
                 }
                 else

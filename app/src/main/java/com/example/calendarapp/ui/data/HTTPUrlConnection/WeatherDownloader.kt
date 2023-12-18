@@ -87,4 +87,9 @@ class WeatherDownloader(application: Application, viewmodel: AppViewmodel) {
             return null
         }
     }
+
+    //Below FN translates JSON string into usable data
+    fun parseJSON(){
+
+    }
 }
