@@ -29,7 +29,9 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SingleEventEdit(
-    event: Event, navController: NavController,
+    allEvents:List<Event>,
+    event: Event,
+    navController: NavController,
     viewModel: AppViewmodel
 ){
 
@@ -38,12 +40,8 @@ fun SingleEventEdit(
         val descriptionString = event.description?.let { eventInputField("Description", it) }
         val locationString = event.location?.let { eventInputField("Location", it) }
         val clientString = event.clientName?.let { eventInputField("Client Name", it) }
-
-
         // Fetching local context
         val context = LocalContext.current
-
-
         val startEndTimes = eventTimeDisplay(event)
 
         Button(
@@ -56,39 +54,42 @@ fun SingleEventEdit(
                 //set event values after checking time validity
                 if(titleString.isNotEmpty()){
                     //check for time collisions (cannot overlap w/ each other)
-                    val check = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1])
-                    if(check == null){
-                        event.eventName = titleString
-                        event.description = descriptionString
-                        event.clientName = clientString
-                        event.location = locationString
-                        event.start = startEndTimes[0]
-                        event.theEnd = startEndTimes[1]
-                        Log.d("nya", viewModel.isEditing.toString())
-                        if(!viewModel.isEditing)
-                        {
-                            val bool:Boolean = viewModel.insertEvent(event)
-                            Log.d("nya", bool.toString())
-                            if(bool){
-                                Log.d("nya", viewModel.currentDay.toString())
-                                navController.popBackStack()
+                    if (!viewModel.isEditing) {
+                        val check1 = viewModel.checkConflictingExistingEvents(titleString, allEvents)
+                        val check2 = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1])
+                        if(check1 == null && check2 == null) {
+                            event.eventName = titleString
+                            event.description = descriptionString
+                            event.clientName = clientString
+                            event.location = locationString
+                            event.start = startEndTimes[0]
+                            event.theEnd = startEndTimes[1]
+                            viewModel.insertEvent(event)
+                            viewModel.setIsEditing(false)
+                            navController.navigate(Routes.DailyOverview.route)
+                        } else {
+                            if (check1 == null) {
+                                Toast.makeText(context, "$check2", Toast.LENGTH_LONG).show()
+                            } else if(check2 == null) {
+                                Toast.makeText(context, "$check1", Toast.LENGTH_LONG).show()
                             } else {
-                                val toastText = "Something went wrong when adding the event."
-                                Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "$check1 ans $check2", Toast.LENGTH_LONG).show()
                             }
                         }
-                        else
-                        {
-                            //i'm sure setting the event values to the current
-                            //would save it in memory
-                            navController.popBackStack()
-
+                    } else {
+                        val check = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1])
+                        if(check == null) {
+                            event.eventName = titleString
+                            event.description = descriptionString
+                            event.clientName = clientString
+                            event.location = locationString
+                            event.start = startEndTimes[0]
+                            event.theEnd = startEndTimes[1]
+                            viewModel.insertEvent(event)
+                            navController.navigate(Routes.DailyOverview.route)
+                        } else {
+                            Toast.makeText(context, check, Toast.LENGTH_LONG).show()
                         }
-                    }
-                    else
-                    {
-                        val toastText = "Error: $check"
-                        Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
                     }
                 }
                 else{
@@ -101,7 +102,6 @@ fun SingleEventEdit(
         Button(
             content={Text(text = "Quit without saving")},
             onClick={
-                //isEditing = false
                 navController.popBackStack()
             }
         )
@@ -118,7 +118,7 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
         Button(
             content={Text(text = "Edit Event")},
             onClick={
-                viewModel.isEditing = true
+                viewModel.setIsEditing(true)
                 navController.navigate(Routes.EventEdit.route)
             }
         )
@@ -126,14 +126,13 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
             content={Text(text = "Delete Event")},
             //realistically should have a "Are you sure??" dialog
             onClick={
-                if(viewModel.deleteEvent(event.eventName)){
-                    navController.popBackStack()
-                }
+                viewModel.deleteEvent(event.eventName)
+                navController.navigate(Routes.DailyOverview.route)
             }
         )
         Button(
             content={Text(text="Return")},
-            onClick = {navController.popBackStack()}
+            onClick = {navController.navigate(Routes.DailyOverview.route)}
         )
     }
 }

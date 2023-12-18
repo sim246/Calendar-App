@@ -87,6 +87,7 @@ class MainActivity : ComponentActivity() {
             composable(Routes.EventEdit.route) {
                 appViewmodel.currentlyViewingEvent?.let { it1 ->
                     SingleEventEdit(
+                        allEvents,
                         it1,
                         navController,
                         appViewmodel

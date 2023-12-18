@@ -1,16 +1,13 @@
 package com.example.calendarapp.ui.data.retrofit
 
-import android.content.Context
-import android.os.Build
 import android.util.Log
 import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.presentation.viewmodel.UtilityHelper
 import java.time.LocalDateTime
 
 
-open class HolidayRepository(utilityHelper: UtilityHelper) {
+open class HolidayRepository(private val utilityHelper: UtilityHelper) {
     private val holidayService = RetrofitInstance.holidayService
-    private val utilityHelper = utilityHelper
     open suspend fun getHolidays(): List<Holiday> {
         val holidays : MutableList<Holiday> = mutableListOf()
         Log.d("day", utilityHelper.locale)

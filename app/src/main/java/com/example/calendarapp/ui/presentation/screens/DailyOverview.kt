@@ -110,19 +110,17 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
     }
 }
 
-val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
-val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
+//val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
+//val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @Composable
 fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewModel: AppViewmodel) {
     events?.sortedBy(Event::start)?.forEach { event ->
         Log.d("day day", viewModel.currentDay.toString())
         Log.d("day day event", event.day.toString())
         if (event.day == viewModel.currentDay) {
-            val height = (event.theEnd.format(FormatterHours).toInt() - event.start.format(
-                FormatterHours
-            ).toInt()) * 60
+            val height = (event.theEnd.hour - event.start.hour) * 60
             val heightMin =
-                event.theEnd.format(FormatterMin).toInt() - event.start.format(FormatterMin)
+                event.theEnd.minute - event.start.minute
                     .toInt()
             Layout(
                 content = {
@@ -138,7 +136,7 @@ fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewMod
                     measurable.measure(constraints.copy(maxHeight = (height + heightMin).dp.roundToPx()))
                 }
                 layout(constraints.maxWidth, height) {
-                    var y = event.start.format(FormatterHours).toInt()
+                    var y = event.start.hour
                     y -= if (y > 12) {
                         7
                     } else {
@@ -253,11 +251,9 @@ fun AddButton(navController: NavController, viewModel: AppViewmodel) {
                     if (LocalDateTime.now()
                             .format(Formatter) <= viewModel.currentDay.toString()
                     ) {
-//                        val format = DateTimeFormatter.ofPattern("yyyy-mm-ddTHH:mm:ss")
                         //Create a new (empty) event for the selected day,
                         // set it to the currently viewing one
                         // and open the edit menu for it
-                        viewModel.isEditing = false
                         viewModel.setCurrentEvent(
                             Event(
                                 viewModel.currentDay,
@@ -269,6 +265,7 @@ fun AddButton(navController: NavController, viewModel: AppViewmodel) {
                                 ""
                             )
                         )
+                        viewModel.setIsEditing(false)
                         navController.navigate(Routes.EventEdit.route)
                     }
                 }

@@ -29,62 +29,52 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     var searchResults: MutableLiveData<List<Event>> = MutableLiveData()
 
     init {
-        val productDb = EventRoomDatabase.getInstance(application)
-        val productDao = productDb.eventDao()
-        roomRepository = EventRepository(productDao)
+        val eventDb = EventRoomDatabase.getInstance(application)
+        val eventDao = eventDb.eventDao()
+        roomRepository = EventRepository(eventDao)
         allEvents = roomRepository.getAllEvents()
-//        searchResults =
     }
 
-    //var to determine if a new event gets added or just edited for the edit menu
-    var isEditing = false
-
-    //DB FUNCTIONS
-    private val eventDb = EventRoomDatabase.getInstance(application)
-    private val eventDao = eventDb.eventDao()
-    private var dbRepository = EventRepository(eventDao)
-
-    fun insertEvent(event: Event): Boolean {
-        return try {
-            viewModelScope.launch (Dispatchers.IO) {
-                dbRepository.insertEvent(event)
-            }
-            true
-        } catch (e: Exception) {
-            Log.d("error", e.message.toString())
-            false
+    fun insertEvent(event: Event) {
+        viewModelScope.launch(Dispatchers.IO) {
+            roomRepository.insertEvent(event)
         }
     }
 
-    fun findEventsByName(name: String){
+    fun findEventsByName(name: String) {
         viewModelScope.launch (Dispatchers.IO){
-            searchResults.postValue(dbRepository.findEvent(name))
+            searchResults.postValue(roomRepository.findEvent(name))
         }
+    }
+
+    var isEditing:Boolean by mutableStateOf(false)
+    fun setIsEditing(bool:Boolean) {
+        isEditing = bool
     }
 
     fun findEventsByDay(day: LocalDateTime) {
         viewModelScope.launch (Dispatchers.IO){
-            searchResults.postValue(dbRepository.findEventByDay(day))
+            searchResults.postValue(roomRepository.findEventByDay(day))
         }
     }
 
+    fun deleteEvent(name: String) {
+        viewModelScope.launch (Dispatchers.IO) {
+            roomRepository.deleteEvent(name)
+        }
+    }
 
-    fun deleteEvent(name: String): Boolean {
-        return try {
-            viewModelScope.launch (Dispatchers.IO) {
-                dbRepository.deleteEvent(name)
+    fun checkConflictingExistingEvents(name:String, events:List<Event>): String?{
+        for (event in events) {
+            if (name == event.eventName) {
+                return "an event with this name already exists"
             }
-            true
-        } catch (e: Exception) {
-            Log.d("error", e.message.toString())
-            false
         }
+        return null
     }
-
     fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime): String? {
         //Given a start & end, look thru the list of events and find conflicting times & dates
         //returns an error message if a conflict is found, null if not
-
         //validate if start is before end / equals to each other
         Log.d(
             "what",
@@ -92,6 +82,14 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         )
         if (start.hour * 60 + start.minute >= end.hour * 60 + end.minute) {
             return "Start time must be before the end time"
+        }
+        //validate if start and end are between 6 am and 12 pm
+        if (start.hour !in 6..24 || end.hour !in 6..24){
+            return "events must be between 6 am and 12 pm"
+        }
+        //check exact date start & end
+        if (start.hour * 60 + start.minute == end.hour * 60 + end.minute) {
+            return "Start and End times are the same"
         }
 
         //Checks if it overlaps with an existing event
@@ -108,10 +106,6 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 //                }
 //            }
 //        }
-        //check exact date start & end
-        if (start.hour * 60 + start.minute == end.hour * 60 + end.minute) {
-            return "Start and End times are the same"
-        }
         return null
     }
 
