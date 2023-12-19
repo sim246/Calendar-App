@@ -102,6 +102,14 @@ class DalyOverviewUnitTest {
         composeTestRule.onNodeWithTag("Click Add", useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag("Next Day", useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag("Previous Day", useUnmergedTree = true).assertIsDisplayed()
+
+        //test to see if the first few hours are displayed before scrolling
+        var i = 0
+        while (i <= 5) {
+            composeTestRule.onNodeWithTag(i.toString(), useUnmergedTree = true).assertIsDisplayed()
+            i++
+        }
+
         composeTestRule.onNodeWithTag("Click Add", useUnmergedTree = true)
             .performClick()
     }

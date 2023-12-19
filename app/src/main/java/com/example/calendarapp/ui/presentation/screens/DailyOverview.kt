@@ -96,7 +96,7 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
                 viewModel.setCurrentEvent(event)
                 navController.navigate(Routes.EventOverview.route)
             }
-            .testTag("Click Event Display " + event.eventName)
+//            .testTag("Click Event Display " + event.eventName)
     ) {
         Text(
             text = "${event.start.format(EventTimeFormatter)} - ${event.theEnd.format(
@@ -167,6 +167,7 @@ fun HourDisplay() {
                     .height(60.dp)
                     .fillMaxWidth()
                     .background(color)
+                    .testTag(i.toString())
             )
             {
                 Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
