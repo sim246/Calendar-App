@@ -26,6 +26,7 @@ import com.example.calendarapp.ui.domain.Event
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,7 +120,6 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
 @ExperimentalMaterial3Api
 fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
     //Time Picker declatation
-
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
@@ -128,29 +128,37 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
     val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("H:mm")
 
     // Fetching current hour, and minute
-    val hour = calendar[Calendar.HOUR_OF_DAY]
-    val minute = calendar[Calendar.MINUTE]
+    //val hour = calendar[Calendar.HOUR_OF_DAY] + 1
+    //val minute = calendar[Calendar.MINUTE]
+    //Log.d("hour", hour.toString())
+    //Log.d("minute", minute.toString())
 
 
     val timePickerStart = TimePickerDialog(
         context,
         { _, selectedHour: Int, selectedMinute: Int ->
-            startTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
-        }, hour, minute, false
+            //startTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
+            startTime = formatTime(selectedHour, selectedMinute)
+        }, 11, 0, false
     )
     val timePickerEnd = TimePickerDialog(context,
         { _, selectedHour: Int, selectedMinute: Int ->
-            endTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
-        }, hour, minute, false
+            //endTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
+            endTime = formatTime(selectedHour, selectedMinute)
+        }, 13, 0, false
     )
 
     Text(
         //text= "Start Time: $startTime"
-        text = stringResource(R.string.start_time, startTime)
+        //text = stringResource(R.string.start_time, startTime)
+        text = stringResource(R.string.start_time, formatLocalizedTime(startTime))
+
     )
     Text(
         //text= "End Time: $endTime"
-        text = stringResource(R.string.end_time, startTime)
+        //text = stringResource(R.string.end_time, endTime)
+        text = stringResource(R.string.end_time, formatLocalizedTime(endTime))
+
     )
     Row{
         Button(onClick={
@@ -167,6 +175,17 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
     return arrayOf(LocalDateTime.of(event.start.toLocalDate(), LocalTime.parse(startTime, formatter)),
         LocalDateTime.of(event.theEnd.toLocalDate(), LocalTime.parse(endTime, formatter)))
 
+}
+
+
+private fun formatTime(hour: Int, minute: Int): String {
+    return fixString(hour.toString()) + ":" + fixString(minute.toString())
+}
+
+private fun formatLocalizedTime(time: String): String {
+    val formatter = DateTimeFormatter.ofPattern("H:mm")
+    val localizedFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+    return LocalTime.parse(time, formatter).format(localizedFormatter)
 }
 
 fun fixString(input : String): String{
