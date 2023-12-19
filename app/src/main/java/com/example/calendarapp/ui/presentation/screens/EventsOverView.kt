@@ -53,7 +53,7 @@ fun SingleEventEdit(
                 Log.i("nya", startEndTimes[1].toString())
                 //set event values after checking time validity
                 if(titleString.isNotEmpty()){
-                    val check = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1], allEvents)
+                    val check = viewModel.checkConflictingEvents(event.id, startEndTimes[0], startEndTimes[1], allEvents)
                     if(check == null) {
                         event.eventName = titleString
                         event.description = descriptionString
@@ -152,8 +152,8 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
         }, content={Text(text = "Set End Time")})
     }
     //fix strings for parsings
-    return arrayOf(LocalDateTime.of(event.start.toLocalDate(), LocalTime.parse(startTime, formatter)),
-        LocalDateTime.of(event.theEnd.toLocalDate(), LocalTime.parse(endTime, formatter)))
+    return arrayOf(LocalDateTime.of(event.day.toLocalDate(), LocalTime.parse(startTime, formatter)),
+        LocalDateTime.of(event.day.toLocalDate(), LocalTime.parse(endTime, formatter)))
 
 }
 

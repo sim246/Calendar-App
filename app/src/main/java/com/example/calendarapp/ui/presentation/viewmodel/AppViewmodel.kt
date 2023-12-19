@@ -69,7 +69,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         }
     }
 
-    fun checkConflictingEvents(start: LocalDateTime, end: LocalDateTime, allEvents:List<Event>): String? {
+    fun checkConflictingEvents(id:Int, start: LocalDateTime, end: LocalDateTime, allEvents:List<Event>): String? {
         //Given a start & end, look thru the list of events and find conflicting times & dates
         //returns an error message if a conflict is found, null if not
         //validate if start is before end / equals to each other
@@ -93,11 +93,14 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         //for now, checks every single event in the array (could be cleaner)
         allEvents.forEach {
             //if the same day...
-            if (it.start.toLocalDate() == start.toLocalDate()) {
+            if (it.start.toLocalDate() == start.toLocalDate() && id != it.id) {
+                Log.d("day", (start.hour * 60 + start.minute).toString())
+                Log.d("day range " + it.eventName, (it.start.hour * 60 + it.start.minute).toString() + " " + (it.theEnd.hour * 60 + it.theEnd.minute).toString())
                 if ((start.hour * 60 + start.minute) in (it.start.hour * 60 + it.start.minute)..(it.theEnd.hour * 60 + it.theEnd.minute)) {
                     //overlaps start time! send a message
                     return "Start time overlaps another event, check time values"
                 }
+
                 if ((end.hour * 60 + end.minute) in (it.start.hour * 60 + it.start.minute)..(it.theEnd.hour * 60 + it.theEnd.minute)) {
                     //overlaps end time! send a message
                     return "End time overlaps another event, check time values"
