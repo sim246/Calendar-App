@@ -43,8 +43,11 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Locale
 
 
 @Composable
@@ -183,6 +186,16 @@ fun HourDisplay() {
         }
     }
 }
+
+fun formatHour(hour: Int): String{
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.HOUR_OF_DAY, hour)
+    val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return dateFormat.format(calendar.time)
+}
+
+
+
 
 val DayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
 @Composable
