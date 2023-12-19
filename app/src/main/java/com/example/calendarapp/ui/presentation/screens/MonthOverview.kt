@@ -85,7 +85,7 @@ fun YearAndNav(allEvents: List<Event>, navController: NavController, viewModel: 
 
             Text(
                 text = "${selectedMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${selectedMonth.year}",
-                modifier = Modifier.testTag("NOVEMBER 2023")
+                modifier = Modifier.testTag("MONTH 2023")
             )
 
             IconButton(
