@@ -91,18 +91,19 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 
         //Checks if it overlaps with an existing event
         //for now, checks every single event in the array (could be cleaner)
-//        allEvents.forEach {
-//            //if the same day...
-//            if (it.start.dayOfYear != start.dayOfYear) {
-//                //if the end of the it crosses the start time of the event
-//                if (end.hour * 60 + end.minute >= it.start.hour * 60 + it.start.minute ||
-//                    start.hour * 60 + start.minute >= it.theEnd.hour * 60 + it.theEnd.minute
-//                ) {
-//                    //overlaps either in the top or the bottom! send a message
-//                    return "Overlaps another event: Check time values"
-//                }
-//            }
-//        }
+        allEvents.forEach {
+            //if the same day...
+            if (it.start.toLocalDate() == start.toLocalDate()) {
+                if ((start.hour * 60 + start.minute) in (it.start.hour * 60 + it.start.minute)..(it.theEnd.hour * 60 + it.theEnd.minute)) {
+                    //overlaps start time! send a message
+                    return "Start time overlaps another event, check time values"
+                }
+                if ((end.hour * 60 + end.minute) in (it.start.hour * 60 + it.start.minute)..(it.theEnd.hour * 60 + it.theEnd.minute)) {
+                    //overlaps end time! send a message
+                    return "End time overlaps another event, check time values"
+                }
+            }
+        }
         return null
     }
 
@@ -117,7 +118,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     }
 
     fun fetchHolidays() {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch {
             try {
                 val hol = holidayRepository.getHolidays()
                 _holidays.value = hol
