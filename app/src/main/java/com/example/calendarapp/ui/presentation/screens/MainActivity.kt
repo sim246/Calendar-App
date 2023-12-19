@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
 
     @Composable
     fun ScreenSetup(appViewmodel: AppViewmodel) {
@@ -97,7 +98,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
 class AppViewmodelFactory(private val application: Application, private val context: Context,  private val fusedLocationProvider: FusedLocationProviderClient) :
     ViewModelProvider.Factory {
