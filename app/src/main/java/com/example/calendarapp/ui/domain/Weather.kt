@@ -7,7 +7,7 @@ display the 5-day forecast with 3-hour step, for the location. Your app should u
  weather information was last updated
  */
 
-data class Weather(
+class Weather(
 //should describe the weather for a day.
 
     var day:String = "",
