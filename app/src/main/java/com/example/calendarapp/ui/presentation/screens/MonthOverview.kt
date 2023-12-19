@@ -37,11 +37,13 @@ import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.google.android.libraries.places.api.model.DayOfWeek
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.util.Calendar
 import java.util.Locale
 
 
@@ -104,10 +106,12 @@ fun DaysOfTheWeek(allEvents: List<Event>, selectedMonth: YearMonth, navControlle
             .padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
         for (day in DayOfWeek.values()) {
+
             Text(
-                text = day.name.take(3),
-//                text = "${day.name.take(3).getDisplayName(TextStyle.SHORT, Locale.getDefault())}",
+                //text = day.name.take(3),
+                text = day.getAbbreviatedDisplayName(),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -115,6 +119,15 @@ fun DaysOfTheWeek(allEvents: List<Event>, selectedMonth: YearMonth, navControlle
 
     DaysOfTheMonth(allEvents = allEvents, selectedMonth = selectedMonth, navController, viewModel)
 }
+
+//Abbreviation of days of the week
+fun DayOfWeek.getAbbreviatedDisplayName(): String {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.DAY_OF_WEEK, this.ordinal + 1)
+    val dateFormat = SimpleDateFormat("EEE", Locale.getDefault())
+    return dateFormat.format(calendar.time)
+}
+
 
 val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 @Composable
