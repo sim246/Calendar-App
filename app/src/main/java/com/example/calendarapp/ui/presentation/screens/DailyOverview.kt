@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,10 +45,12 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
+import com.example.calendarapp.ui.domain.Weather
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 
@@ -235,12 +238,21 @@ fun TopHalf(
                 fontSize = 20.sp,
                 color = Color.Black
             )
-            if(viewModel.currentDay.toLocalDate() == LocalDate.now()){
+            val dayOffset = LocalDateTime.now().until(viewModel.currentDay, ChronoUnit.DAYS).toInt()
+            if(viewModel.currentDay.toLocalDate() == LocalDate.now() || dayOffset in 1..5){
                 //show button for forecast
-                val weather = viewModel.getCurrentDayForecast(viewModel.utilityHelper)
-                if(weather != null){
-                    Button(onClick = { /*TODO*/ }) {
-                        Text("weather")
+
+                Log.d("days", dayOffset.toString())
+                var currentDay: Weather? = viewModel.WeatherDownloader.weatherCurrentDay
+                if(dayOffset in 1..5)
+                {
+                    //if a future date in between 1-5, pick that in the array
+                    currentDay = viewModel.WeatherDownloader.weatherFiveDays[dayOffset - 1]
+                }
+
+                if(currentDay!= null){
+                    Button(onClick = { }) {
+                        Text(currentDay.temperature.toString() + " degrees")
                     }
                 }
                 else

@@ -50,9 +50,6 @@ fun SingleEventEdit(
             content={Text(text = stringResource(R.string.save_event))},
             //should save the event at the specified date and time onclick
             onClick={
-                Log.i("nya title", titleString)
-                Log.i("nya", startEndTimes[0].toString())
-                Log.i("nya", startEndTimes[1].toString())
                 //set event values after checking time validity
                 if(titleString.isNotEmpty()){
                     val check = viewModel.checkConflictingEvents(event.id, startEndTimes[0], startEndTimes[1], allEvents)
