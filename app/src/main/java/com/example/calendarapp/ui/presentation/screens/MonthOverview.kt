@@ -46,6 +46,7 @@ import java.util.Locale
 
 @Composable
 fun MonthOverviewScreen(allEvents: List<Event>, navController: NavController, viewModel: AppViewmodel) {
+    viewModel.getCurrentDayForecast()
     YearAndNav(allEvents = allEvents, navController, viewModel)
 
 }

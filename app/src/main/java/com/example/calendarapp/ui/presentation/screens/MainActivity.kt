@@ -3,6 +3,7 @@ package com.example.calendarapp.ui.presentation.screens
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,7 @@ import com.example.calendarapp.ui.presentation.viewmodel.UtilityHelper
 import com.example.calendarapp.ui.theme.CalendarAppTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -60,6 +62,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun ScreenSetup(appViewmodel: AppViewmodel) {
+        appViewmodel.getCurrentDayForecast()
+        Log.d("WeatherDownloader", LocalDate.now().toString())
         val navController = rememberNavController()
         val holidays by appViewmodel.holidays.observeAsState(null)
         val allEvents by appViewmodel.allEvents.observeAsState(listOf())

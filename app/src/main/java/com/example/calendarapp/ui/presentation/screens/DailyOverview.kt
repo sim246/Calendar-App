@@ -43,6 +43,7 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
+import com.example.calendarapp.ui.domain.Weather
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -207,16 +208,22 @@ fun TopHalf(
             )
             if(viewModel.currentDay.toLocalDate() == LocalDate.now()){
                 //show button for forecast
-                viewModel.getCurrentDayForecast(viewModel.utilityHelper)
-                //if(weather != null){
-                //    Button(onClick = { /*TODO*/ }) {
-                //        Text("weather")
-                //    }
-                //}
-                //else
+
+                //viewModel.getCurrentDayForecast()
+                //if(viewModel.WeatherDownloader.weatherCurrentDay == null)
                 //{
-                //    Text("Weather not found, try again later.")
+                    //if weather is null, attempt to fetch.
                 //}
+                val currentDay: Weather? = viewModel.WeatherDownloader.weatherCurrentDay
+                if(currentDay!= null){
+                    Button(onClick = { }) {
+                        Text(currentDay.temperature.toString() + " degrees")
+                    }
+                }
+                else
+                {
+                    Text("Weather not found, try again later.")
+                }
             }
             if (holidays != null) {
                 for (i in holidays.indices) {

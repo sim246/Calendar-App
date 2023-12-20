@@ -21,7 +21,6 @@ fun WeatherSingle(weather: Weather){
         Text("Feels Like" + weather.temperatureFeelsLike.toString() + " degrees C")
         Text(weather.condition)
         Text("Humidity: " + weather.humidity)
-        Text("UV Index: " + weather.UVIndex)
     }
 }
 @Composable
