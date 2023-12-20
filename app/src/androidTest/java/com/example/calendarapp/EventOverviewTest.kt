@@ -1,5 +1,6 @@
 package com.example.calendarapp
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -13,6 +14,7 @@ import androidx.compose.ui.test.performClick
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.example.calendarapp.ui.presentation.screens.AppViewmodelFactory
 import com.example.calendarapp.ui.presentation.screens.ScreenSetup
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
@@ -22,8 +24,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import android.Manifest
-import androidx.test.rule.GrantPermissionRule
+import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @RunWith(AndroidJUnit4::class)
@@ -61,7 +62,9 @@ class EventOverviewTest {
     @Test
     fun verifyIfAllViewsIsDisplayedClickBack() {
 
-        composeTestRule.onNodeWithText("1", useUnmergedTree = true)
+        val date = LocalDateTime.now().dayOfMonth
+
+        composeTestRule.onNodeWithText(date.toString(), useUnmergedTree = true)
             .performClick()
         composeTestRule.onNodeWithTag("Click Add", useUnmergedTree = true)
             .performClick()
@@ -71,5 +74,8 @@ class EventOverviewTest {
         composeTestRule.onNodeWithTag("No Save", useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag("Start", useUnmergedTree = true).assertIsDisplayed()
         composeTestRule.onNodeWithTag("End", useUnmergedTree = true).assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("No Save", useUnmergedTree = true)
+            .performClick()
     }
 }

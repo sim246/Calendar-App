@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.example.calendarapp.ui.presentation.screens.AppViewmodelFactory
 import com.example.calendarapp.ui.presentation.screens.ScreenSetup
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
@@ -26,6 +27,8 @@ import java.time.LocalDate
 import java.time.Year
 import java.time.format.TextStyle
 import java.util.Locale
+import android.Manifest
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @RunWith(AndroidJUnit4::class)
@@ -33,6 +36,9 @@ class DalyOverviewUnitTest {
 
     @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     //Call the MySimpleUI function
     @Before

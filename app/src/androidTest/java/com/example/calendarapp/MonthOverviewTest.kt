@@ -1,5 +1,6 @@
 package com.example.calendarapp
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
@@ -16,6 +17,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.test.rule.GrantPermissionRule
 import com.example.calendarapp.ui.presentation.screens.AppViewmodelFactory
 import com.example.calendarapp.ui.presentation.screens.ScreenSetup
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
@@ -34,6 +36,9 @@ class MonthOverviewTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     @Before
     fun setUP() {

@@ -25,7 +25,11 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 
     private val fusedLocationProviderClient = fusedLocationProvider
     val utilityHelper = utilityHelper
-    var WeatherDownloader: WeatherDownloader = WeatherDownloader()
+
+
+    //Location Context
+    var WeatherDownloader: WeatherDownloader
+
     var holidayRepository = HolidayRepository(utilityHelper)
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
@@ -35,10 +39,14 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     var searchResults: MutableLiveData<List<Event>> = MutableLiveData()
 
     init {
+        WeatherDownloader = WeatherDownloader(context = utilityHelper.context,fusedLocationClient=fusedLocationProviderClient)
         val eventDb = EventRoomDatabase.getInstance(application)
         val eventDao = eventDb.eventDao()
         roomRepository = EventRepository(eventDao)
         allEvents = roomRepository.getAllEvents()
+
+        //get weather for the day
+        //getCurrentDayForecast()
     }
 
     fun insertEvent(event: Event) {
@@ -122,10 +130,12 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         }
     }
 
-    fun getCurrentDayForecast(utilityHelper: UtilityHelper){
+    fun getCurrentDayForecast(){
         viewModelScope.launch (Dispatchers.IO){
             //below should set the viewmodel's livedata to the fetched weather data
-            WeatherDownloader.fetchData(utilityHelper.context,fusedLocationProviderClient, viewModelScope)
+
+            WeatherDownloader.loadWeatherToday()
+            WeatherDownloader.loadWeatherFive()
         }
     }
 }

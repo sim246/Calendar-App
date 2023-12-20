@@ -47,7 +47,6 @@ fun SingleEventEdit(
         // Fetching local context
         val context = LocalContext.current
         val startEndTimes = eventTimeDisplay(event)
-
         Row (modifier = Modifier.testTag("Save")) {
             Button(
                 content = { Text(text = stringResource(R.string.save_event)) },
@@ -76,10 +75,6 @@ fun SingleEventEdit(
                         } else {
                             Toast.makeText(context, "$check", Toast.LENGTH_LONG).show()
                         }
-                    } else {
-                        //on unfilled required fields
-                        val toastText = "Please fill all the required values."
-                        Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
                     }
                 })
         }
