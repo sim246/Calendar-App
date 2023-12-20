@@ -1,13 +1,16 @@
 package com.example.calendarapp.ui.presentation.screens
 
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 //import androidx.compose.foundation.layout.ColumnScopeInstance.weight
+
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -134,19 +137,26 @@ val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
     // Days in the month
     val daysInMonth = selectedMonth.lengthOfMonth()
+
     val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7 + 1
+    Log.d("firstday", firstDayOfWeek.toString())
+
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
     for (row in 0 until rows) {
-        LazyRow(
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             for (col in 1..7) {
                 val day = row * 7 + col - firstDayOfWeek + 1
+                Log.d("DAY", day.toString())
+
                 if (day in 1..daysInMonth) {
+
                     val currentDate = LocalDate.now()
                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
                     var hasEvents:List<LocalDateTime> = mutableListOf()
+
                     if (allEvents.isNotEmpty()) {
                         val monthsEvents = allEvents.filter {
                             val eventMonth = YearMonth.from(it.day)
@@ -155,22 +165,12 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                         val eventDates = monthsEvents.map { it.day }.toSet()
                         hasEvents = eventDates.toList()
                     }
-                    item {
-                        if (hasEvents.contains(selectedMonth.atDay(day).atStartOfDay())){
+//                    item {
+
                             Show(
                                 day,
                                 daysInMonth,
-                                true,
-                                isCurrentDay,
-                                selectedMonth,
-                                navController,
-                                viewModel
-                            )
-                        } else {
-                            Show(
-                                day,
-                                daysInMonth,
-                                false,
+                                hasEvents.contains(selectedMonth.atDay(day).atStartOfDay()),
                                 isCurrentDay,
                                 selectedMonth,
                                 navController,
@@ -178,8 +178,18 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                             )
                         }
 
-                    }
+//                    }
+
+                else {
+                    // placeholder for empty spaces in the first and last week
+                    Spacer(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp)
+                            .background(Color.Transparent)
+                    )
                 }
+
             }
         }
     }
@@ -202,8 +212,9 @@ fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selec
     if (day in 1..daysInMonth) {
         Box(
             modifier = Modifier
-//                .weight(1f)
                 .padding(4.dp)
+                //.weight(1f)
+                //.fillMaxWidth()
                 .background(color)
                 .clip(MaterialTheme.shapes.small)
                 .clickable {
@@ -222,6 +233,7 @@ fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selec
                 color = fontColor
             )
         }
+
     }
 }
 @Composable
