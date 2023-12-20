@@ -51,7 +51,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         }
     }
 
-    fun findEventsByName(id: Int) {
+    fun findEventsById(id: Int) {
         viewModelScope.launch (Dispatchers.IO){
             searchResults.postValue(roomRepository.findEvent(id))
         }
