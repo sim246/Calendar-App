@@ -59,124 +59,135 @@ class AppViewModelTest {
     }
 
     @Test
-    fun insertEvent() {
-        val event = Event(
-            LocalDateTime.now(),
-            "Test Event",
-            LocalDateTime.now(),
-            LocalDateTime.now(),
+    fun checkConflictingEvents_noConflict() {
+        val start = LocalDateTime.of(2023, Month.DECEMBER, 25, 13, 0)
+        val end = LocalDateTime.of(2023, Month.DECEMBER, 25, 14, 0)
+
+        val eventsList: List<Event> = listOf(
+            Event(
+                LocalDateTime.of(2023, 12, 25, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 25, 8, 0),
+                LocalDateTime.of(2023, 12, 25, 9, 0),
+                "des",
+                "John Doe",
+                "loc"
+            ),
+            Event(
+                LocalDateTime.of(2023, 12, 26, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 26, 13, 0),
+                LocalDateTime.of(2023, 12, 26, 14, 0),
+                "des",
+                "John Doe",
+                "loc"
+            )
+        )
+        val result = viewModel.checkConflictingEvents(2, start, end, eventsList)
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun checkConflictingEvents_conflict() {
+        val start = LocalDateTime.of(2023, 11, 1, 13, 0)
+        val end = LocalDateTime.of(2023, 11, 1, 15, 0)
+
+        // Create an event that conflicts with the given time range
+        var conflictingEvent = Event(
+            LocalDateTime.of(2023, Month.NOVEMBER, 1, 0, 0),
+            "Conflicting Event",
+            start,
+            end,
             "Description",
             "Client",
             "Location"
         )
-        viewModel.insertEvent(event)
-        assertTrue(viewModel.allEvents.value?.get(0) == event)
+
+        val eventsList: List<Event> = listOf(
+            Event(
+                LocalDateTime.of(2023, 12, 25, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 25, 8, 0),
+                LocalDateTime.of(2023, 12, 25, 9, 0),
+                "des",
+                "John Doe",
+                "loc"
+            ),
+            Event(
+                LocalDateTime.of(2023, 12, 26, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 26, 13, 0),
+                LocalDateTime.of(2023, 12, 26, 14, 0),
+                "des",
+                "John Doe",
+                "loc"
+            ),
+            conflictingEvent
+        )
+
+        var result = viewModel.checkConflictingEvents(3, start, end, eventsList)
+        assertEquals("Start time overlaps another event, check time values", result)
+
+        conflictingEvent = Event(
+            LocalDateTime.of(2023, 11, 1, 0, 0),
+            "Conflicting Event",
+            LocalDateTime.of(2023, 11, 1, 14, 0),
+            end,
+            "Description",
+            "Client",
+            "Location"
+        )
+
+        val eventsList2: List<Event> = listOf(
+            Event(
+                LocalDateTime.of(2023, 12, 25, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 25, 8, 0),
+                LocalDateTime.of(2023, 12, 25, 9, 0),
+                "des",
+                "John Doe",
+                "loc"
+            ),
+            Event(
+                LocalDateTime.of(2023, 12, 26, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 26, 13, 0),
+                LocalDateTime.of(2023, 12, 26, 14, 0),
+                "des",
+                "John Doe",
+                "loc"
+            ),
+            conflictingEvent
+        )
+        result = viewModel.checkConflictingEvents(3, start, end, eventsList2)
+        assertEquals("End time overlaps another event, check time values", result)
     }
 
     @Test
-    fun deleteEvent() {
-        val eventName = "Test Event"
-        val result = viewModel.deleteEvent(0)
-        viewModel.allEvents.value?.isEmpty()?.let { assertTrue(it) }
+    fun checkConflictingEvents_sameStartAndEnd() {
+        val eventsList: List<Event> = listOf()
+
+        var start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
+        var end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
+        var result = viewModel.checkConflictingEvents(1, start, end, eventsList)
+        // Start and end times are the same, conflict
+        assertEquals("Start and End times are the same", result)
+
+        start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 9, 0)
+        end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 7, 0)
+        result = viewModel.checkConflictingEvents(1, start, end, eventsList)
+        // Start and end times are the same, conflict
+        assertEquals("Start time must be before the end time", result)
+
+        start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 1, 0)
+        end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 2, 0)
+        result = viewModel.checkConflictingEvents(1, start, end, eventsList)
+        // Start and end times are the same, conflict
+        assertEquals("events must be between 6 am and 12 pm", result)
     }
 
-//    @Test
-//    fun findEventsById() {
-//        val eventName = "Test Event"
-//        val events = listOf(
-//            Event(
-//                LocalDateTime.now(),
-//                eventName,
-//                LocalDateTime.now(),
-//                LocalDateTime.now(),
-//                "Description",
-//                "Clients",
-//                "Location"
-//            )
-//        )
-//        viewModel.findEventsById(0)
-//        val result = viewModel.searchResults.value?.get(0)
-//        assertEquals(events[0], result)
-//    }
 
-//    @Test
-//    fun findEventsByDay() {
-//        val day = LocalDateTime.now()
-//        val events = listOf(
-//            Event(
-//                day,
-//                "Test Event",
-//                LocalDateTime.now(),
-//                LocalDateTime.now(),
-//                "Description",
-//                "Clients",
-//                "Location"
-//            )
-//        )
-//
-////        viewModel.searchResults.value = events
-//        viewModel.findEventsByDay(day)
-//        val result = viewModel.searchResults.value
-//
-//        assertEquals(events[0], result?.get(0))
-//    }
-//
-//    @Test
-//    fun checkConflictingEvents_noConflict() {
-//        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
-//        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 0)
-//
-//        // assuming there are no events in the viewModel.searchResults
-//        viewModel.searchResults.value = emptyList()
-//
-//        val result = viewModel.checkConflictingEvents(2, start, end)
-//
-//        // should be no conflict, so the result should be null
-//        assertEquals(null, result)
-//    }
-//
-//    @Test
-//    fun checkConflictingEvents_conflict() {
-//        val viewModel = AppViewmodel()
-//
-//        // Create an event that conflicts with the given time range
-//        val conflictingEvent = Event(
-//            LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 30),
-//            "Conflicting Event",
-//            LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 30),
-//            LocalDateTime.of(2023, Month.NOVEMBER, 1, 14, 0),
-//            "Description",
-//            "Client",
-//            "Location"
-//        )
-//
-//        viewModel.searchResults.value = listOf(conflictingEvent)
-//
-//        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
-//        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 0)
-//
-//        val result = viewModel.checkConflictingEvents(start, end)
-//
-//        assertEquals("Overlaps another event: Check time values", result)
-//    }
-//
-//    @Test
-//    fun checkConflictingEvents_sameStartAndEnd() {
-//        val viewModel = AppViewmodel()
-//
-//        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
-//        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
-//
-//        viewModel.searchResults.value = emptyList()
-//
-//        val result = viewModel.checkConflictingEvents(start, end)
-//
-//        // Start and end times are the same, conflict
-//        assertEquals("Start and End times are the same", result)
-//    }
-//
-//
-//
+
     class MockHolidayRepository(utilityHelper:UtilityHelper) : HolidayRepository(utilityHelper = utilityHelper) {
         private val holidays = MutableStateFlow<List<Holiday>>(emptyList())
 

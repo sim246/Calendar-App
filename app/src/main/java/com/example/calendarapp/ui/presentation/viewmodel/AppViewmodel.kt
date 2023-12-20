@@ -71,9 +71,6 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
             "what",
             (start.hour * 60 + start.minute).toString() + "-" + (end.hour * 60 + end.minute).toString()
         )
-        if (start.hour * 60 + start.minute >= end.hour * 60 + end.minute) {
-            return "Start time must be before the end time"
-        }
         //validate if start and end are between 6 am and 12 pm
         if (start.hour !in 6..24 || end.hour !in 6..24){
             return "events must be between 6 am and 12 pm"
@@ -82,7 +79,9 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         if (start.hour * 60 + start.minute == end.hour * 60 + end.minute) {
             return "Start and End times are the same"
         }
-
+        if (start.hour * 60 + start.minute > end.hour * 60 + end.minute) {
+            return "Start time must be before the end time"
+        }
         //Checks if it overlaps with an existing event
         //for now, checks every single event in the array (could be cleaner)
         allEvents.forEach {
