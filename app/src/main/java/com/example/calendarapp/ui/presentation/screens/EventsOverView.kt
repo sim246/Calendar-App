@@ -27,7 +27,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +55,7 @@ fun SingleEventEdit(
                 Log.i("nya", startEndTimes[1].toString())
                 //set event values after checking time validity
                 if(titleString.isNotEmpty()){
-                    val check = viewModel.checkConflictingEvents(startEndTimes[0], startEndTimes[1], allEvents)
+                    val check = viewModel.checkConflictingEvents(event.id, startEndTimes[0], startEndTimes[1], allEvents)
                     if(check == null) {
                         event.eventName = titleString
                         event.description = descriptionString
@@ -121,8 +120,6 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
 fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
     //Time Picker declatation
     val context = LocalContext.current
-    val calendar = Calendar.getInstance()
-
     var startTime by remember { mutableStateOf(fixString(event.start.hour.toString()) + ":"+ fixString(event.start.minute.toString())) }
     var endTime by remember { mutableStateOf(fixString(event.theEnd.hour.toString()) + ":"+ fixString(event.theEnd.minute.toString())) }
     val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("H:mm")
@@ -147,7 +144,6 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
             endTime = formatTime(selectedHour, selectedMinute)
         }, 13, 0, false
     )
-
     Text(
         //text= "Start Time: $startTime"
         //text = stringResource(R.string.start_time, startTime)
@@ -169,11 +165,8 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
         }, content={Text(text = stringResource(R.string.set_end_time))})
     }
     //fix strings for parsings
-
-
-
-    return arrayOf(LocalDateTime.of(event.start.toLocalDate(), LocalTime.parse(startTime, formatter)),
-        LocalDateTime.of(event.theEnd.toLocalDate(), LocalTime.parse(endTime, formatter)))
+    return arrayOf(LocalDateTime.of(event.day.toLocalDate(), LocalTime.parse(startTime, formatter)),
+        LocalDateTime.of(event.day.toLocalDate(), LocalTime.parse(endTime, formatter)))
 
 }
 

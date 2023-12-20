@@ -12,8 +12,6 @@ import java.time.LocalDateTime
 interface EventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: Event)
-    @Query("SELECT * FROM events_db WHERE _id = :id")
-    suspend fun findEvents(id: Int): List<Event>
     @Query("DELETE FROM events_db WHERE _id = :id")
     suspend fun deleteEvents(id: Int)
     @Query("SELECT * FROM events_db")

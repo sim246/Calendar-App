@@ -1,6 +1,5 @@
 package com.example.calendarapp.ui.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,11 +44,10 @@ import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
-import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 import java.util.Locale
 
 
@@ -100,7 +99,7 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
                 viewModel.setCurrentEvent(event)
                 navController.navigate(Routes.EventOverview.route)
             }
-            .testTag("Click Event Display " + event.eventName)
+//            .testTag("Click Event Display " + event.eventName)
     ) {
         Text(
             text = "${event.start.format(EventTimeFormatter)} - ${event.theEnd.format(
@@ -116,13 +115,9 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
     }
 }
 
-//val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
-//val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @Composable
 fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewModel: AppViewmodel) {
     events?.sortedBy(Event::start)?.forEach { event ->
-        Log.d("day day", viewModel.currentDay.toString())
-        Log.d("day day event", event.day.toString())
         if (event.day == viewModel.currentDay) {
             val height = (event.theEnd.hour - event.start.hour) * 60
             val heightMin =
@@ -175,6 +170,7 @@ fun HourDisplay() {
                     .height(60.dp)
                     .fillMaxWidth()
                     .background(color)
+                    .testTag(i.toString())
                     .padding(
                         start = if (isFrenchLocale()) 8.dp else 0.dp,
                         end = if (isFrenchLocale()) 8.dp else 0.dp
@@ -239,6 +235,19 @@ fun TopHalf(
                 fontSize = 20.sp,
                 color = Color.Black
             )
+            if(viewModel.currentDay.toLocalDate() == LocalDate.now()){
+                //show button for forecast
+                val weather = viewModel.getCurrentDayForecast(viewModel.utilityHelper)
+                if(weather != null){
+                    Button(onClick = { /*TODO*/ }) {
+                        Text("weather")
+                    }
+                }
+                else
+                {
+                    Text("Weather not found, try again later.")
+                }
+            }
             if (holidays != null) {
                 for (i in holidays.indices) {
                     if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date && holidays[0].types[0] == "Public") {

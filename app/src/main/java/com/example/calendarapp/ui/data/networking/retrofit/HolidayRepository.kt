@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.data.retrofit
+package com.example.calendarapp.ui.data.networking.retrofit
 
 import android.util.Log
 import com.example.calendarapp.ui.domain.Holiday
@@ -19,7 +19,7 @@ open class HolidayRepository(private val utilityHelper: UtilityHelper) {
         val countryCode = if (languageCode == "fr") {
             "FR" //french language, set country code to France
         } else {
-            "CA"//default
+            utilityHelper.locale
         }
 
         Log.d("lang", languageCode)
