@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -137,10 +136,7 @@ val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
     // Days in the month
     val daysInMonth = selectedMonth.lengthOfMonth()
-
     val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7 + 1
-    Log.d("firstday", firstDayOfWeek.toString())
-
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
     for (row in 0 until rows) {
         Row(
@@ -149,10 +145,7 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
         ) {
             for (col in 1..7) {
                 val day = row * 7 + col - firstDayOfWeek + 1
-                Log.d("DAY", day.toString())
-
                 if (day in 1..daysInMonth) {
-
                     val currentDate = LocalDate.now()
                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
                     var hasEvents:List<LocalDateTime> = mutableListOf()
@@ -165,8 +158,6 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                         val eventDates = monthsEvents.map { it.day }.toSet()
                         hasEvents = eventDates.toList()
                     }
-//                    item {
-
                             Show(
                                 day,
                                 daysInMonth,
@@ -174,12 +165,11 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                                 isCurrentDay,
                                 selectedMonth,
                                 navController,
-                                viewModel
+                                viewModel,
+                                modifier = Modifier
+                                    .weight(1f)
                             )
                         }
-
-//                    }
-
                 else {
                     // placeholder for empty spaces in the first and last week
                     Spacer(
@@ -189,7 +179,6 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                             .background(Color.Transparent)
                     )
                 }
-
             }
         }
     }
@@ -197,7 +186,16 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
 
 
 @Composable
-fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
+fun Show(
+    day: Int,
+    daysInMonth: Int,
+    hasEvent: Boolean,
+    isCurrentDay: Boolean,
+    selectedMonth: YearMonth,
+    navController: NavController,
+    viewModel: AppViewmodel,
+    modifier: Modifier
+){
     var color = Color.White
     var fontColor = Color.Black
 
@@ -209,12 +207,9 @@ fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selec
         color = Color.LightGray
         fontColor = Color.White
     }
-    if (day in 1..daysInMonth) {
         Box(
-            modifier = Modifier
+            modifier
                 .padding(4.dp)
-                //.weight(1f)
-                //.fillMaxWidth()
                 .background(color)
                 .clip(MaterialTheme.shapes.small)
                 .clickable {
@@ -233,8 +228,6 @@ fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selec
                 color = fontColor
             )
         }
-
-    }
 }
 @Composable
 fun App(allEvents: List<Event>,navController: NavController, viewModel: AppViewmodel) {
