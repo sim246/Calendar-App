@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.data.retrofit
+package com.example.calendarapp.ui.data.networking.retrofit
 
 import android.util.Log
 import com.example.calendarapp.ui.domain.Holiday

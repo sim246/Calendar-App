@@ -8,7 +8,7 @@ import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
-import com.example.calendarapp.ui.data.retrofit.HolidayRepository
+import com.example.calendarapp.ui.data.networking.retrofit.HolidayRepository
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.presentation.viewmodel.UtilityHelper
 import com.google.android.gms.location.LocationServices
