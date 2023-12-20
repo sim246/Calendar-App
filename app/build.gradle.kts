@@ -81,7 +81,7 @@ dependencies {
     androidTestImplementation("androidx.room:room-testing:2.6.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
 
     implementation ("androidx.navigation:navigation-compose:2.7.6")
@@ -97,4 +97,5 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.0.4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
 }

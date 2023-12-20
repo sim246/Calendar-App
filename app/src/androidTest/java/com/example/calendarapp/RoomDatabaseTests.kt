@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.arch.core.executor.DefaultTaskExecutor
-import androidx.arch.core.executor.TaskExecutor
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @RunWith(AndroidJUnit4::class)
 class RoomDatabaseTests {
@@ -32,6 +32,8 @@ class RoomDatabaseTests {
     private lateinit var eventDao: EventDao
     private lateinit var db: EventRoomDatabase
 
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
     @Before
     fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -46,9 +48,8 @@ class RoomDatabaseTests {
         db.close()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun insertAndGetEvent() = runBlockingTest {
+    fun insertAndGetEvent() = runBlocking {
         ArchTaskExecutor.getInstance().setDelegate(DefaultTaskExecutor())
         val currentDateTime = LocalDateTime.now()
         val event = Event(
@@ -62,16 +63,42 @@ class RoomDatabaseTests {
         )
         eventDao.insertEvent(event)
         val allEvents = LiveDataTestUtil.getValue(eventDao.getAllEvents())
-
         assertThat(allEvents?.size ?: 0, `is`(1))
         assertThat(allEvents?.get(0)?.eventName, `is`("name"))
+        ArchTaskExecutor.getInstance().setDelegate(null)
+    }
+
+    @Test
+    fun deleteEvent() = runBlocking {
+        ArchTaskExecutor.getInstance().setDelegate(DefaultTaskExecutor())
+        val currentDateTime = LocalDateTime.now()
+        val event = Event(
+            day = currentDateTime,
+            eventName = "name",
+            start = currentDateTime,
+            theEnd = currentDateTime.plusHours(2),
+            description = "des",
+            clientName = "John Doe",
+            location = "loc"
+        )
+        eventDao.insertEvent(event)
+        var allEvents = LiveDataTestUtil.getValue(eventDao.getAllEvents())
+        assertThat(allEvents?.size ?: 0, `is`(1))
+        assertThat(allEvents?.get(0)?.eventName, `is`("name"))
+        allEvents?.get(0)?.id?.let { eventDao.deleteEvents(it) }
+        allEvents = LiveDataTestUtil.getValue(eventDao.getAllEvents())
+        assertThat(allEvents?.size ?: 0, `is`(0))
         ArchTaskExecutor.getInstance().setDelegate(null)
     }
 }
 
 object LiveDataTestUtil {
     @Throws(InterruptedException::class)
-    fun <T> getValue(liveData: LiveData<T>, time: Long = 2, timeUnit: TimeUnit = TimeUnit.SECONDS): T? {
+    fun <T> getValue(
+        liveData: LiveData<T>,
+        time: Long = 20,
+        timeUnit: TimeUnit = TimeUnit.SECONDS
+    ): T? {
         var data: T? = null
         val latch = CountDownLatch(1)
 
@@ -79,11 +106,19 @@ object LiveDataTestUtil {
             data = t
             latch.countDown()
         }
-        liveData.observeForever(observer)
+        runBlocking {
+            withContext(Dispatchers.Main) {
+                liveData.observeForever(observer)
+            }
+        }
         if (!latch.await(time, timeUnit)) {
             throw TimeoutException("LiveData value not set within the specified timeout")
         }
-        liveData.removeObserver(observer)
+        runBlocking {
+            withContext(Dispatchers.Main) {
+                liveData.removeObserver(observer)
+            }
+        }
         return data
     }
 }
