@@ -5,12 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-//import androidx.compose.foundation.layout.ColumnScopeInstance.weight
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -36,11 +35,13 @@ import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.google.android.libraries.places.api.model.DayOfWeek
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.util.Calendar
 import java.util.Locale
 
 
@@ -77,18 +78,10 @@ fun YearAndNav(allEvents: List<Event>, navController: NavController, viewModel: 
                         .semantics { contentDescription = "Previous Month" }
                 )
             }
-
-//            Text(
-//                text = "${selectedMonth.month.name} ${selectedMonth.year}",
-//                modifier = Modifier
-//                    .testTag("NOVEMBER 2023")
-//            )
-
             Text(
                 text = "${selectedMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${selectedMonth.year}",
-                modifier = Modifier.testTag("NOVEMBER 2023")
+                modifier = Modifier.testTag("MONTH 2023")
             )
-
             IconButton(
                 onClick = { selectedMonth = selectedMonth.plusMonths(1) }
             ) {
@@ -99,7 +92,6 @@ fun YearAndNav(allEvents: List<Event>, navController: NavController, viewModel: 
                 )
             }
         }
-
         DaysOfTheWeek(allEvents = allEvents, selectedMonth = selectedMonth, navController, viewModel)
     }
 }
@@ -113,25 +105,28 @@ fun DaysOfTheWeek(allEvents: List<Event>, selectedMonth: YearMonth, navControlle
             .padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
         for (day in DayOfWeek.values()) {
+
             Text(
-                text = day.name.take(3),
-                //text = "${day.name.take(3).getDisplayName(TextStyle.SHORT, Locale.getDefault())}",
+                //text = day.name.take(3),
+                text = day.getAbbreviatedDisplayName(),
                 modifier = Modifier.weight(1f)
             )
-//            Text(
-//                text = "${selectedMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${selectedMonth.year}",
-//                modifier = Modifier.testTag("NOVEMBER 2023")
-//            )
-//           Text(
-//                text = "${day.day.getDisplayName(TextStyle.SHORT, Locale.getDefault())}",
-//                modifier = Modifier.weight(1f)
-//           )
         }
     }
 
     DaysOfTheMonth(allEvents = allEvents, selectedMonth = selectedMonth, navController, viewModel)
 }
+
+//Abbreviation of days of the week
+fun DayOfWeek.getAbbreviatedDisplayName(): String {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.DAY_OF_WEEK, this.ordinal + 1)
+    val dateFormat = SimpleDateFormat("EEE", Locale.getDefault())
+    return dateFormat.format(calendar.time)
+}
+
 
 val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 @Composable
@@ -141,18 +136,17 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
     val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7 + 1
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
     for (row in 0 until rows) {
-        LazyRow(
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             for (col in 1..7) {
                 val day = row * 7 + col - firstDayOfWeek + 1
-
                 if (day in 1..daysInMonth) {
                     val currentDate = LocalDate.now()
                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
-
                     var hasEvents:List<LocalDateTime> = mutableListOf()
+
                     if (allEvents.isNotEmpty()) {
                         val monthsEvents = allEvents.filter {
                             val eventMonth = YearMonth.from(it.day)
@@ -161,58 +155,26 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                         val eventDates = monthsEvents.map { it.day }.toSet()
                         hasEvents = eventDates.toList()
                     }
-//                     else if(isCurrentDay){
-//                         color = Color.LightGray
-//                         fontColor = Color.White
-//                     }
-//
-//                    Box(
-//                        modifier = Modifier
-//                            .weight(1f)
-//                            .padding(4.dp)
-//                            .background(color)
-//                            .clip(MaterialTheme.shapes.small)
-//                            .clickable {
-//                                val localDateTime = selectedMonth.atDay(day).atStartOfDay()
-//                                viewModel.setNewDay(localDateTime)
-//                                // viewModel.setNewDay(selectedMonth.atDay(day))
-//                                navController.navigate(Routes.DailyOverview.route)
-//                            }
-//                            .semantics { contentDescription = daysInMonth.toString() }
-//
-////                    ) {
-//                        Text(
-//                            text = day.toString(),
-//                            modifier = Modifier
-//                                .align(Alignment.Center)
-//                                .padding(8.dp),
-//                            color = fontColor
-//                        )
-
-                    item {
-                        if (hasEvents.contains(selectedMonth.atDay(day).atStartOfDay())){
-                            Show(
-                                day,
-                                daysInMonth,
-                                true,
-                                isCurrentDay,
-                                selectedMonth,
-                                navController,
-                                viewModel
-                            )
-                        } else {
-                            Show(
-                                day,
-                                daysInMonth,
-                                false,
-                                isCurrentDay,
-                                selectedMonth,
-                                navController,
-                                viewModel
-                            )
-                        }
-
-                    }
+                    Show(
+                        day,
+                        daysInMonth,
+                        hasEvents.contains(selectedMonth.atDay(day).atStartOfDay()),
+                        isCurrentDay,
+                        selectedMonth,
+                        navController,
+                        viewModel,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+                }
+                else {
+                    // placeholder for empty spaces in the first and last week
+                    Spacer(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp)
+                            .background(Color.Transparent)
+                    )
                 }
             }
         }
@@ -221,7 +183,16 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
 
 
 @Composable
-fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
+fun Show(
+    day: Int,
+    daysInMonth: Int,
+    hasEvent: Boolean,
+    isCurrentDay: Boolean,
+    selectedMonth: YearMonth,
+    navController: NavController,
+    viewModel: AppViewmodel,
+    modifier: Modifier
+){
     var color = Color.White
     var fontColor = Color.Black
 
@@ -233,10 +204,8 @@ fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selec
         color = Color.LightGray
         fontColor = Color.White
     }
-    if (day in 1..daysInMonth) {
         Box(
-            modifier = Modifier
-//                .weight(1f)
+            modifier
                 .padding(4.dp)
                 .background(color)
                 .clip(MaterialTheme.shapes.small)
@@ -256,7 +225,6 @@ fun Show(day:Int, daysInMonth:Int, hasEvent:Boolean, isCurrentDay:Boolean, selec
                 color = fontColor
             )
         }
-    }
 }
 @Composable
 fun App(allEvents: List<Event>,navController: NavController, viewModel: AppViewmodel) {

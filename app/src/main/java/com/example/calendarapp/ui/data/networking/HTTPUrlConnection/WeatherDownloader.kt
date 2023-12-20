@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.data.HTTPUrlConnection
+package com.example.calendarapp.ui.data.networking.HTTPUrlConnection
 
 
 import android.app.Activity

@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.data.retrofit
+package com.example.calendarapp.ui.data.networking.retrofit
 
 import com.example.calendarapp.ui.domain.Holiday
 import retrofit2.http.GET

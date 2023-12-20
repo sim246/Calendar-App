@@ -35,6 +35,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -46,7 +47,9 @@ import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.domain.Weather
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @Composable
@@ -97,7 +100,7 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
                 viewModel.setCurrentEvent(event)
                 navController.navigate(Routes.EventOverview.route)
             }
-            .testTag("Click Event Display " + event.eventName)
+//            .testTag("Click Event Display " + event.eventName)
     ) {
         Text(
             text = "${event.start.format(EventTimeFormatter)} - ${event.theEnd.format(
@@ -168,19 +171,46 @@ fun HourDisplay() {
                     .height(60.dp)
                     .fillMaxWidth()
                     .background(color)
+                    .testTag(i.toString())
+                    .padding(
+                        start = if (isFrenchLocale()) 8.dp else 0.dp,
+                        end = if (isFrenchLocale()) 8.dp else 0.dp
+                    )
             )
             {
-                Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
+                val formattedHour = formatHour(hour)
+                //Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
+                Text(
+                    formattedHour,
+                    //fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.scrim,
+                    overflow = TextOverflow.Clip,
+                    maxLines = 1
+                )
             }
             i++
-            if (hour == 12) {
-                hour = 1
-            } else {
-                hour++
-            }
+//            if (hour == 12) {
+//                hour = 1
+//            } else {
+//                hour++
+//            }
+            hour = (hour + 1) % 24
         }
     }
 }
+
+fun formatHour(hour: Int): String{
+    val locale = Locale.getDefault()
+    val pattern = if (locale.language == "fr") "HH'h'mm" else "HH:mm"
+    val formatter = DateTimeFormatter.ofPattern(pattern, locale)
+    val localTime = LocalTime.of(hour, 0)
+    return formatter.format(localTime)
+}
+fun isFrenchLocale(): Boolean {
+    return Locale.getDefault().language == "fr"
+}
+
+
 
 val DayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
 @Composable
@@ -228,7 +258,7 @@ fun TopHalf(
             if (holidays != null) {
                 for (i in holidays.indices) {
                     if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date && holidays[0].types[0] == "Public") {
-                        Text(holidays[i].name, color = Color.LightGray)
+                        Text(holidays[i].localName, color = Color.LightGray)
                     }
                 }
             }
