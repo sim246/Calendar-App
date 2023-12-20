@@ -9,19 +9,26 @@ import java.util.Locale
 
 open class HolidayRepository(private val utilityHelper: UtilityHelper) {
     private val holidayService = RetrofitInstance.holidayService
-    open suspend fun getHolidays(): List<Holiday> {
-        val holidays : MutableList<Holiday> = mutableListOf()
-        Log.d("day", utilityHelper.locale)
-        Log.d("dayy", Locale.getDefault().toLanguageTag())
-        Locale.getDefault()
-        val date: LocalDateTime = LocalDateTime.now()
 
-        holidays.addAll(holidayService.getHolidays(date.year.toString(),utilityHelper.locale))
-        holidays.addAll(holidayService.getHolidays(date.minusYears(1).year.toString(),utilityHelper.locale))
-        holidays.addAll(holidayService.getHolidays(date.plusYears(1).year.toString(),utilityHelper.locale))
-//        holidays.addAll(holidayService.getHolidays("2023","CA"))
-//        holidays.addAll(holidayService.getHolidays("2022","CA"))
-//        holidays.addAll(holidayService.getHolidays("2024","CA"))
+    open suspend fun getHolidays(): List<Holiday> {
+        val holidays: MutableList<Holiday> = mutableListOf()
+
+        val date: LocalDateTime = LocalDateTime.now()
+        val languageCode = Locale.getDefault().language
+
+        val countryCode = if (languageCode == "fr") {
+            "FR" //french language, set country code to France
+        } else {
+            "CA"//default
+        }
+
+        Log.d("lang", languageCode)
+        Log.d("ccode", countryCode)
+
+        holidays.addAll(holidayService.getHolidays(date.year.toString(), countryCode))
+        holidays.addAll(holidayService.getHolidays(date.minusYears(1).year.toString(), countryCode))
+        holidays.addAll(holidayService.getHolidays(date.plusYears(1).year.toString(), countryCode))
+
         return holidays
     }
 }

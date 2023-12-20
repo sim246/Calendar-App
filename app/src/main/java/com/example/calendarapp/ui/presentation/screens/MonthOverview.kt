@@ -158,18 +158,18 @@ fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navControll
                         val eventDates = monthsEvents.map { it.day }.toSet()
                         hasEvents = eventDates.toList()
                     }
-                            Show(
-                                day,
-                                daysInMonth,
-                                hasEvents.contains(selectedMonth.atDay(day).atStartOfDay()),
-                                isCurrentDay,
-                                selectedMonth,
-                                navController,
-                                viewModel,
-                                modifier = Modifier
-                                    .weight(1f)
-                            )
-                        }
+                    Show(
+                        day,
+                        daysInMonth,
+                        hasEvents.contains(selectedMonth.atDay(day).atStartOfDay()),
+                        isCurrentDay,
+                        selectedMonth,
+                        navController,
+                        viewModel,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+                }
                 else {
                     // placeholder for empty spaces in the first and last week
                     Spacer(
