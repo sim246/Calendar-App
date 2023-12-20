@@ -1,8 +1,7 @@
+package com.example.calendarapp
+
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.calendarapp.ui.data.db.EventRepository
@@ -13,14 +12,12 @@ import com.example.calendarapp.ui.data.retrofit.HolidayRepository
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.presentation.viewmodel.UtilityHelper
 import com.google.android.gms.location.LocationServices
-import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
@@ -30,11 +27,7 @@ import java.time.Month
 @RunWith(AndroidJUnit4::class)
 class AppViewModelTest {
 
-
-    @get:Rule
     private lateinit var viewModel: AppViewmodel
-    private lateinit var eventRepository: EventRepository
-    private lateinit var holidayRepository: HolidayRepository
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -113,15 +106,6 @@ class AppViewModelTest {
                 "John Doe",
                 "loc"
             ),
-            Event(
-                LocalDateTime.of(2023, 12, 26, 0, 0),
-                "name",
-                LocalDateTime.of(2023, 12, 26, 13, 0),
-                LocalDateTime.of(2023, 12, 26, 14, 0),
-                "des",
-                "John Doe",
-                "loc"
-            ),
             conflictingEvent
         )
 
@@ -139,15 +123,6 @@ class AppViewModelTest {
         )
 
         val eventsList2: List<Event> = listOf(
-            Event(
-                LocalDateTime.of(2023, 12, 25, 0, 0),
-                "name",
-                LocalDateTime.of(2023, 12, 25, 8, 0),
-                LocalDateTime.of(2023, 12, 25, 9, 0),
-                "des",
-                "John Doe",
-                "loc"
-            ),
             Event(
                 LocalDateTime.of(2023, 12, 26, 0, 0),
                 "name",
@@ -170,22 +145,38 @@ class AppViewModelTest {
         var start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
         var end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
         var result = viewModel.checkConflictingEvents(1, start, end, eventsList)
-        // Start and end times are the same, conflict
         assertEquals("Start and End times are the same", result)
 
         start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 9, 0)
         end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 7, 0)
         result = viewModel.checkConflictingEvents(1, start, end, eventsList)
-        // Start and end times are the same, conflict
         assertEquals("Start time must be before the end time", result)
 
         start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 1, 0)
         end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 2, 0)
         result = viewModel.checkConflictingEvents(1, start, end, eventsList)
-        // Start and end times are the same, conflict
         assertEquals("events must be between 6 am and 12 pm", result)
     }
 
+
+    @Test
+    fun testTheSets() {
+        val date = LocalDateTime.now()
+        viewModel.setNewDay(date)
+        assertEquals(viewModel.currentDay, date)
+
+        val event = Event(
+            LocalDateTime.of(2023, 12, 26, 0, 0),
+            "name",
+            LocalDateTime.of(2023, 12, 26, 13, 0),
+            LocalDateTime.of(2023, 12, 26, 14, 0),
+            "des",
+            "John Doe",
+            "loc"
+        )
+        viewModel.setCurrentEvent(event)
+        assertEquals(viewModel.currentlyViewingEvent, event)
+    }
 
 
     class MockHolidayRepository(utilityHelper:UtilityHelper) : HolidayRepository(utilityHelper = utilityHelper) {
