@@ -17,14 +17,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.example.calendarapp.R
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
+import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,16 +38,16 @@ fun SingleEventEdit(
 ){
 
     Column{
-        val titleString = eventInputField("Title (Required)", event.eventName)
-        val descriptionString = event.description?.let { eventInputField("Description", it) }
-        val locationString = event.location?.let { eventInputField("Location", it) }
-        val clientString = event.clientName?.let { eventInputField("Client Name", it) }
+        val titleString = eventInputField(stringResource(R.string.title_required), event.eventName)
+        val descriptionString = event.description?.let { eventInputField(stringResource(R.string.description), it) }
+        val locationString = event.location?.let { eventInputField(stringResource(R.string.location), it) }
+        val clientString = event.clientName?.let { eventInputField(stringResource(R.string.client_name), it) }
         // Fetching local context
         val context = LocalContext.current
         val startEndTimes = eventTimeDisplay(event)
 
         Button(
-            content={Text(text = "Save Event")},
+            content={Text(text = stringResource(R.string.save_event))},
             //should save the event at the specified date and time onclick
             onClick={
                 Log.i("nya title", titleString)
@@ -74,7 +76,7 @@ fun SingleEventEdit(
             })
 
         Button(
-            content={Text(text = "Quit without saving")},
+            content={Text(text = stringResource(R.string.quit_without_saving))},
             onClick={
                 navController.popBackStack()
             }
@@ -90,13 +92,13 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
         Text(text=event.start.toLocalTime().toString() + " to " + event.theEnd.toLocalTime().toString())
         event.description?.let { Text(text= it) }
         Button(
-            content={Text(text = "Edit Event")},
+            content={Text(text = stringResource(R.string.edit_event))},
             onClick={
                 navController.navigate(Routes.EventEdit.route)
             }
         )
         Button(
-            content={Text(text = "Delete Event")},
+            content={Text(text = stringResource(R.string.delete_event))},
             //realistically should have a "Are you sure??" dialog
             onClick={
                 viewModel.deleteEvent(event.id)
@@ -104,7 +106,7 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
             }
         )
         Button(
-            content={Text(text="Return")},
+            content={Text(text=stringResource(R.string.return_btn))},
             onClick = {
                 navController.navigate(Routes.DailyOverview.route)
             }
@@ -117,44 +119,66 @@ fun SingleEventDisplay(event: Event, navController: NavController, viewModel: Ap
 @ExperimentalMaterial3Api
 fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
     //Time Picker declatation
-
     val context = LocalContext.current
-    val calendar = Calendar.getInstance()
-
     var startTime by remember { mutableStateOf(fixString(event.start.hour.toString()) + ":"+ fixString(event.start.minute.toString())) }
     var endTime by remember { mutableStateOf(fixString(event.theEnd.hour.toString()) + ":"+ fixString(event.theEnd.minute.toString())) }
     val formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("H:mm")
 
     // Fetching current hour, and minute
-    val hour = calendar[Calendar.HOUR_OF_DAY]
-    val minute = calendar[Calendar.MINUTE]
+    //val hour = calendar[Calendar.HOUR_OF_DAY] + 1
+    //val minute = calendar[Calendar.MINUTE]
+    //Log.d("hour", hour.toString())
+    //Log.d("minute", minute.toString())
 
 
     val timePickerStart = TimePickerDialog(
         context,
         { _, selectedHour: Int, selectedMinute: Int ->
-            startTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
-        }, hour, minute, false
+            //startTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
+            startTime = formatTime(selectedHour, selectedMinute)
+        }, 11, 0, false
     )
     val timePickerEnd = TimePickerDialog(context,
         { _, selectedHour: Int, selectedMinute: Int ->
-            endTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
-        }, hour, minute, false
+            //endTime = fixString(selectedHour.toString()) + ":" + fixString(selectedMinute.toString())
+            endTime = formatTime(selectedHour, selectedMinute)
+        }, 13, 0, false
     )
-    Text(text= "Start Time: $startTime")
-    Text(text= "End Time: $endTime")
+    Text(
+        //text= "Start Time: $startTime"
+        //text = stringResource(R.string.start_time, startTime)
+        text = stringResource(R.string.start_time, formatLocalizedTime(startTime))
+
+    )
+    Text(
+        //text= "End Time: $endTime"
+        //text = stringResource(R.string.end_time, endTime)
+        text = stringResource(R.string.end_time, formatLocalizedTime(endTime))
+
+    )
     Row{
         Button(onClick={
             timePickerStart.show()
-        }, content={Text(text = "Set Start Time")})
+        }, content={Text(text = stringResource(R.string.set_start_time))})
         Button(onClick={
             timePickerEnd.show()
-        }, content={Text(text = "Set End Time")})
+        }, content={Text(text = stringResource(R.string.set_end_time))})
     }
     //fix strings for parsings
     return arrayOf(LocalDateTime.of(event.day.toLocalDate(), LocalTime.parse(startTime, formatter)),
         LocalDateTime.of(event.day.toLocalDate(), LocalTime.parse(endTime, formatter)))
 
+}
+
+
+private fun formatTime(hour: Int, minute: Int): String {
+    return fixString(hour.toString()) + ":" + fixString(minute.toString())
+}
+
+private fun formatLocalizedTime(time: String): String {
+    val formatter = DateTimeFormatter.ofPattern("H:mm")
+    val localizedFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+    return LocalTime.parse(time, formatter).format(localizedFormatter)
 }
 
 fun fixString(input : String): String{
