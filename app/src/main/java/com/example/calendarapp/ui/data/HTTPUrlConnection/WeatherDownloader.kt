@@ -43,13 +43,58 @@ class WeatherDownloader() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 // Got last known location. In some rare situations this can be null.
-                currentLocation = location
-                Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
-                Log.d("WeatherDownloader WeatherDownloader", location.toString())
 
-                //Load JSON
-                viewmodelScope.launch {
-                    loadJSON()
+                if(location !== null)
+                {
+                    currentLocation = location
+                    val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${location.latitude}&lon=${location.longitude}&appid=${APIKEY}")
+                    Log.d("WeatherDownloader", "Current location updated! Doing JSON fetch.")
+                    Log.d("WeatherDownloader WeatherDownloader", location.toString())
+
+                    //Load JSON
+
+                    //Loads JSON into the weather livedata.
+                    Log.d("WeatherDownloader", "Runnng LoadJSON")
+                    //Uncomment the below line ONLY IF the above fn is working (will always be null and never fetch JSON otherwise)
+                    if(currentLocation === null){
+                        Log.d("WeatherDownloader", "location is null")
+                        weatherFiveDays.postValue(emptyList())
+
+                    }
+                    else
+                    {
+                        Log.d("WeatherDownloader", "location isn;t null")
+
+
+                        val httpURLConnection = url.openConnection() as HttpURLConnection
+                        httpURLConnection.requestMethod = "GET"
+                        httpURLConnection.setRequestProperty("Accept", "text/json")
+
+                        //Check if the connection is successful
+                        val responseCode = httpURLConnection.responseCode
+
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            val dataString = httpURLConnection.inputStream.bufferedReader()
+                                .use { it.readText() }
+                            //return weather with JSON translated data
+                            Log.d("WeatherDownloader", dataString)
+
+                            var weather = Weather()
+                            val jObject = JSONObject(dataString)
+                            weather.condition = jObject.getJSONArray("weather").getJSONObject(0).getString("main")
+                            weather.day = "Today (temp value)"
+                            weather.temperature = jObject.getJSONObject("main").getString("temp").toDouble()
+                            weather.temperatureFeelsLike = jObject.getJSONObject("main").getString("feels_like").toDouble()
+                            //weather.UVIndex =
+                            weatherFiveDays.postValue(listOf(weather))
+
+
+                        } else {
+                            Log.e("WeatherDownloader", "REST FETCH ERROR: $responseCode")
+                            weatherFiveDays.postValue(emptyList())
+
+                        }
+                    }
                 }
 
 
@@ -71,46 +116,7 @@ class WeatherDownloader() {
     }
 
     fun loadJSON(){
-//Loads JSON into the weather livedata.
-        Log.d("WeatherDownloader", "Runnng LoadJSON")
-        //Uncomment the below line ONLY IF the above fn is working (will always be null and never fetch JSON otherwise)
-        if(currentLocation === null){
-            Log.d("WeatherDownloader", "location is null")
-            weatherFiveDays.postValue(emptyList())
 
-        }
-        Log.d("WeatherDownloader", "location isn;t null")
-
-        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
-//        val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=1&lon=1&appid=${APIKEY}")
-        val httpURLConnection = url.openConnection() as HttpURLConnection
-        httpURLConnection.requestMethod = "GET"
-        httpURLConnection.setRequestProperty("Accept", "text/json")
-
-        //Check if the connection is successful
-        val responseCode = httpURLConnection.responseCode
-
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            val dataString = httpURLConnection.inputStream.bufferedReader()
-                .use { it.readText() }
-            //return weather with JSON translated data
-            Log.d("WeatherDownloader", dataString)
-
-            var weather = Weather()
-            val jObject = JSONObject(dataString)
-            weather.condition = jObject.getJSONArray("weather").getJSONObject(0).getString("main")
-            weather.day = "Today (temp value)"
-            weather.temperature = jObject.getJSONObject("main").getString("temp").toDouble()
-            weather.temperatureFeelsLike = jObject.getJSONObject("main").getString("feels_like").toDouble()
-            //weather.UVIndex =
-            weatherFiveDays.postValue(listOf(weather))
-
-
-        } else {
-            Log.e("WeatherDownloader", "REST FETCH ERROR: $responseCode")
-            weatherFiveDays.postValue(emptyList())
-
-        }
     }
 
     //Below FN translates JSON string into usable data

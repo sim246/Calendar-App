@@ -207,16 +207,16 @@ fun TopHalf(
             )
             if(viewModel.currentDay.toLocalDate() == LocalDate.now()){
                 //show button for forecast
-                val weather = viewModel.getCurrentDayForecast(viewModel.utilityHelper)
-                if(weather != null){
-                    Button(onClick = { /*TODO*/ }) {
-                        Text("weather")
-                    }
-                }
-                else
-                {
-                    Text("Weather not found, try again later.")
-                }
+                viewModel.getCurrentDayForecast(viewModel.utilityHelper)
+                //if(weather != null){
+                //    Button(onClick = { /*TODO*/ }) {
+                //        Text("weather")
+                //    }
+                //}
+                //else
+                //{
+                //    Text("Weather not found, try again later.")
+                //}
             }
             if (holidays != null) {
                 for (i in holidays.indices) {

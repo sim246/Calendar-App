@@ -1,8 +1,12 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.widget.ScrollView
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.example.calendarapp.ui.domain.Weather
 
 //The weather overview screen
@@ -24,5 +28,11 @@ fun WeatherSingle(weather: Weather){
 fun WeatherMultiple(weatherList : List<Weather>){
     //The weather for the current day (the current day's weather + 5 days ahead)
     //I feel this should be the above but x5 in a scrollable view
-
+    Column (modifier= Modifier.verticalScroll(rememberScrollState())){
+        for (weather in weatherList) {
+            WeatherSingle(weather)
+        }
+    }
 }
+
+
