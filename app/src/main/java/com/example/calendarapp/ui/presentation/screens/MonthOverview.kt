@@ -1,8 +1,5 @@
 package com.example.calendarapp.ui.presentation.screens
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,24 +31,29 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.google.android.libraries.places.api.model.DayOfWeek
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Calendar
+import java.util.Locale
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
-fun MonthOverviewScreen(navController: NavController, viewModel: AppViewmodel) {
-    YearAndNav(navController, viewModel)
+fun MonthOverviewScreen(allEvents: List<Event>, navController: NavController, viewModel: AppViewmodel) {
+    viewModel.getCurrentDayForecast()
+    YearAndNav(allEvents = allEvents, navController, viewModel)
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
+fun YearAndNav(allEvents: List<Event>, navController: NavController, viewModel: AppViewmodel) {
     var selectedMonth by remember { mutableStateOf(YearMonth.now()) }
 
     Column(
@@ -76,13 +78,10 @@ fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
                         .semantics { contentDescription = "Previous Month" }
                 )
             }
-
             Text(
-                text = "${selectedMonth.month.name} ${selectedMonth.year}",
-                modifier = Modifier
-                    .testTag("NOVEMBER 2023")
+                text = "${selectedMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${selectedMonth.year}",
+                modifier = Modifier.testTag("MONTH 2023")
             )
-
             IconButton(
                 onClick = { selectedMonth = selectedMonth.plusMonths(1) }
             ) {
@@ -93,14 +92,12 @@ fun YearAndNav(navController: NavController, viewModel: AppViewmodel) {
                 )
             }
         }
-
-        DaysOfTheWeek(selectedMonth = selectedMonth, navController, viewModel)
+        DaysOfTheWeek(allEvents = allEvents, selectedMonth = selectedMonth, navController, viewModel)
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
+fun DaysOfTheWeek(allEvents: List<Event>, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel){
     // Days of the week
     Row(
         modifier = Modifier
@@ -108,34 +105,36 @@ fun DaysOfTheWeek(selectedMonth: YearMonth, navController: NavController, viewMo
             .padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
         for (day in DayOfWeek.values()) {
+
             Text(
-                text = day.name.take(3),
+                //text = day.name.take(3),
+                text = day.getAbbreviatedDisplayName(),
                 modifier = Modifier.weight(1f)
             )
         }
     }
 
-    DaysOfTheMonth(selectedMonth = selectedMonth, navController, viewModel)
+    DaysOfTheMonth(allEvents = allEvents, selectedMonth = selectedMonth, navController, viewModel)
+}
+
+//Abbreviation of days of the week
+fun DayOfWeek.getAbbreviatedDisplayName(): String {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.DAY_OF_WEEK, this.ordinal + 1)
+    val dateFormat = SimpleDateFormat("EEE", Locale.getDefault())
+    return dateFormat.format(calendar.time)
 }
 
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 val Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
-
-    val daysWithEvents = viewModel.getDaysWithEvents(selectedMonth)
-    Log.d("Daysofthemonth", daysWithEvents.toString())
-
+fun DaysOfTheMonth(allEvents: List<Event>, selectedMonth: YearMonth, navController: NavController, viewModel: AppViewmodel) {
     // Days in the month
     val daysInMonth = selectedMonth.lengthOfMonth()
     val firstDayOfWeek = selectedMonth.atDay(1).dayOfWeek.value % 7 + 1
-
     val rows = ((daysInMonth + firstDayOfWeek - 1 + 6) / 7)
-
     for (row in 0 until rows) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -143,56 +142,30 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
         ) {
             for (col in 1..7) {
                 val day = row * 7 + col - firstDayOfWeek + 1
-//                val isCurrentMonthDay = day in 1..daysInMonth
-                var color = Color.White
-                var fontColor = Color.Black
-//                if (holidays != null && isCurrentMonthDay) {
-//                    for (i in holidays.indices) {
-//                        val date: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
-//                        if (date.format(Formatter) == holidays[i].date) {
-//                            color = Color.LightGray
-//                        }
-//                    }
-//                }
+                if (day in 1..daysInMonth) {
+                    val currentDate = LocalDate.now()
+                    val isCurrentDay = selectedMonth.atDay(day) == currentDate
+                    var hasEvents:List<LocalDateTime> = mutableListOf()
 
-                 if (day in 1..daysInMonth) {
-                     val currentDate = LocalDate.now()
-                     val isCurrentDay = selectedMonth.atDay(day) == currentDate
-
-                     val hasEvent = daysWithEvents?.map { it.toLocalDate() }?.contains(selectedMonth.atDay(day))
-
-                     if (hasEvent == true) {
-                        color = Color.DarkGray
-                        fontColor = Color.White
+                    if (allEvents.isNotEmpty()) {
+                        val monthsEvents = allEvents.filter {
+                            val eventMonth = YearMonth.from(it.day)
+                            eventMonth == selectedMonth
+                        }
+                        val eventDates = monthsEvents.map { it.day }.toSet()
+                        hasEvents = eventDates.toList()
                     }
-                     else if(isCurrentDay){
-                         color = Color.LightGray
-                         fontColor = Color.White
-                     }
-
-                    Box(
+                    Show(
+                        day,
+                        daysInMonth,
+                        hasEvents.contains(selectedMonth.atDay(day).atStartOfDay()),
+                        isCurrentDay,
+                        selectedMonth,
+                        navController,
+                        viewModel,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(4.dp)
-                            .background(color)
-                            .clip(MaterialTheme.shapes.small)
-                            .clickable {
-                                val localDateTime = selectedMonth.atDay(day).atStartOfDay()
-                                viewModel.setNewDay(localDateTime)
-                                // viewModel.setNewDay(selectedMonth.atDay(day))
-                                navController.navigate(Routes.DailyOverview.route)
-                            }
-                            .semantics { contentDescription = daysInMonth.toString() }
-
-                    ) {
-                        Text(
-                            text = day.toString(),
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(8.dp),
-                            color = fontColor
-                        )
-                    }
+                    )
                 }
                 else {
                     // placeholder for empty spaces in the first and last week
@@ -208,8 +181,52 @@ fun DaysOfTheMonth(selectedMonth: YearMonth, navController: NavController, viewM
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
-fun App(navController: NavController, viewModel: AppViewmodel) {
-    MonthOverviewScreen(navController, viewModel)
+fun Show(
+    day: Int,
+    daysInMonth: Int,
+    hasEvent: Boolean,
+    isCurrentDay: Boolean,
+    selectedMonth: YearMonth,
+    navController: NavController,
+    viewModel: AppViewmodel,
+    modifier: Modifier
+){
+    var color = Color.White
+    var fontColor = Color.Black
+
+    if (hasEvent) {
+        color = Color.DarkGray
+        fontColor = Color.White
+    }
+    else if(isCurrentDay){
+        color = Color.LightGray
+        fontColor = Color.White
+    }
+        Box(
+            modifier
+                .padding(4.dp)
+                .background(color)
+                .clip(MaterialTheme.shapes.small)
+                .clickable {
+                    val localDateTime: LocalDateTime = selectedMonth.atDay(day).atStartOfDay()
+                    viewModel.setNewDay(localDateTime)
+                    viewModel.findEventsByDay(viewModel.currentDay)
+                    navController.navigate(Routes.DailyOverview.route)
+                }
+                .semantics { contentDescription = daysInMonth.toString() }
+        ) {
+            Text(
+                text = day.toString(),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(8.dp),
+                color = fontColor
+            )
+        }
+}
+@Composable
+fun App(allEvents: List<Event>,navController: NavController, viewModel: AppViewmodel) {
+    MonthOverviewScreen(allEvents = allEvents,navController, viewModel)
 }

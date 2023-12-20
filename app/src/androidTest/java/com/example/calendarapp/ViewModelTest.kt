@@ -1,234 +1,189 @@
+package com.example.calendarapp
+
 import android.app.Application
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.calendarapp.ui.data.db.EventDao
 import com.example.calendarapp.ui.data.db.EventRepository
+import com.example.calendarapp.ui.data.db.EventRoomDatabase
 import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
-import com.example.calendarapp.ui.data.retrofit.HolidayRepository
+import com.example.calendarapp.ui.domain.Holiday
+import com.example.calendarapp.ui.data.networking.retrofit.HolidayRepository
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
-import junit.framework.TestCase.assertTrue
+import com.example.calendarapp.ui.presentation.viewmodel.UtilityHelper
+import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
 import java.time.Month
-import java.time.YearMonth
 
 
 @RunWith(AndroidJUnit4::class)
 class AppViewModelTest {
 
-
-    @get:Rule
     private lateinit var viewModel: AppViewmodel
-    private lateinit var eventRepository: EventRepository
-    private lateinit var holidayRepository: HolidayRepository
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         Dispatchers.setMain(Dispatchers.Unconfined)
 
-//        val mockContext = ApplicationProvider.getApplicationContext<Context>()
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val mockApplication = ApplicationProvider.getApplicationContext<Application>()
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        val utilityHelper = UtilityHelper(context)
 
-        viewModel.roomRepository = eventRepository
+        // Create the repositories (mock or real, depending on your needs)
+        val eventDb = EventRoomDatabase.getInstance(mockApplication)
+        val eventDao = eventDb.eventDao()
+        val eventRepository = EventRepository(eventDao)
+        val holidayRepository = MockHolidayRepository(utilityHelper)
 
-        //have to initilize this..
-        //eventRepository = MockEventRepository()
-        holidayRepository = MockHolidayRepository()
-
-        viewModel = AppViewmodel(mockApplication)
+        // Initialize the ViewModel
+        viewModel = AppViewmodel(mockApplication, utilityHelper, fusedLocationClient)
         viewModel.roomRepository = eventRepository
         viewModel.holidayRepository = holidayRepository
     }
 
     @Test
-    fun insertEvent() {
-        val event = Event(
-            LocalDateTime.now(),
-            "Test Event",
-            LocalDateTime.now(),
-            LocalDateTime.now(),
-            "Description",
-            "Client",
-            "Location"
-        )
-
-        val result = viewModel.insertEvent(event)
-        assertTrue(result)
-    }
-
-    @Test
-    fun deleteEvent() {
-        val eventName = "Test Event"
-
-        val result = viewModel.deleteEvent(eventName)
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun findEventsByName() {
-        val eventName = "Test Event"
-        val events = listOf(
-            Event(
-                LocalDateTime.now(),
-                eventName,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "Description",
-                "Clients",
-                "Location"
-            )
-        )
-        viewModel.searchResults.value = events
-        val result = viewModel.findEventsByName(eventName)
-        assertEquals(events, result)
-    }
-
-    @Test
-    fun findEventsByDay() {
-        val day = LocalDateTime.now()
-        val events = listOf(
-            Event(
-                day,
-                "Test Event",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "Description",
-                "Clients",
-                "Location"
-            )
-        )
-
-        viewModel.searchResults.value = events
-        val result = viewModel.findEventsByDay(day)
-        assertEquals(events, result)
-    }
-
-    @Test
-    fun getDaysWithEvents_emptyEventsList() {
-        val emptyEvents = MutableLiveData<List<Event>>()
-        emptyEvents.postValue(emptyList())
-        viewModel.allEvents = emptyEvents
-
-        val result = viewModel.getDaysWithEvents(YearMonth.of(2023, 11))
-        assertEquals(null, result)
-    }
-
-    @Test
-    fun getDaysWithEvents() {
-        val event1 = Event(
-            LocalDateTime.of(2023, 11, 1, 12, 0),
-            "Event 1",
-            LocalDateTime.of(2023, 11, 1, 12, 0),
-            LocalDateTime.of(2023, 11, 1, 13, 0),
-            "Description",
-            "Client",
-            "Location"
-        )
-
-        val event2 = Event(
-            LocalDateTime.of(2023, 11, 2, 14, 0),
-            "Event 2",
-            LocalDateTime.of(2023, 11, 2, 14, 0),
-            LocalDateTime.of(2023, 11, 2, 15, 0),
-            "Description",
-            "Client",
-            "Location"
-        )
-
-        val allEvents = MutableLiveData<List<Event>>()
-        allEvents.postValue(listOf(event1, event2))
-        viewModel.allEvents = allEvents
-
-        val result = viewModel.getDaysWithEvents(YearMonth.of(2023, 11))
-
-        assertEquals(listOf(
-            LocalDateTime.of(2023, 11, 1, 12, 0),
-            LocalDateTime.of(2023, 11, 2, 14, 0)
-        ), result)
-    }
-
-    @Test
     fun checkConflictingEvents_noConflict() {
-        val viewModel = AppViewmodel()
+        val start = LocalDateTime.of(2023, Month.DECEMBER, 25, 13, 0)
+        val end = LocalDateTime.of(2023, Month.DECEMBER, 25, 14, 0)
 
-        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
-        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 0)
-
-        // assuming there are no events in the viewModel.searchResults
-        viewModel.searchResults.value = emptyList()
-
-        val result = viewModel.checkConflictingEvents(start, end)
-
-        // should be no conflict, so the result should be null
+        val eventsList: List<Event> = listOf(
+            Event(
+                LocalDateTime.of(2023, 12, 25, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 25, 8, 0),
+                LocalDateTime.of(2023, 12, 25, 9, 0),
+                "des",
+                "John Doe",
+                "loc"
+            ),
+            Event(
+                LocalDateTime.of(2023, 12, 26, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 26, 13, 0),
+                LocalDateTime.of(2023, 12, 26, 14, 0),
+                "des",
+                "John Doe",
+                "loc"
+            )
+        )
+        val result = viewModel.checkConflictingEvents(2, start, end, eventsList)
         assertEquals(null, result)
     }
 
     @Test
     fun checkConflictingEvents_conflict() {
-        val viewModel = AppViewmodel()
+        val start = LocalDateTime.of(2023, 11, 1, 13, 0)
+        val end = LocalDateTime.of(2023, 11, 1, 15, 0)
 
         // Create an event that conflicts with the given time range
-        val conflictingEvent = Event(
-            LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 30),
+        var conflictingEvent = Event(
+            LocalDateTime.of(2023, Month.NOVEMBER, 1, 0, 0),
             "Conflicting Event",
-            LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 30),
-            LocalDateTime.of(2023, Month.NOVEMBER, 1, 14, 0),
+            start,
+            end,
             "Description",
             "Client",
             "Location"
         )
 
-        viewModel.searchResults.value = listOf(conflictingEvent)
+        val eventsList: List<Event> = listOf(
+            Event(
+                LocalDateTime.of(2023, 12, 25, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 25, 8, 0),
+                LocalDateTime.of(2023, 12, 25, 9, 0),
+                "des",
+                "John Doe",
+                "loc"
+            ),
+            conflictingEvent
+        )
 
-        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
-        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 13, 0)
+        var result = viewModel.checkConflictingEvents(3, start, end, eventsList)
+        assertEquals("Start time overlaps another event, check time values", result)
 
-        val result = viewModel.checkConflictingEvents(start, end)
+        conflictingEvent = Event(
+            LocalDateTime.of(2023, 11, 1, 0, 0),
+            "Conflicting Event",
+            LocalDateTime.of(2023, 11, 1, 14, 0),
+            end,
+            "Description",
+            "Client",
+            "Location"
+        )
 
-        assertEquals("Overlaps another event: Check time values", result)
+        val eventsList2: List<Event> = listOf(
+            Event(
+                LocalDateTime.of(2023, 12, 26, 0, 0),
+                "name",
+                LocalDateTime.of(2023, 12, 26, 13, 0),
+                LocalDateTime.of(2023, 12, 26, 14, 0),
+                "des",
+                "John Doe",
+                "loc"
+            ),
+            conflictingEvent
+        )
+        result = viewModel.checkConflictingEvents(3, start, end, eventsList2)
+        assertEquals("End time overlaps another event, check time values", result)
     }
 
     @Test
     fun checkConflictingEvents_sameStartAndEnd() {
-        val viewModel = AppViewmodel()
+        val eventsList: List<Event> = listOf()
 
-        val start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
-        val end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
-
-        viewModel.searchResults.value = emptyList()
-
-        val result = viewModel.checkConflictingEvents(start, end)
-
-        // Start and end times are the same, conflict
+        var start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
+        var end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 12, 0)
+        var result = viewModel.checkConflictingEvents(1, start, end, eventsList)
         assertEquals("Start and End times are the same", result)
+
+        start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 9, 0)
+        end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 7, 0)
+        result = viewModel.checkConflictingEvents(1, start, end, eventsList)
+        assertEquals("Start time must be before the end time", result)
+
+        start = LocalDateTime.of(2023, Month.NOVEMBER, 1, 1, 0)
+        end = LocalDateTime.of(2023, Month.NOVEMBER, 1, 2, 0)
+        result = viewModel.checkConflictingEvents(1, start, end, eventsList)
+        assertEquals("events must be between 6 am and 12 pm", result)
     }
 
 
+    @Test
+    fun testTheSets() {
+        val date = LocalDateTime.now()
+        viewModel.setNewDay(date)
+        assertEquals(viewModel.currentDay, date)
 
-    class MockHolidayRepository : HolidayRepository() {
+        val event = Event(
+            LocalDateTime.of(2023, 12, 26, 0, 0),
+            "name",
+            LocalDateTime.of(2023, 12, 26, 13, 0),
+            LocalDateTime.of(2023, 12, 26, 14, 0),
+            "des",
+            "John Doe",
+            "loc"
+        )
+        viewModel.setCurrentEvent(event)
+        assertEquals(viewModel.currentlyViewingEvent, event)
+    }
+
+
+    class MockHolidayRepository(utilityHelper:UtilityHelper) : HolidayRepository(utilityHelper = utilityHelper) {
         private val holidays = MutableStateFlow<List<Holiday>>(emptyList())
 
         override suspend fun getHolidays(): List<Holiday> {
             return holidays.value
         }
-
-
     }
-
-
-
-
 }

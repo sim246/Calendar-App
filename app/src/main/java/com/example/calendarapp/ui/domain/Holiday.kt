@@ -1,4 +1,4 @@
-package com.example.calendarapp.ui.data.retrofit
+package com.example.calendarapp.ui.domain
 
 data class Holiday(
     val date: String,
