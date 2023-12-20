@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calendrier</string>
+    <string name="save_event">Sauvegarder</string>
+    <string name="quit_without_saving">Quitter sans sauvegarder</string>
+    <string name="edit_event">Modifier</string>
+    <string name="delete_event">Supprimer</string>
+    <string name="return_btn">Retour</string>
+    <string name="start_time">Heure de début: %1$s</string>
+    <string name="end_time">Heure de fin: %1$s</string>
+    <string name="set_start_time">Fixer l\'heure de début</string>
+    <string name="set_end_time">Fixer l\'heure de fin</string>
+    <string name="title_required">Titre (Requis)</string>
+    <string name="description">Description</string>
+    <string name="location">Lieu</string>
+    <string name="client_name">Nom du client</string>
+</resources>

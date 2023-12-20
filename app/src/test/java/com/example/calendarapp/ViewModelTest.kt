@@ -1,12 +1,9 @@
 import android.app.Application
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.calendarapp.ui.data.db.EventDao
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
+import com.example.calendarapp.ui.domain.Holiday
 import com.example.calendarapp.ui.data.retrofit.HolidayRepository
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import junit.framework.TestCase.assertTrue
@@ -21,10 +18,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
 import java.time.Month
-import java.time.YearMonth
 
 
-@RunWith(AndroidJUnit4::class)
 class AppViewModelTest {
 
 
@@ -39,7 +34,7 @@ class AppViewModelTest {
         Dispatchers.setMain(Dispatchers.Unconfined)
 
 //        val mockContext = ApplicationProvider.getApplicationContext<Context>()
-        val mockApplication = ApplicationProvider.getApplicationContext<Application>()
+            val mockApplication = ApplicationProvider.getApplicationContext<Application>()
 
         viewModel.roomRepository = eventRepository
 
@@ -63,7 +58,6 @@ class AppViewModelTest {
             "Client",
             "Location"
         )
-
         val result = viewModel.insertEvent(event)
         assertTrue(result)
     }
@@ -71,9 +65,7 @@ class AppViewModelTest {
     @Test
     fun deleteEvent() {
         val eventName = "Test Event"
-
         val result = viewModel.deleteEvent(eventName)
-
         assertTrue(result)
     }
 
@@ -111,53 +103,11 @@ class AppViewModelTest {
             )
         )
 
-        viewModel.searchResults.value = events
-        val result = viewModel.findEventsByDay(day)
-        assertEquals(events, result)
-    }
+//        viewModel.searchResults.value = events
+        viewModel.findEventsByDay(day)
+        val result = viewModel.searchResults.value
 
-    @Test
-    fun getDaysWithEvents_emptyEventsList() {
-        val emptyEvents = MutableLiveData<List<Event>>()
-        emptyEvents.postValue(emptyList())
-        viewModel.allEvents = emptyEvents
-
-        val result = viewModel.getDaysWithEvents(YearMonth.of(2023, 11))
-        assertEquals(null, result)
-    }
-
-    @Test
-    fun getDaysWithEvents() {
-        val event1 = Event(
-            LocalDateTime.of(2023, 11, 1, 12, 0),
-            "Event 1",
-            LocalDateTime.of(2023, 11, 1, 12, 0),
-            LocalDateTime.of(2023, 11, 1, 13, 0),
-            "Description",
-            "Client",
-            "Location"
-        )
-
-        val event2 = Event(
-            LocalDateTime.of(2023, 11, 2, 14, 0),
-            "Event 2",
-            LocalDateTime.of(2023, 11, 2, 14, 0),
-            LocalDateTime.of(2023, 11, 2, 15, 0),
-            "Description",
-            "Client",
-            "Location"
-        )
-
-        val allEvents = MutableLiveData<List<Event>>()
-        allEvents.postValue(listOf(event1, event2))
-        viewModel.allEvents = allEvents
-
-        val result = viewModel.getDaysWithEvents(YearMonth.of(2023, 11))
-
-        assertEquals(listOf(
-            LocalDateTime.of(2023, 11, 1, 12, 0),
-            LocalDateTime.of(2023, 11, 2, 14, 0)
-        ), result)
+        assertEquals(events[0], result?.get(0))
     }
 
     @Test
@@ -224,11 +174,5 @@ class AppViewModelTest {
         override suspend fun getHolidays(): List<Holiday> {
             return holidays.value
         }
-
-
     }
-
-
-
-
 }

@@ -1,5 +1,6 @@
 package com.example.calendarapp.ui.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,6 +35,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -40,13 +43,17 @@ import com.example.calendarapp.R
 import com.example.calendarapp.ui.presentation.routes.Routes
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 import com.example.calendarapp.ui.domain.Event
-import com.example.calendarapp.ui.data.retrofit.Holiday
+import com.example.calendarapp.ui.domain.Holiday
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Locale
 
 
 @Composable
-fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
+fun DailyOverview(searchResults: List<Event>, holidays: List<Holiday>?, viewModel: AppViewmodel, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -56,7 +63,7 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
             .testTag("DailyOverviewUI")
     )
     {
-        TopHalf(holidays, viewModel.currentDay.toString(), navController, viewModel)
+        TopHalf(holidays, navController, viewModel)
         Row (Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
@@ -69,10 +76,12 @@ fun DailyOverview(holidays: List<Holiday>?, viewModel: AppViewmodel, navControll
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                //filter events by current day
-
-                val events:List<Event>? = viewModel.findEventsByDay(viewModel.currentDay)
-                ScheduleDisplay(events, navController, viewModel)
+                LazyColumn (modifier = Modifier.fillMaxWidth().height(1080.dp)){
+                    viewModel.findEventsByDay(viewModel.currentDay)
+                    item {
+                        ScheduleDisplay(searchResults, navController, viewModel)
+                    }
+                }
             }
         }
     }
@@ -99,52 +108,47 @@ fun EventDisplay(event: Event, navController: NavController, viewModel: AppViewm
             )}",
             color = Color.White
         )
-
         Text(
             text = event.eventName,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
     }
-
 }
 
-val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
-val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
+//val FormatterHours: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
+//val FormatterMin: DateTimeFormatter = DateTimeFormatter.ofPattern("mm")
 @Composable
 fun ScheduleDisplay(events : List<Event>?, navController: NavController, viewModel: AppViewmodel) {
-    if (events != null) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            events.sortedBy(Event::start).forEach { event ->
-                val height = (event.theEnd.format(FormatterHours).toInt() - event.start.format(
-                    FormatterHours
-                ).toInt()) * 60
-                val heightMin =
-                    event.theEnd.format(FormatterMin).toInt() - event.start.format(FormatterMin)
-                        .toInt()
-                Layout(
-                    content = {
-                        EventDisplay(
-                            event,
-                            navController,
-                            viewModel,
-                            (height + heightMin)
-                        )
+    events?.sortedBy(Event::start)?.forEach { event ->
+        Log.d("day day", viewModel.currentDay.toString())
+        Log.d("day day event", event.day.toString())
+        if (event.day == viewModel.currentDay) {
+            val height = (event.theEnd.hour - event.start.hour) * 60
+            val heightMin =
+                event.theEnd.minute - event.start.minute
+            Layout(
+                content = {
+                    EventDisplay(
+                        event,
+                        navController,
+                        viewModel,
+                        (height + heightMin)
+                    )
+                }
+            ) { measureables, constraints ->
+                val placeables = measureables.map { measurable ->
+                    measurable.measure(constraints.copy(maxHeight = (height + heightMin).dp.roundToPx()))
+                }
+                layout(constraints.maxWidth, height) {
+                    var y = event.start.hour
+                    y -= if (y > 12) {
+                        7
+                    } else {
+                        6
                     }
-                ) { measureables, constraints ->
-                    val placeables = measureables.map { measurable ->
-                        measurable.measure(constraints.copy(maxHeight = (height + heightMin).dp.roundToPx()))
-                    }
-                    layout(constraints.maxWidth, height) {
-                        var y = event.start.format(FormatterHours).toInt()
-                        y -= if (y > 12) {
-                            7
-                        } else {
-                            6
-                        }
-                        placeables.forEach { placeable ->
-                            placeable.place(0, ((y * 60) + heightMin).dp.roundToPx())
-                        }
+                    placeables.forEach { placeable ->
+                        placeable.place(0, ((y * 60) + heightMin).dp.roundToPx())
                     }
                 }
             }
@@ -171,33 +175,60 @@ fun HourDisplay() {
                     .height(60.dp)
                     .fillMaxWidth()
                     .background(color)
+                    .padding(
+                        start = if (isFrenchLocale()) 8.dp else 0.dp,
+                        end = if (isFrenchLocale()) 8.dp else 0.dp
+                    )
             )
             {
-                Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
+                val formattedHour = formatHour(hour)
+                //Text("$hour:00", color = MaterialTheme.colorScheme.scrim)
+                Text(
+                    formattedHour,
+                    //fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.scrim,
+                    overflow = TextOverflow.Clip,
+                    maxLines = 1
+                )
             }
             i++
-            if (hour == 12) {
-                hour = 1
-            } else {
-                hour++
-            }
+//            if (hour == 12) {
+//                hour = 1
+//            } else {
+//                hour++
+//            }
+            hour = (hour + 1) % 24
         }
     }
 }
 
+fun formatHour(hour: Int): String{
+    val locale = Locale.getDefault()
+    val pattern = if (locale.language == "fr") "HH'h'mm" else "HH:mm"
+    val formatter = DateTimeFormatter.ofPattern(pattern, locale)
+    val localTime = LocalTime.of(hour, 0)
+    return formatter.format(localTime)
+}
+fun isFrenchLocale(): Boolean {
+    return Locale.getDefault().language == "fr"
+}
+
+
+
+val DayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM uuuu")
 @Composable
 fun TopHalf(
     holidays: List<Holiday>?,
-    day: String,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
+    val day = viewModel.currentDay.format(DayFormatter).toString()
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         BackwardsArrowButton(
-            day = day,
             navController = navController,
             viewModel = viewModel
         )
@@ -206,29 +237,28 @@ fun TopHalf(
                 day,
                 modifier = Modifier.height(50.dp),
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.scrim
+                color = Color.Black
             )
             if (holidays != null) {
                 for (i in holidays.indices) {
-                    if (viewModel.currentDay.toString() == holidays[i].date) {
-                        Text(holidays[i].name)
+                    if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date && holidays[0].types[0] == "Public") {
+                        Text(holidays[i].localName, color = Color.LightGray)
                     }
                 }
             }
         }
         ForwardArrowButton(
-            day = day,
             navController = navController,
             viewModel = viewModel
         )
     }
     Spacer(modifier = Modifier.height(5.dp))
-    AddButton(navController = navController, day = day, viewModel)
+    AddButton(navController = navController, viewModel)
     Spacer(modifier = Modifier.height(5.dp))
 }
 
 @Composable
-fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel) {
+fun AddButton(navController: NavController, viewModel: AppViewmodel) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -255,10 +285,9 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
                         //Create a new (empty) event for the selected day,
                         // set it to the currently viewing one
                         // and open the edit menu for it
-                        viewModel.isEditing = false
                         viewModel.setCurrentEvent(
                             Event(
-                                LocalDateTime.parse(day),
+                                viewModel.currentDay,
                                 "",
                                 LocalDateTime.now(),
                                 LocalDateTime.now(),
@@ -277,20 +306,18 @@ fun AddButton(navController: NavController, day: String, viewModel: AppViewmodel
 
 @Composable
 fun ForwardArrowButton(
-    day: String,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
     IconButton(
         onClick = {
-            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val date: LocalDateTime = LocalDateTime
-                .parse(day, format)
+            val date: LocalDateTime =
+                viewModel.currentDay
                 .plusDays(1)
             viewModel.setNewDay(date)
             navController.navigate(Routes.DailyOverview.route)
         },
-        modifier = Modifier.testTag("Next Day")
+        modifier = Modifier.testTag("Next Day"),
     ) {
         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Day")
     }
@@ -298,15 +325,13 @@ fun ForwardArrowButton(
 
 @Composable
 fun BackwardsArrowButton(
-    day: String,
     navController: NavController,
     viewModel: AppViewmodel
 ) {
     IconButton(
         onClick = {
-            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val date: LocalDateTime = LocalDateTime
-                .parse(day, format)
+            val date: LocalDateTime =
+                viewModel.currentDay
                 .minusDays(1)
             viewModel.setNewDay(date)
             navController.navigate(Routes.DailyOverview.route)
