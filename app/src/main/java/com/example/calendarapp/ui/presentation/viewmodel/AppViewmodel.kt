@@ -25,11 +25,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
 
     private val fusedLocationProviderClient = fusedLocationProvider
     val utilityHelper = utilityHelper
-
-    //Location Context
     var WeatherDownloader: WeatherDownloader = WeatherDownloader()
-
-
     var holidayRepository = HolidayRepository(utilityHelper)
     private val _holidays = MutableLiveData<List<Holiday>>()
     val holidays: LiveData<List<Holiday>> = _holidays
