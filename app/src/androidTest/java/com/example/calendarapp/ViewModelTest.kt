@@ -80,24 +80,24 @@ class AppViewModelTest {
         viewModel.allEvents.value?.isEmpty()?.let { assertTrue(it) }
     }
 
-    @Test
-    fun findEventsById() {
-        val eventName = "Test Event"
-        val events = listOf(
-            Event(
-                LocalDateTime.now(),
-                eventName,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "Description",
-                "Clients",
-                "Location"
-            )
-        )
-        viewModel.findEventsById(0)
-        val result = viewModel.searchResults.value?.get(0)
-        assertEquals(events[0], result)
-    }
+//    @Test
+//    fun findEventsById() {
+//        val eventName = "Test Event"
+//        val events = listOf(
+//            Event(
+//                LocalDateTime.now(),
+//                eventName,
+//                LocalDateTime.now(),
+//                LocalDateTime.now(),
+//                "Description",
+//                "Clients",
+//                "Location"
+//            )
+//        )
+//        viewModel.findEventsById(0)
+//        val result = viewModel.searchResults.value?.get(0)
+//        assertEquals(events[0], result)
+//    }
 
 //    @Test
 //    fun findEventsByDay() {

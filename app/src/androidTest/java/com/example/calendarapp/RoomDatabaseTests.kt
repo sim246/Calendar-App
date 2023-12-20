@@ -90,6 +90,27 @@ class RoomDatabaseTests {
         assertThat(allEvents?.size ?: 0, `is`(0))
         ArchTaskExecutor.getInstance().setDelegate(null)
     }
+
+    @Test
+    fun findEventByDay() = runBlocking {
+        ArchTaskExecutor.getInstance().setDelegate(DefaultTaskExecutor())
+        val currentDateTime = LocalDateTime.now()
+        val event = Event(
+            day = currentDateTime,
+            eventName = "name",
+            start = currentDateTime,
+            theEnd = currentDateTime.plusHours(2),
+            description = "des",
+            clientName = "John Doe",
+            location = "loc"
+        )
+        eventDao.insertEvent(event)
+        val foundEvents = eventDao.findAllEventsByDay(currentDateTime)
+
+        assertThat(foundEvents.size, `is`(1))
+        assertThat(foundEvents[0].eventName, `is`("name"))
+        ArchTaskExecutor.getInstance().setDelegate(null)
+    }
 }
 
 object LiveDataTestUtil {

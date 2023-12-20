@@ -51,12 +51,6 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         }
     }
 
-    fun findEventsById(id: Int) {
-        viewModelScope.launch (Dispatchers.IO){
-            searchResults.postValue(roomRepository.findEvent(id))
-        }
-    }
-
     fun findEventsByDay(day: LocalDateTime) {
         viewModelScope.launch (Dispatchers.IO){
             searchResults.postValue(roomRepository.findEventByDay(day))
