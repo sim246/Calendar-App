@@ -98,4 +98,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+
+    androidTestImplementation ("com.android.support.test:runner:1.0.2")
+    androidTestImplementation ("com.android.support.test:rules:1.0.2")
+    androidTestImplementation ("com.android.support.test.espresso:espresso-core:3.0.2")
+    androidTestImplementation ("com.android.support.test.espresso:espresso-intents:3.0.2")
+    androidTestImplementation ("com.android.support.test.espresso:espresso-contrib:3.0.2")
 }

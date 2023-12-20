@@ -16,7 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.calendarapp.R
@@ -37,7 +39,7 @@ fun SingleEventEdit(
     viewModel: AppViewmodel
 ){
 
-    Column{
+    Column (modifier = Modifier.testTag("EventEditOverviewUI")){
         val titleString = eventInputField(stringResource(R.string.title_required), event.eventName)
         val descriptionString = event.description?.let { eventInputField(stringResource(R.string.description), it) }
         val locationString = event.location?.let { eventInputField(stringResource(R.string.location), it) }
@@ -46,71 +48,85 @@ fun SingleEventEdit(
         val context = LocalContext.current
         val startEndTimes = eventTimeDisplay(event)
 
-        Button(
-            content={Text(text = stringResource(R.string.save_event))},
-            //should save the event at the specified date and time onclick
-            onClick={
-                Log.i("nya title", titleString)
-                Log.i("nya", startEndTimes[0].toString())
-                Log.i("nya", startEndTimes[1].toString())
-                //set event values after checking time validity
-                if(titleString.isNotEmpty()){
-                    val check = viewModel.checkConflictingEvents(event.id, startEndTimes[0], startEndTimes[1], allEvents)
-                    if(check == null) {
-                        event.eventName = titleString
-                        event.description = descriptionString
-                        event.clientName = clientString
-                        event.location = locationString
-                        event.start = startEndTimes[0]
-                        event.theEnd = startEndTimes[1]
-                        viewModel.insertEvent(event)
-                        navController.navigate(Routes.DailyOverview.route)
+        Row (modifier = Modifier.testTag("Save")) {
+            Button(
+                content = { Text(text = stringResource(R.string.save_event)) },
+                //should save the event at the specified date and time onclick
+                onClick = {
+                    Log.i("nya title", titleString)
+                    Log.i("nya", startEndTimes[0].toString())
+                    Log.i("nya", startEndTimes[1].toString())
+                    //set event values after checking time validity
+                    if (titleString.isNotEmpty()) {
+                        val check = viewModel.checkConflictingEvents(
+                            event.id,
+                            startEndTimes[0],
+                            startEndTimes[1],
+                            allEvents
+                        )
+                        if (check == null) {
+                            event.eventName = titleString
+                            event.description = descriptionString
+                            event.clientName = clientString
+                            event.location = locationString
+                            event.start = startEndTimes[0]
+                            event.theEnd = startEndTimes[1]
+                            viewModel.insertEvent(event)
+                            navController.navigate(Routes.DailyOverview.route)
+                        } else {
+                            Toast.makeText(context, "$check", Toast.LENGTH_LONG).show()
+                        }
                     } else {
-                        Toast.makeText(context, "$check", Toast.LENGTH_LONG).show()
+                        //on unfilled required fields
+                        val toastText = "Please fill all the required values."
+                        Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
                     }
-                } else {
-                    //on unfilled required fields
-                    val toastText = "Please fill all the required values."
-                    Toast.makeText(context, toastText, Toast.LENGTH_LONG).show()
+                })
+        }
+        Row (modifier = Modifier.testTag("No Save")) {
+            Button(
+                content = { Text(text = stringResource(R.string.quit_without_saving)) },
+                onClick = {
+                    navController.popBackStack()
                 }
-            })
-
-        Button(
-            content={Text(text = stringResource(R.string.quit_without_saving))},
-            onClick={
-                navController.popBackStack()
-            }
-        )
+            )
+        }
     }
 }
 
 @Composable
 fun SingleEventDisplay(event: Event, navController: NavController, viewModel: AppViewmodel){
-    Column{
+    Column (modifier = Modifier.testTag("EventDisplayOverviewUI")){
         Text(text=event.eventName)
         Text(text="@ " + event.location)
         Text(text=event.start.toLocalTime().toString() + " to " + event.theEnd.toLocalTime().toString())
         event.description?.let { Text(text= it) }
-        Button(
-            content={Text(text = stringResource(R.string.edit_event))},
-            onClick={
-                navController.navigate(Routes.EventEdit.route)
-            }
-        )
-        Button(
-            content={Text(text = stringResource(R.string.delete_event))},
-            //realistically should have a "Are you sure??" dialog
-            onClick={
-                viewModel.deleteEvent(event.id)
-                navController.navigate(Routes.DailyOverview.route)
-            }
-        )
-        Button(
-            content={Text(text=stringResource(R.string.return_btn))},
-            onClick = {
-                navController.navigate(Routes.DailyOverview.route)
-            }
-        )
+        Row (modifier = Modifier.testTag("Edit")) {
+            Button(
+                content = { Text(text = stringResource(R.string.edit_event)) },
+                onClick = {
+                    navController.navigate(Routes.EventEdit.route)
+                }
+            )
+        }
+        Row (modifier = Modifier.testTag("Delete")) {
+            Button(
+                content = { Text(text = stringResource(R.string.delete_event)) },
+                //realistically should have a "Are you sure??" dialog
+                onClick = {
+                    viewModel.deleteEvent(event.id)
+                    navController.navigate(Routes.DailyOverview.route)
+                }
+            )
+        }
+        Row (modifier = Modifier.testTag("Return")) {
+            Button(
+                content = { Text(text = stringResource(R.string.return_btn)) },
+                onClick = {
+                    navController.navigate(Routes.DailyOverview.route)
+                }
+            )
+        }
     }
 }
 
@@ -157,12 +173,16 @@ fun eventTimeDisplay(event: Event) : Array<LocalDateTime>{
 
     )
     Row{
-        Button(onClick={
-            timePickerStart.show()
-        }, content={Text(text = stringResource(R.string.set_start_time))})
-        Button(onClick={
-            timePickerEnd.show()
-        }, content={Text(text = stringResource(R.string.set_end_time))})
+        Column(modifier = Modifier.testTag("Start")) {
+            Button(onClick = {
+                timePickerStart.show()
+            }, content = { Text(text = stringResource(R.string.set_start_time)) })
+        }
+        Column(modifier = Modifier.testTag("End")) {
+            Button(onClick = {
+                timePickerEnd.show()
+            }, content = { Text(text = stringResource(R.string.set_end_time)) })
+        }
     }
     //fix strings for parsings
     return arrayOf(LocalDateTime.of(event.day.toLocalDate(), LocalTime.parse(startTime, formatter)),
