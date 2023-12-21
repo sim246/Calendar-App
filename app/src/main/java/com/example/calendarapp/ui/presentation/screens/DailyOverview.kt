@@ -238,7 +238,7 @@ fun TopHalf(
                 fontSize = 20.sp,
                 color = Color.Black
             )
-            val dayOffset = LocalDateTime.now().until(viewModel.currentDay, ChronoUnit.DAYS).toInt()
+            val dayOffset = LocalDate.now().until(viewModel.currentDay, ChronoUnit.DAYS).toInt() + 1
             if(viewModel.currentDay.toLocalDate() == LocalDate.now() || dayOffset in 1..5){
                 //show button for forecast
 
