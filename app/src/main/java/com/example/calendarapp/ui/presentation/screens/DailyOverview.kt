@@ -238,8 +238,17 @@ fun TopHalf(
                 fontSize = 20.sp,
                 color = Color.Black
             )
+            if (holidays != null) {
+                for (i in holidays.indices) {
+                    if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date && holidays[0].types[0] == "Public") {
+                        Text(holidays[i].localName, color = Color.LightGray)
+                    }
+                }
+            }
             val dayOffset = LocalDate.now().until(viewModel.currentDay, ChronoUnit.DAYS).toInt() + 1
-            if(viewModel.currentDay.toLocalDate() == LocalDate.now() || dayOffset in 1..5){
+            viewModel.currentlyViewingDateOffset = dayOffset
+            val isViewingCurrentDate: Boolean = viewModel.currentDay.toLocalDate() == LocalDate.now()
+            if(isViewingCurrentDate || dayOffset in 1..5){
                 //show button for forecast
 
                 Log.d("days", dayOffset.toString())
@@ -253,7 +262,15 @@ fun TopHalf(
                 }
 
                 if(currentDay!= null){
-                    Button(onClick = { }) {
+                    Button(onClick = {
+                        if(!isViewingCurrentDate){ //this bool check doesn't make sense but it's flipped otherwise
+                            navController.navigate(Routes.WeatherSingle.route)
+                        }
+                        else
+                        {
+                            navController.navigate(Routes.WeatherFive.route)
+                        }
+                    }) {
                         Text(currentDay.temperature.toString() + " degrees")
                     }
                 }
@@ -263,13 +280,7 @@ fun TopHalf(
                     Text("Check if your location is on and try again.")
                 }
             }
-            if (holidays != null) {
-                for (i in holidays.indices) {
-                    if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date && holidays[0].types[0] == "Public") {
-                        Text(holidays[i].localName, color = Color.LightGray)
-                    }
-                }
-            }
+
         }
         ForwardArrowButton(
             navController = navController,

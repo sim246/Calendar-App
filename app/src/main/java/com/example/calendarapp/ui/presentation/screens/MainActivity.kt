@@ -63,7 +63,6 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun ScreenSetup(appViewmodel: AppViewmodel) {
-        //appViewmodel.getCurrentDayForecast()
         Log.d("WeatherDownloader", LocalDate.now().toString())
         val navController = rememberNavController()
         val holidays by appViewmodel.holidays.observeAsState(null)
@@ -99,6 +98,12 @@ class MainActivity : ComponentActivity() {
                         appViewmodel
                     )
                 }
+            }
+            composable(Routes.WeatherSingle.route) {
+                WeatherSingleDay(appViewmodel)
+            }
+            composable(Routes.WeatherFive.route) {
+                WeatherCurrentDay(appViewmodel)
             }
         }
     }

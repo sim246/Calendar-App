@@ -23,6 +23,14 @@ import java.time.LocalDateTime
 
 class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper,fusedLocationProvider: FusedLocationProviderClient) : ViewModel(){
 
+
+    //weather menu value
+    //the current day's offset from the current date: Used to
+    //calculate which weathers are shown
+    var currentlyViewingDateOffset: Int = 0
+
+
+
     private val fusedLocationProviderClient = fusedLocationProvider
     val utilityHelper = utilityHelper
 
@@ -136,5 +144,9 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
             WeatherDownloader.loadWeatherToday()
             WeatherDownloader.loadWeatherFive()
         }
+    }
+
+    fun getCurrentWeatherFromArray(): Weather{
+        return WeatherDownloader.weatherFiveDays[currentlyViewingDateOffset - 1]
     }
 }
