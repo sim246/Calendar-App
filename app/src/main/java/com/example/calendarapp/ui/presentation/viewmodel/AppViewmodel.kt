@@ -142,7 +142,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         viewModelScope.launch (Dispatchers.IO){
             //below should set the viewmodel's livedata to the fetched weather data
             WeatherDownloader.loadWeatherToday()
-            WeatherDownloader.loadWeatherFive()
+
         }
     }
 

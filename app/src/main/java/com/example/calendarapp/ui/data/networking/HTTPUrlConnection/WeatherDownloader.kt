@@ -98,7 +98,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
                 val weather = Weather()
                 //set data
                 weather.condition = jObject.getJSONArray("weather").getJSONObject(0).getString("main")
-                weather.day = jObject.getString("dt_txt")
+                weather.day = LocalDate.now().toString()
                 weather.temperature = jObject.getJSONObject("main").getString("temp").toDouble()
                 weather.temperatureFeelsLike = jObject.getJSONObject("main").getString("feels_like").toDouble()
                 weather.humidity = jObject.getJSONObject("main").getString("humidity").toDouble()
@@ -109,7 +109,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
 
 
         } else {
-            Log.e("WeatherDownloader", "REST FETCH ERROR: $responseCode")
+            Log.e("WeatherDownloader", "REST FETCH ERROR: $responseCode $httpURLConnection.responseMessage");
             weatherCurrentDay = null
 
         }
@@ -119,18 +119,10 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
         //SET 5 DAYS WEATHER
 
         //Loads JSON into the weather livedata.
-        Log.d("WeatherDownloader", "Runnng LoadJSON")
-        //Uncomment the below line ONLY IF the above fn is working (will always be null and never fetch JSON otherwise)
-        if(currentLocation === null){
-            Log.d("WeatherDownloader", "location is null")
-            weatherFiveDays =
-            return
-        }
-        Log.d("WeatherDownloader", "location isn;t null")
-
-
-        url = URL("https://api.openweathermap.org/data/2.5/forecast?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
-        //val url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
+        Log.d("WeatherDownloader", "Runnng Load Multipledayforecast")
+        url = URL("https://api.openweathermap.org/data/2.5/forecast?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&cnt=5&appid=${APIKEY}")
+        //url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&cnt=5&appid=${APIKEY}")
+        // the onecall 3.0 doesn't work, you need a sub for it??
         httpURLConnection = url.openConnection() as HttpURLConnection
         httpURLConnection.requestMethod = "GET"
         httpURLConnection.setRequestProperty("Accept", "text/json")
@@ -143,13 +135,9 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
                 .use { it.readText() }
             //return weather with JSON translated data
             Log.d("WeatherDownloader", dataString)
-
             weatherFiveDays.clear()
-
-
             val jObject = JSONObject(dataString)
             val weatherArray: JSONArray = jObject.getJSONArray("list") // contains a list of all the JSON weathers
-
             //add 5 weathers to the list
             for (i in 0..4){
                 val weather = Weather()
@@ -164,21 +152,11 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
                 //add to list
                 weatherFiveDays.add(weather)
             }
-
-
-
         } else {
-            Log.e("WeatherDownloader", "REST FETCH ERROR: $responseCode")
+            Log.e("WeatherDownloader", "REST FETCH ERROR: $responseCode $httpURLConnection.responseMessage");
             weatherFiveDays.clear()
-
         }
 
         lastUpdated = LocalDateTime.now()
-    }
-
-    fun loadWeatherFive(){
-
-
-
     }
 }
