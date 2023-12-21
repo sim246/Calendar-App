@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import android.Manifest
 import org.json.JSONArray
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, context: Context) {
@@ -25,6 +26,9 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
 
     //currentWeather for the fetched day
     //var currentWeather: Weather? = null
+
+    var lastUpdated: LocalDateTime = LocalDateTime.now()
+
 
     var weatherCurrentDay: Weather? = null
     var weatherFiveDays = mutableListOf<Weather>()
@@ -94,10 +98,10 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
                 val weather = Weather()
                 //set data
                 weather.condition = jObject.getJSONArray("weather").getJSONObject(0).getString("main")
-                //weather.day = "Today (temp value)"
+                weather.day = jObject.getString("dt_txt")
                 weather.temperature = jObject.getJSONObject("main").getString("temp").toDouble()
                 weather.temperatureFeelsLike = jObject.getJSONObject("main").getString("feels_like").toDouble()
-
+                weather.humidity = jObject.getJSONObject("main").getString("humidity").toDouble()
                 //add to list
                 weatherList.plus(weather)
 
@@ -153,10 +157,10 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
 
                 //set data
                 weather.condition = weatherJSON.getJSONArray("weather").getJSONObject(0).getString("main")
-                //weather.day = "Today (temp value)"
+                weather.day = weatherJSON.getString("dt_txt")
                 weather.temperature = weatherJSON.getJSONObject("main").getString("temp").toDouble()
                 weather.temperatureFeelsLike = weatherJSON.getJSONObject("main").getString("feels_like").toDouble()
-
+                weather.humidity = weatherJSON.getJSONObject("main").getString("humidity").toDouble()
                 //add to list
                 weatherFiveDays.add(weather)
             }
@@ -169,7 +173,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
 
         }
 
-
+        lastUpdated = LocalDateTime.now()
     }
 
     fun loadWeatherFive(){
