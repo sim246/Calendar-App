@@ -244,7 +244,9 @@ fun TopHalf(
 
                 Log.d("days", dayOffset.toString())
                 var currentDay: Weather? = viewModel.WeatherDownloader.weatherCurrentDay
-                if(dayOffset in 1..5)
+                val fivedayWeather = viewModel.WeatherDownloader.weatherFiveDays
+                Log.d("days", "Fiveday length: " + fivedayWeather.size.toString())
+                if(dayOffset in 1..5 && fivedayWeather.isNotEmpty())
                 {
                     //if a future date in between 1-5, pick that in the array
                     currentDay = viewModel.WeatherDownloader.weatherFiveDays[dayOffset - 1]
@@ -257,7 +259,8 @@ fun TopHalf(
                 }
                 else
                 {
-                    Text("Weather not found, try again later.")
+                    Text("Weather not found.")
+                    Text("Check if your location is on and try again.")
                 }
             }
             if (holidays != null) {
