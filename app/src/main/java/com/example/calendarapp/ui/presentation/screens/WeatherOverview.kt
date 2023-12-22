@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendarapp.ui.domain.Weather
@@ -49,15 +50,27 @@ fun WeatherCurrentDay(viewmodel: AppViewmodel, navController: NavController){
         if(currentDayWeather !== null)
         {
             Column (modifier= Modifier.verticalScroll(rememberScrollState())){
+                Text("Current Weather:", fontWeight = FontWeight.Bold)
+
                 WeatherCard(currentDayWeather)
+
+                val threeHourStep = viewmodel.WeatherDownloader.weather3HRStep
+
+                if(threeHourStep.isNotEmpty())
+                {
+                    Text("Today's 3 Hour Step:", fontWeight = FontWeight.Bold)
+                    for (weather in viewmodel.WeatherDownloader.weather3HRStep) {
+                        WeatherCard(weather)
+                    }
+                }
+                Text("Weather for the next 5 days:", fontWeight = FontWeight.Bold)
+
                 for (weather in viewmodel.WeatherDownloader.weatherFiveDays) {
                     WeatherCard(weather)
                 }
             }
         }
     }
-
-
 }
 @Composable
 fun WeatherCard(weather: Weather){
@@ -68,9 +81,14 @@ fun WeatherCard(weather: Weather){
         Text("Feels Like: " + weather.temperatureFeelsLike.toString() + " degrees C")
         Text("Condition: " + weather.condition)
         Text("Humidity: " + weather.humidity)
-        Divider(color = Color.Gray, modifier = Modifier
-            .fillMaxWidth()
-            .width(1.dp))
+        CardDivider()
     }
 }
 
+
+@Composable
+fun CardDivider(){
+    Divider(color = Color.Gray, modifier = Modifier
+        .fillMaxWidth()
+        .width(1.dp))
+}

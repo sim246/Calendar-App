@@ -31,6 +31,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
 
 
     var weatherCurrentDay: Weather? = null
+    var weather3HRStep = mutableListOf<Weather>()
     var weatherFiveDays = mutableListOf<Weather>()
 
     init {
@@ -81,8 +82,6 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
            }
            Log.d("WeatherDownloader", "location isn;t null")
 
-
-           //val url = URL("https://api.openweathermap.org/data/2.5/forecast?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
            var url = URL("https://api.openweathermap.org/data/2.5/weather?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&appid=${APIKEY}")
            var httpURLConnection = url.openConnection() as HttpURLConnection
            httpURLConnection.requestMethod = "GET"
@@ -157,26 +156,23 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
                val jObject = JSONObject(dataString)
                val weatherArray: JSONArray = jObject.getJSONArray("list") // contains a list of all the JSON weathers
                //add 5 weathers to the list
-               for (i in 0..weatherArray.length() - 1){
+               val todaysDate = LocalDate.now().toString()
+               for (i in 0 until weatherArray.length()){
                    val weatherJSON : JSONObject = weatherArray.getJSONObject(i)
                    //if current date hasn't been added yet (timetext starts with any in the list)
                    val weatherDay = weatherJSON.getString("dt_txt").split(" ")[0]
                    if(datesToFetch.any { weatherDay.contains(it, ignoreCase = true) })
                    {
-                       val weather = Weather()
-                       //set data
-                       weather.condition = weatherJSON.getJSONArray("weather").getJSONObject(0).getString("main")
-                       weather.day = weatherDay
-                       weather.temperature = weatherJSON.getJSONObject("main").getString("temp").toDouble()
-                       weather.temperatureFeelsLike = weatherJSON.getJSONObject("main").getString("feels_like").toDouble()
-                       weather.humidity = weatherJSON.getJSONObject("main").getString("humidity").toDouble()
+                       val weather = getObjectFromJSON(weatherJSON, weatherDay)
                        //add to list
                        weatherFiveDays.add(weather)
                        datesToFetch.remove(weatherDay)
                    }
-
-
-
+                   else if(weatherDay == todaysDate){
+                       //if today, add to 3hr step list
+                       val weather = getObjectFromJSON(weatherJSON, weatherDay)
+                       weather3HRStep.add(weather)
+                   }
                }
            } else {
                Log.e("WeatherDownloader", "REST FETCH ERROR: $responseCode $httpURLConnection.responseMessage");
@@ -191,4 +187,16 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
        }
         lastUpdated = LocalDateTime.now()
     }
+}
+
+
+fun getObjectFromJSON(weatherJSON:JSONObject, weatherDay:String):Weather{
+    val weather = Weather()
+    //set data
+    weather.condition = weatherJSON.getJSONArray("weather").getJSONObject(0).getString("main")
+    weather.day = weatherDay
+    weather.temperature = weatherJSON.getJSONObject("main").getString("temp").toDouble()
+    weather.temperatureFeelsLike = weatherJSON.getJSONObject("main").getString("feels_like").toDouble()
+    weather.humidity = weatherJSON.getJSONObject("main").getString("humidity").toDouble()
+    return weather
 }
