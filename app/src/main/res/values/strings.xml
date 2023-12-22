@@ -13,4 +13,16 @@
     <string name="description">Description</string>
     <string name="location">Location</string>
     <string name="client_name">Client Name</string>
+
+    <string name="weather_humidity">Humidity: </string>
+    <string name="weather_degrees">°C</string>
+    <string name="weather_feelslike">Feels Like </string>
+    <string name="weather_condition">Condition: </string>
+    <string name="weather_for">Weather for:  </string>
+
+    <string name="weather_todaytitle">Today\'s Current Weather  </string>
+    <string name="weather_3hrsteptitle">Today\'s Current Weather (3 Hour Step)</string>
+    <string name="weather_5daystitle">5-Day Forecast</string>
+    <string name="weather_notfound">Weather not found. Check if Location and Wi-Fi is on.</string>
+    <string name="weather_lastupdated">Last updated: </string>
 </resources>
