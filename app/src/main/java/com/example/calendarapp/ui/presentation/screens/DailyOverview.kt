@@ -276,8 +276,10 @@ fun TopHalf(
                 }
                 else
                 {
-                    Text("Weather not found.")
-                    Text("Check if your location is on and try again.")
+                    Column(modifier=Modifier.width(250.dp)){
+                        Text("Weather not found. Check if Location & Wi-Fi is on.")
+                    }
+
                 }
             }
 

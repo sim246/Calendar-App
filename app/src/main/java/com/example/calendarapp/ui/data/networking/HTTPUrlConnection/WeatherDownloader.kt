@@ -138,8 +138,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
 
            Log.d("WeatherDownloader", "Runnng Load Multipledayforecast")
            url = URL("https://api.openweathermap.org/data/2.5/forecast?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&cnt=80&appid=${APIKEY}")
-           //url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&cnt=5&appid=${APIKEY}")
-           // the onecall 3.0 doesn't work, you need a sub for it??
+
            httpURLConnection = url.openConnection() as HttpURLConnection
            httpURLConnection.requestMethod = "GET"
            httpURLConnection.setRequestProperty("Accept", "text/json")
