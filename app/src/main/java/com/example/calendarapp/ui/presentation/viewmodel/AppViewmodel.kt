@@ -147,6 +147,6 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     }
 
     fun getCurrentWeatherFromArray(): Weather{
-        return WeatherDownloader.weatherFiveDays[currentlyViewingDateOffset - 1]
+        return WeatherDownloader.weatherFiveDays[currentlyViewingDateOffset-2]
     }
 }

@@ -129,7 +129,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
            val datesToFetch = mutableListOf<String>()
            var currentWeatherDay = LocalDate.now()
            Log.d("WeatherDownloader", LocalDate.now().toString())
-           for(i in 1..4){
+           for(i in 1..5){
                currentWeatherDay = currentWeatherDay.plusDays(1)
                datesToFetch.add(currentWeatherDay.toString())
            }
@@ -137,7 +137,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
 
 
            Log.d("WeatherDownloader", "Runnng Load Multipledayforecast")
-           url = URL("https://api.openweathermap.org/data/2.5/forecast?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&cnt=50&appid=${APIKEY}")
+           url = URL("https://api.openweathermap.org/data/2.5/forecast?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&cnt=80&appid=${APIKEY}")
            //url = URL("https://api.openweathermap.org/data/2.5/forecast/daily?lat=${currentLocation!!.latitude}&lon=${currentLocation!!.longitude}&cnt=5&appid=${APIKEY}")
            // the onecall 3.0 doesn't work, you need a sub for it??
            httpURLConnection = url.openConnection() as HttpURLConnection
