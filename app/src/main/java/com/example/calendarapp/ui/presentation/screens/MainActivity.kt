@@ -100,10 +100,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
             composable(Routes.WeatherSingle.route) {
-                WeatherSingleDay(appViewmodel)
+                WeatherSingleDay(appViewmodel, navController)
             }
             composable(Routes.WeatherFive.route) {
-                WeatherCurrentDay(appViewmodel)
+                WeatherCurrentDay(appViewmodel, navController)
             }
         }
     }
