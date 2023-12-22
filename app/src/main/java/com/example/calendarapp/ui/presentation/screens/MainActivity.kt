@@ -109,7 +109,7 @@ class MainActivity : ComponentActivity() {
                 WeatherSingleDay(appViewmodel, navController)
             }
             composable(Routes.WeatherFive.route) {
-                appViewmodel.checkForWeatherUpdates()dd
+                appViewmodel.checkForWeatherUpdates()
                 WeatherCurrentDay(appViewmodel, navController)
             }
         }
