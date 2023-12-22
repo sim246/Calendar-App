@@ -27,7 +27,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
     //currentWeather for the fetched day
     //var currentWeather: Weather? = null
 
-    var lastUpdated: LocalDateTime = LocalDateTime.now()
+
 
 
     var weatherCurrentDay: Weather? = null
@@ -184,7 +184,7 @@ class WeatherDownloader(fusedLocationClient: FusedLocationProviderClient, contex
            weatherCurrentDay = null
            weatherFiveDays = mutableListOf<Weather>()
        }
-        lastUpdated = LocalDateTime.now()
+
     }
 }
 
@@ -199,3 +199,4 @@ fun getObjectFromJSON(weatherJSON:JSONObject, weatherDay:String):Weather{
     weather.humidity = weatherJSON.getJSONObject("main").getString("humidity").toDouble()
     return weather
 }
+

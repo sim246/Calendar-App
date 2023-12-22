@@ -21,6 +21,8 @@ import androidx.navigation.NavController
 import com.example.calendarapp.R
 import com.example.calendarapp.ui.domain.Weather
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 //The weather overview screen
 
@@ -36,6 +38,7 @@ fun WeatherSingleDay(viewmodel: AppViewmodel, navController: NavController){
             Text(stringResource(R.string.return_btn))
         }
         WeatherCard(weather)
+        LastUpdated(viewmodel)
     }
 
 }
@@ -52,24 +55,27 @@ fun WeatherCurrentDay(viewmodel: AppViewmodel, navController: NavController){
         if(currentDayWeather !== null)
         {
             Column (modifier= Modifier.verticalScroll(rememberScrollState())){
+                CardDivider()
                 Text(stringResource(R.string.weather_todaytitle), fontWeight = FontWeight.Bold)
-
+                CardDivider()
                 WeatherCard(currentDayWeather)
 
                 val threeHourStep = viewmodel.WeatherDownloader.weather3HRStep
 
                 if(threeHourStep.isNotEmpty())
                 {
-                    Text(stringResource(R.string.weather_3hrsteptitle), fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.weather_3hrsteptitle) , fontWeight = FontWeight.Bold)
+                    CardDivider()
                     for (weather in viewmodel.WeatherDownloader.weather3HRStep) {
                         WeatherCard(weather)
                     }
                 }
                 Text(stringResource(R.string.weather_5daystitle), fontWeight = FontWeight.Bold)
-
+                CardDivider()
                 for (weather in viewmodel.WeatherDownloader.weatherFiveDays) {
                     WeatherCard(weather)
                 }
+                LastUpdated(viewmodel)
             }
         }
     }
@@ -78,11 +84,11 @@ fun WeatherCurrentDay(viewmodel: AppViewmodel, navController: NavController){
 fun WeatherCard(weather: Weather){
     //The card object itself, in a vertical style.
     Column(Modifier.fillMaxWidth()){
-        Text(stringResource(R.string.weather_for) + weather.day)
+        Text(stringResource(R.string.weather_for) + " " + weather.day)
         Text(weather.temperature.toString() + stringResource(R.string.weather_degrees))
-        Text(stringResource(R.string.weather_feelslike) + weather.temperatureFeelsLike.toString() + stringResource(R.string.weather_degrees))
-        Text(stringResource(R.string.weather_condition) + weather.condition)
-        Text(stringResource(R.string.weather_humidity) + weather.humidity)
+        Text(stringResource(R.string.weather_feelslike) + " " + weather.temperatureFeelsLike.toString() + stringResource(R.string.weather_degrees))
+        Text(stringResource(R.string.weather_condition) + " " + weather.condition)
+        Text(stringResource(R.string.weather_humidity) + " " + weather.humidity)
         CardDivider()
     }
 }
@@ -93,4 +99,10 @@ fun CardDivider(){
     Divider(color = Color.Gray, modifier = Modifier
         .fillMaxWidth()
         .width(1.dp))
+}
+@Composable
+fun LastUpdated(viewmodel: AppViewmodel){
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    val formattedDateTime = viewmodel.lastUpdated.format(formatter)
+    Text(stringResource(R.string.weather_lastupdated) + " " +  formattedDateTime)
 }

@@ -23,4 +23,5 @@
     <string name="weather_3hrsteptitle">Météo actuelle du jour (étape de 3 heures)</string>
     <string name="weather_5daystitle">Prévisions sur 5 jours</string>
     <string name="weather_notfound">Météo introuvable. Vérifiez si la localisation et le Wi-Fi sont activés.</string>
+    <string name="weather_lastupdated">Dernière mise à jour:</string>
 </resources>

@@ -20,6 +20,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper,fusedLocationProvider: FusedLocationProviderClient) : ViewModel(){
 
@@ -29,7 +30,7 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     //calculate which weathers are shown
     var currentlyViewingDateOffset: Int = 0
 
-
+    var lastUpdated: LocalDateTime = LocalDateTime.now()
 
     private val fusedLocationProviderClient = fusedLocationProvider
     val utilityHelper = utilityHelper
@@ -142,8 +143,23 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
         viewModelScope.launch (Dispatchers.IO){
             //below should set the viewmodel's livedata to the fetched weather data
             WeatherDownloader.loadWeather()
-
+            //update last Update Time
+            lastUpdated = LocalDateTime.now()
         }
+    }
+
+    fun checkForWeatherUpdates(){
+        //if time since last update > 10 min, refresh weather data
+        try{
+            if(ChronoUnit.MINUTES.between(lastUpdated, LocalDateTime.now()) >= 10){
+                getCurrentDayForecast()
+                lastUpdated = LocalDateTime.now()
+            }
+        }
+        catch(e: Exception){
+            Log.d("WeatherDownloader",e.stackTraceToString())
+        }
+
     }
 
     fun getCurrentWeatherFromArray(): Weather{
