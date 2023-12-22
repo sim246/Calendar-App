@@ -75,12 +75,16 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = Routes.MonthOverviewScreen.route)
         {
             composable(Routes.MonthOverviewScreen.route) {
+                appViewmodel.checkForWeatherUpdates()
                 App(allEvents = allEvents,navController = navController, appViewmodel)
+
             }
             composable(Routes.DailyOverview.route) {
+                appViewmodel.checkForWeatherUpdates()
                 DailyOverview(searchResults = searchResults,holidays, appViewmodel, navController)
             }
             composable(Routes.EventOverview.route) {
+                appViewmodel.checkForWeatherUpdates()
                 appViewmodel.currentlyViewingEvent?.let { it1 ->
                     SingleEventDisplay(
                         it1,
@@ -90,6 +94,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             composable(Routes.EventEdit.route) {
+                appViewmodel.checkForWeatherUpdates()
                 appViewmodel.currentlyViewingEvent?.let { it1 ->
                     SingleEventEdit(
                         allEvents,
@@ -100,9 +105,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
             composable(Routes.WeatherSingle.route) {
+                appViewmodel.checkForWeatherUpdates()
                 WeatherSingleDay(appViewmodel, navController)
             }
             composable(Routes.WeatherFive.route) {
+                appViewmodel.checkForWeatherUpdates()dd
                 WeatherCurrentDay(appViewmodel, navController)
             }
         }

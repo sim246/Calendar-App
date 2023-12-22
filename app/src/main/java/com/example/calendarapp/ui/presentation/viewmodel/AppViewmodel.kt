@@ -1,6 +1,7 @@
 package com.example.calendarapp.ui.presentation.viewmodel
 
 import android.app.Application
+import android.os.Handler
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,18 +10,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.calendarapp.ui.data.networking.HTTPUrlConnection.WeatherDownloader
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
+import com.example.calendarapp.ui.data.networking.HTTPUrlConnection.WeatherDownloader
+import com.example.calendarapp.ui.data.networking.retrofit.HolidayRepository
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
-import com.example.calendarapp.ui.data.networking.retrofit.HolidayRepository
 import com.example.calendarapp.ui.domain.Weather
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
+import java.util.Timer
+import java.util.TimerTask
+
 
 class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper,fusedLocationProvider: FusedLocationProviderClient) : ViewModel(){
 
@@ -165,4 +169,6 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     fun getCurrentWeatherFromArray(): Weather{
         return WeatherDownloader.weatherFiveDays[currentlyViewingDateOffset-2]
     }
+
+
 }
