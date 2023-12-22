@@ -14,9 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.calendarapp.R
 import com.example.calendarapp.ui.domain.Weather
 import com.example.calendarapp.ui.presentation.viewmodel.AppViewmodel
 
@@ -31,7 +33,7 @@ fun WeatherSingleDay(viewmodel: AppViewmodel, navController: NavController){
     val weather = viewmodel.getCurrentWeatherFromArray()
     Column {
         Button(onClick = {navController.popBackStack()}) {
-            Text("Return")
+            Text(stringResource(R.string.return_btn))
         }
         WeatherCard(weather)
     }
@@ -44,13 +46,13 @@ fun WeatherCurrentDay(viewmodel: AppViewmodel, navController: NavController){
     //I feel this should be the above but x5 in a scrollable view
     Column{
         Button(onClick = {navController.popBackStack()}) {
-            Text("Return")
+            Text(stringResource(R.string.return_btn))
         }
         val currentDayWeather: Weather? = viewmodel.WeatherDownloader.weatherCurrentDay
         if(currentDayWeather !== null)
         {
             Column (modifier= Modifier.verticalScroll(rememberScrollState())){
-                Text("Current Weather:", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.weather_todaytitle), fontWeight = FontWeight.Bold)
 
                 WeatherCard(currentDayWeather)
 
@@ -58,12 +60,12 @@ fun WeatherCurrentDay(viewmodel: AppViewmodel, navController: NavController){
 
                 if(threeHourStep.isNotEmpty())
                 {
-                    Text("Today's 3 Hour Step:", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.weather_3hrsteptitle), fontWeight = FontWeight.Bold)
                     for (weather in viewmodel.WeatherDownloader.weather3HRStep) {
                         WeatherCard(weather)
                     }
                 }
-                Text("Weather for the next 5 days:", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.weather_5daystitle), fontWeight = FontWeight.Bold)
 
                 for (weather in viewmodel.WeatherDownloader.weatherFiveDays) {
                     WeatherCard(weather)
@@ -76,11 +78,11 @@ fun WeatherCurrentDay(viewmodel: AppViewmodel, navController: NavController){
 fun WeatherCard(weather: Weather){
     //The card object itself, in a vertical style.
     Column(Modifier.fillMaxWidth()){
-        Text("Weather for " + weather.day)
-        Text(weather.temperature.toString() + " degrees C")
-        Text("Feels Like: " + weather.temperatureFeelsLike.toString() + " degrees C")
-        Text("Condition: " + weather.condition)
-        Text("Humidity: " + weather.humidity)
+        Text(stringResource(R.string.weather_for) + weather.day)
+        Text(weather.temperature.toString() + stringResource(R.string.weather_degrees))
+        Text(stringResource(R.string.weather_feelslike) + weather.temperatureFeelsLike.toString() + stringResource(R.string.weather_degrees))
+        Text(stringResource(R.string.weather_condition) + weather.condition)
+        Text(stringResource(R.string.weather_humidity) + weather.humidity)
         CardDivider()
     }
 }

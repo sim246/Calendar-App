@@ -14,4 +14,13 @@
     <string name="description">Description</string>
     <string name="location">Lieu</string>
     <string name="client_name">Nom du client</string>
+    <string name="weather_humidity">Humidité</string>
+    <string name="weather_degrees">°C</string>
+    <string name="weather_feelslike">"Température ressentie: "</string>
+    <string name="weather_condition">"Condition: "</string>
+    <string name="weather_for">Météo pour :</string>
+    <string name="weather_todaytitle">Météo actuelle du jour</string>
+    <string name="weather_3hrsteptitle">Météo actuelle du jour (étape de 3 heures)</string>
+    <string name="weather_5daystitle">Prévisions sur 5 jours</string>
+    <string name="weather_notfound">Météo introuvable. Vérifiez si la localisation et le Wi-Fi sont activés.</string>
 </resources>

@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -271,13 +272,13 @@ fun TopHalf(
                             navController.navigate(Routes.WeatherFive.route)
                         }
                     }) {
-                        Text(currentDay.temperature.toString() + " degrees")
+                        Text(currentDay.temperature.toString() + stringResource(R.string.weather_degrees))
                     }
                 }
                 else
                 {
                     Column(modifier=Modifier.width(250.dp)){
-                        Text("Weather not found. Check if Location & Wi-Fi is on.")
+                        Text(stringResource(R.string.weather_notfound))
                     }
 
                 }
