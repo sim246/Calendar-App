@@ -1,6 +1,7 @@
 package com.example.calendarapp.ui.presentation.viewmodel
 
 import android.app.Application
+import android.os.Handler
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,19 +10,31 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.calendarapp.ui.data.networking.HTTPUrlConnection.WeatherDownloader
 import com.example.calendarapp.ui.data.db.EventRepository
 import com.example.calendarapp.ui.data.db.EventRoomDatabase
+import com.example.calendarapp.ui.data.networking.HTTPUrlConnection.WeatherDownloader
+import com.example.calendarapp.ui.data.networking.retrofit.HolidayRepository
 import com.example.calendarapp.ui.domain.Event
 import com.example.calendarapp.ui.domain.Holiday
-import com.example.calendarapp.ui.data.networking.retrofit.HolidayRepository
 import com.example.calendarapp.ui.domain.Weather
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
+import java.util.Timer
+import java.util.TimerTask
+
 
 class AppViewmodel(application: Application = Application(), utilityHelper: UtilityHelper,fusedLocationProvider: FusedLocationProviderClient) : ViewModel(){
+
+
+    //weather menu value
+    //the current day's offset from the current date: Used to
+    //calculate which weathers are shown
+    var currentlyViewingDateOffset: Int = 0
+
+    var lastUpdated: LocalDateTime = LocalDateTime.now()
 
     private val fusedLocationProviderClient = fusedLocationProvider
     val utilityHelper = utilityHelper
@@ -133,9 +146,29 @@ class AppViewmodel(application: Application = Application(), utilityHelper: Util
     fun getCurrentDayForecast(){
         viewModelScope.launch (Dispatchers.IO){
             //below should set the viewmodel's livedata to the fetched weather data
-
-            WeatherDownloader.loadWeatherToday()
-            WeatherDownloader.loadWeatherFive()
+            WeatherDownloader.loadWeather()
+            //update last Update Time
+            lastUpdated = LocalDateTime.now()
         }
     }
+
+    fun checkForWeatherUpdates(){
+        //if time since last update > 10 min, refresh weather data
+        try{
+            if(ChronoUnit.MINUTES.between(lastUpdated, LocalDateTime.now()) >= 10){
+                getCurrentDayForecast()
+                lastUpdated = LocalDateTime.now()
+            }
+        }
+        catch(e: Exception){
+            Log.d("WeatherDownloader",e.stackTraceToString())
+        }
+
+    }
+
+    fun getCurrentWeatherFromArray(): Weather{
+        return WeatherDownloader.weatherFiveDays[currentlyViewingDateOffset-2]
+    }
+
+
 }

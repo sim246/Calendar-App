@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -238,28 +239,6 @@ fun TopHalf(
                 fontSize = 20.sp,
                 color = Color.Black
             )
-            val dayOffset = LocalDateTime.now().until(viewModel.currentDay, ChronoUnit.DAYS).toInt()
-            if(viewModel.currentDay.toLocalDate() == LocalDate.now() || dayOffset in 1..5){
-                //show button for forecast
-
-                Log.d("days", dayOffset.toString())
-                var currentDay: Weather? = viewModel.WeatherDownloader.weatherCurrentDay
-                if(dayOffset in 1..5)
-                {
-                    //if a future date in between 1-5, pick that in the array
-                    currentDay = viewModel.WeatherDownloader.weatherFiveDays[dayOffset - 1]
-                }
-
-                if(currentDay!= null){
-                    Button(onClick = { }) {
-                        Text(currentDay.temperature.toString() + " degrees")
-                    }
-                }
-                else
-                {
-                    Text("Weather not found, try again later.")
-                }
-            }
             if (holidays != null) {
                 for (i in holidays.indices) {
                     if (viewModel.currentDay.toLocalDate().toString() == holidays[i].date && holidays[0].types[0] == "Public") {
@@ -267,6 +246,44 @@ fun TopHalf(
                     }
                 }
             }
+            val dayOffset = LocalDate.now().until(viewModel.currentDay, ChronoUnit.DAYS).toInt() + 1
+            viewModel.currentlyViewingDateOffset = dayOffset
+            val isViewingCurrentDate: Boolean = viewModel.currentDay.toLocalDate() == LocalDate.now()
+            if(isViewingCurrentDate || dayOffset in 1..5){
+                //show button for forecast
+
+                Log.d("days", dayOffset.toString())
+                var currentDay: Weather? = viewModel.WeatherDownloader.weatherCurrentDay
+                val fivedayWeather = viewModel.WeatherDownloader.weatherFiveDays
+                Log.d("days", "Fiveday length: " + fivedayWeather.size.toString())
+                if(dayOffset in 1..5 && fivedayWeather.isNotEmpty())
+                {
+                    //if a future date in between 1-5, pick that in the array
+                    currentDay = viewModel.WeatherDownloader.weatherFiveDays[dayOffset - 1]
+                }
+
+                if(currentDay!= null){
+                    Button(onClick = {
+                        if(!isViewingCurrentDate){ //this bool check doesn't make sense but it's flipped otherwise
+                            navController.navigate(Routes.WeatherSingle.route)
+                        }
+                        else
+                        {
+                            navController.navigate(Routes.WeatherFive.route)
+                        }
+                    }) {
+                        Text(currentDay.temperature.toString() + stringResource(R.string.weather_degrees))
+                    }
+                }
+                else
+                {
+                    Column(modifier=Modifier.width(250.dp)){
+                        Text(stringResource(R.string.weather_notfound))
+                    }
+
+                }
+            }
+
         }
         ForwardArrowButton(
             navController = navController,
